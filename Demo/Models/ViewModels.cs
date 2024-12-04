@@ -22,6 +22,7 @@ public class LoginVM
 }
 public class RegisterVM
 {
+
     [StringLength(50, MinimumLength = 2)]
     [Display(Name = "First Name")]
     public string FirstName { get; set; }
@@ -35,13 +36,13 @@ public class RegisterVM
 
     [RegularExpression(@"\d{6}-\d{2}-\d{4}", ErrorMessage = "Invalid Identification Card No format.")]
     [Display(Name = "Identification Card No")]
-    public string IdCard { get; set; }
+    public string IcNo { get; set; }
 
     [StringLength(1)]
-    public string Gender { get; set; }
+    public char Gender { get; set; }
 
     [StringLength(50)]
-    [Display(Name = "Working Position")]
+    [Display(Name = "Job")]
     public string Position { get; set; }
 
     [EmailAddress]

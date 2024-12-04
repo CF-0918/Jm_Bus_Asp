@@ -798,7 +798,7 @@ body {
 }
 
 .login_form label {
-    font-weight: 800;
+    font-weight: 650;
 }
 
 .input_box_login {
@@ -2636,9 +2636,9 @@ input[type="range"]::-webkit-slider-thumb {
 .file-upload {
     border: 4px dashed #007bff;
     /* Change border to dashed and use a primary color */
-    padding: 30px;
+    padding: 10px;
     text-align: center;
-    width: 400px;
+    width: 300px;
     margin-bottom: 20px;
     background-color: #f8f9fa;
     /* Light background color */
@@ -2652,9 +2652,17 @@ input[type="range"]::-webkit-slider-thumb {
     /* Smooth transition for hover effect */
 }
 
-label.upload #photo {
-    display: none;
+.upload img {
+    display: block;            /* Ensures the image behaves like a block element */
+    border: 1px solid #333;    /* Adds a border around the image */
+    width: 200px;              /* Sets the width of the image container */
+    height: 200px;             /* Sets the height of the image container */
+    object-fit: cover;         /* Ensures the image fills the container, cropping if necessary */
+    cursor: pointer;           /* Changes the cursor to indicate interactivity */
+    border-radius: 10px;       /* (Optional) Adds rounded corners to the image */
 }
+
+
 
 .file-upload:hover {
     background-color: #e9ecef;
@@ -2666,7 +2674,7 @@ label.upload #photo {
 /* Style for the h2 header */
 .modal_upload_image_header h2 {
     font-family: 'Arial', sans-serif; /* Change to your preferred font */
-    font-size: 24px; /* Adjust size */
+    font-size: 20px; /* Adjust size */
     color: #333; /* Set text color */
     margin: 0; /* Remove default margin */
     padding: 10px 0; /* Add some padding */
@@ -2676,7 +2684,7 @@ label.upload #photo {
 
 .file-upload p {
     font-family: 'Verdana', sans-serif;
-    font-size: 18px;
+    font-size: 15px;
     color: #555;
     font-weight: 700;
     text-align: center;
@@ -2686,18 +2694,6 @@ label.upload #photo {
     border-radius: 5px;
 }
 
-
-
-
-
-.file-upload img {
-    margin-top: 15px;
-    /* Add some space above the image */
-    border-radius: 10px;
-    /* Rounded corners for the image */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    /* Add a subtle shadow */
-}
 
 #drop-area.dragover {
     background-color: #545454;

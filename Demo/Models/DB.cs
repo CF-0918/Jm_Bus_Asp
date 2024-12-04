@@ -12,6 +12,7 @@ public class DB : DbContext
     // DB Sets
     public DbSet<User> Users { get; set; }
     public DbSet<Admin> Admins { get; set; }
+    public DbSet<Staff> Staffs { get; set; }
     public DbSet<Member> Members { get; set; }
 }
 
@@ -19,16 +20,29 @@ public class DB : DbContext
 
 public class User
 {
-    [MaxLength(100)]
+    [Key, MaxLength(10)]
+    public string Id { get; set; }
+    [MaxLength(50)]
     public string FirstName { get; set; }
-    [MaxLength(100)]
+    [MaxLength(50)]
     public string LastName { get; set; }
-    [Key, MaxLength(100)]
+    [MaxLength (2)]
+    public int Age { get; set; }
+    [MaxLength (15)]
+    public string IcNo { get; set; }
+    [MaxLength (1)]
+    public char Gender { get; set; }
+    [MaxLength(15)]
+    public string Position { get; set; }
+    [ MaxLength(50)]
     public string Email { get; set; }
+    [MaxLength(50)]
+    public string Phone { get; set; }
     [MaxLength(100)]
     public string Hash { get; set; }
+    [MaxLength(50)]
+    public string Country { get; set; }
 
-    // TODO
     public string Role => GetType().Name;
 }
 
@@ -36,6 +50,10 @@ public class User
 public class Admin : User
 {
 
+}
+public class Staff : User
+{
+    public string PhotoURL { get; set; }
 }
 
 // TODO

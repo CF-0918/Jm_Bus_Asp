@@ -236,27 +236,30 @@ $(document).ready(function () {
 
     // Photo preview
 
-    $('label.upload input[type=file]').on('change', function (e) {
-        const f = e.target.files[0]; // Get the selected file
-        const img = $('#userPic')[0]; // Get the image element
+    // Photo preview
+    $('.upload input').on('change', e => {
+        const f = e.target.files[0];
+        const img = $(e.target).siblings('img')[0];
 
-        if (!img) return; // If no img element, return
-
-        // Store the original source of the image
         img.dataset.src ??= img.src;
 
-        // Check if the selected file is an image
         if (f && f.type.startsWith('image/')) {
-            img.src = URL.createObjectURL(f); // Set the src to the image file URL
-        } else {
-            img.src = img.dataset.src; // Reset the image to the original source
-            e.target.value = ''; // Clear the input if the file is not an image
+            img.onload = e => URL.revokeObjectURL(img.src);
+            img.src = URL.createObjectURL(f);
         }
+        else {
+            img.src = img.dataset.src;
+            e.target.value = '';
+        }
+
+        // Trigger input validation
+        $(e.target).valid();
     });
+
 
     // Handle drag-and-drop functionality
     let dropArea = $('#dropArea');
-    let fileInput = $('#photo');
+    let fileInput = $('#Photo');
 
     dropArea.on('dragenter dragover', function (event) {
         event.preventDefault(); // Prevent default drag behavior
