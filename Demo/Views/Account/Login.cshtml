@@ -1,0 +1,48 @@
+﻿@model LoginVM
+
+@{
+    ViewBag.Title = "Account | Login";
+}
+
+<div class="login_container">
+    <div class="left_image">
+    </div>
+    <div class="right_form">
+        <form class="login_form" method="post">
+            <div asp-validation-summary="ModelOnly"></div>
+            <img src="/photo/images/logoremovebg-preview.png" />
+            <h2>Login</h2>
+
+            <div class="line-text">
+                <span>Sign in to your account</span>
+                <hr class="line" />
+            </div>
+
+            <div class="input_box_login">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="inputText" placeholder="Email" autofocus>
+                <span class="errorMessage" asp-validation-for="Email"></span>
+            </div>
+
+            <div class="input_box_login">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="inputText" placeholder="Password">
+                <span class="errorMessage" asp-validation-for="Password"></span>
+            </div>
+
+            <div class="input_box_login">
+                <label>
+                    <input asp-for="RememberMe">Remember Me
+                </label>
+            </div>
+         
+
+            <button class="login_button">Login</button>
+            <div style="margin-top:20px;color:#40a6d2;padding-left:28px;">
+                <a class="hyperlink_login" href="/Account/ResetPassword">Having Problems On Your Account ?</a> |
+                Don't have an account? <a class="hyperlink_login" href="/Account/Register">Sign Up</a>
+            </div>
+
+        </form>
+    </div>
+</div>

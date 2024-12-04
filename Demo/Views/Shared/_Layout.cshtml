@@ -1,0 +1,119 @@
+﻿@inject DB db
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Noto+Serif+Ahom&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- Include jQuery QR Code plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+</head>
+<body>
+    @* <nav class="user_login_status_nav"> *@
+
+    @*     <div class="user-profile-nav "> *@
+    @*         <a href="#"> *@
+    @*             <i class="fas fa-user-circle"></i> *@
+    @*             <img src="/photo/images/founder.jpg" alt="profile picture" /> *@
+    @*             <span>Hello, Yong</span> *@
+    @*         </a> *@
+
+    @*     </div> *@
+    @* </nav> *@
+
+    <nav class="user_login_status_nav">
+        <a href="/Account/Login">Login / Register</a>
+    </nav>
+    <nav class="navbar_user">
+        <div class="logo_container">
+            <img src="/photo/images/logo_JMBus.png" />
+        </div>
+        <ul>
+            <a href="/">
+            <li><i class="fas fa-home"></i> Home</li>
+            </a>
+            <a href="">
+            <li><i class="fas fa-bus"></i> Bus Schedule</li>
+            </a>
+            <a href="">
+            <li><i class="fas fa-key"></i> Rent Service</li>
+            </a>
+            <a href="">
+            <li><i class="fas fa-users"></i> About Us</li>
+            </a>
+            <a href="">
+            <li><i class="fas fa-trophy"></i> Rewards</li>
+            </a>
+        </ul>
+
+        <ul>
+            <a href="https://wa.me/60128082165?text=Hi%20JMBus%20customer%20service,%0A%0AI%20hope%20you're%20doing%20well.%20I%20would%20like%20to%20inquire%20about%20your%20services.%20Could%20you%20please%20provide%20more%20information%20on%20the%20following%3F%0A%0AThank%20you%20in%20advance%20for%20your%20assistance.%20Best%20regards."
+               class="nav_whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+
+        </ul>
+
+    </nav>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-info">
+                <h3 class="footer_title">Contact Us</h3>
+                <p>Email: <a href="mailto:info@yourwebsite.com">info@yourwebsite.com</a></p>
+                <p>Phone: +1 234 567 890</p>
+            </div>
+
+            <div class="footer-social">
+                <h3 class="footer_title">Follow Us</h3>
+                <ul>
+                    <li><a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i> Facebook</a></li>
+                    <li><a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i> Twitter</a></li>
+                    <li><a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i> LinkedIn</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h3 class="footer_title">Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; @DateTime.Today.Year JM_Bus Website. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="/js/jquery.validate.min.js"></script>
+    <script src="/js/jquery.validate.unobtrusive.min.js"></script>
+    <script src="/js/js.js" asp-append-version="true"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @RenderSection("foot", false)
+</body>
+</html>

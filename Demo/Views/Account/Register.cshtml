@@ -1,0 +1,100 @@
+﻿@model RegisterVM
+
+@{
+    ViewBag.Title = "Account | Register";
+}
+
+<div class="register-container">
+    <h2>Register</h2>
+    <form method="post" enctype="multipart/form-data">
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" data-upper autofocus>
+                <span class="errorMessage" asp-validation-for="FirstName"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" data-upper>
+                <span class="errorMessage" asp-validation-for="LastName"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="Age"></label>
+                <input asp-for="Age" data-digit>
+                <span class="errorMessage" asp-validation-for="Age"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdCard"></label>
+                <input asp-for="IdCard" placeholder="000000-00-0000" data-icNo>
+                <span class="errorMessage" asp-validation-for="IdCard"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="Gender"></label>
+                <select asp-for="Gender">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                <span class="errorMessage" asp-validation-for="Gender"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Position"></label>
+                <input asp-for="Position" data-upper>
+                <span class="errorMessage" asp-validation-for="Position"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email">
+                <span class="errorMessage" asp-validation-for="Email"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNo"></label>
+                <input asp-for="PhoneNo" data-digit>
+                <span class="errorMessage" asp-validation-for="PhoneNo"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" type="password">
+                <span class="errorMessage" asp-validation-for="Password"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" type="password">
+                <span class="errorMessage" asp-validation-for="ConfirmPassword"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="Country"></label>
+                <select asp-for="Country" disabled>
+                    <option value="Malaysian" selected>Malaysian</option>
+                </select>
+                <span class="errorMessage" asp-validation-for="Country"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Photo"></label>
+                <input asp-for="Photo" type="file">
+                <span class="errorMessage" asp-validation-for="Photo"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Register</button>
+    </form>
+</div>

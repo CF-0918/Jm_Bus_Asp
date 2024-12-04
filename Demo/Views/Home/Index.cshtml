@@ -1,0 +1,236 @@
+﻿@{
+    ViewBag.Title = "Home | Index";
+}
+
+
+    <div class="home_section1">
+        <div class="banner_title">
+            <h1>
+                JMBus <i class="fas fa-bus"></i>
+            </h1>
+            <h3>Valuable Bus Experience</h3>
+        </div>
+        <div class="banner_image_box">
+            <img src="/photo/images/city_pic.png" />
+        </div>
+
+        <div class="special_info">
+            <div class="special_info_header">
+                <h3>
+                    <cite>
+                        <i class="fas fa-bus"></i>
+                        SPECIAL DEALS
+                    </cite>
+                </h3>
+                <div class="book_now_btn">
+                    <a href="#">
+                        <i class="fas fa-hand-pointer"></i>
+                        Get Now
+                    </a>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="design_box">
+                <div class="special_info_details">
+                    <div class="check_in">
+                        <small>
+                            <i class="fas fa-clock"></i>
+                            Start Time :
+                        </small>
+                        <p>18 Aug 2024 1:00 PM</p>
+                    </div>
+                    <div class="check_out">
+                        <small>
+                            <i class="fas fa-flag-checkered"></i>
+                            Arrival Time :
+                        </small>
+                        <p>19 Aug 2024 10:00 AM</p>
+                    </div>
+                    <div class="room">
+                        <small>
+                            <i class="fas fa-map-marker-alt"></i>
+                            Destination :
+                        </small>
+                        <p>Denting HighLand</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bus-booking-banner">
+            <form class="bus-booking-form">
+                <!-- Origin -->
+                <div class="form-group">
+                    <label for="origin">Origin</label>
+                    <select id="origin">
+                        <option value="" disabled selected>Select Origin</option>
+                        <option value="Johor">Johor</option>
+                        <option value="Kedah">Kedah</option>
+                        <option value="Kelantan">Kelantan</option>
+                        <option value="Malacca">Malacca</option>
+                        <option value="Negeri Sembilan">Negeri Sembilan</option>
+                        <option value="Pahang">Pahang</option>
+                        <option value="Penang">Penang</option>
+                        <option value="Perak">Perak</option>
+                        <option value="Perlis">Perlis</option>
+                        <option value="Selangor">Selangor</option>
+                        <option value="Terengganu">Terengganu</option>
+                        <option value="Kuala Lumpur">Kuala Lumpur</option>
+                        <option value="Putrajaya">Putrajaya</option>
+                    </select>
+                </div>
+
+                <!-- Destination -->
+                <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <select id="destination">
+                        <option value="" disabled selected>Select Destination</option>
+                        <option value="Johor">Johor</option>
+                        <option value="Kedah">Kedah</option>
+                        <option value="Kelantan">Kelantan</option>
+                        <option value="Malacca">Malacca</option>
+                        <option value="Negeri Sembilan">Negeri Sembilan</option>
+                        <option value="Pahang">Pahang</option>
+                        <option value="Penang">Penang</option>
+                        <option value="Perak">Perak</option>
+                        <option value="Perlis">Perlis</option>
+                        <option value="Selangor">Selangor</option>
+                        <option value="Terengganu">Terengganu</option>
+                        <option value="Kuala Lumpur">Kuala Lumpur</option>
+                        <option value="Putrajaya">Putrajaya</option>
+                    </select>
+                </div>
+
+                <!-- Travel Date -->
+                <div class="form-group">
+                    <label for="travel-date">Travel Date</label>
+                    <input type="date" id="travel-date" class="form-control">
+                </div>
+
+                <!-- Return Date -->
+                <div class="form-group">
+                    <label for="return-date">Return Date (Optional)</label>
+                    <input type="date" id="return-date" class="form-control">
+                </div>
+
+                <!-- Search Button -->
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="home_section2">
+        <div class="banner_title_2">
+            <h3>Budget Ticket</h3>
+            <h1>Our Valuable Bus Packages</h1>
+        </div>
+
+        <div class="hot_room_container">
+            <!-- Row 1 -->
+            <div class="hot_room_product">
+                <div class="price_tag">
+                    <h3>RM 60</h3>
+                    <span>/One Way</span>
+                </div>
+                <img src="photo/images/250pic.jpg" alt="Bus T250">
+                <div class="hot_room_product_details">
+                    <h3>Bus T250</h3>
+                    <small><i class="fa fa-star"></i> 4.9</small>
+                </div>
+                <div class="route">
+                    <h2><i class="fas fa-map-marker-alt"></i> Johor</h2>
+                    <span class="route-arrow"><i class="fas fa-arrow-right"></i></span>
+                    <h2><i class="fas fa-map-marker-alt"></i> Melaka</h2>
+                </div>
+                <div class="travel_time">
+                    <span><i class="fas fa-clock"></i> Depart: 8:00 AM</span> -
+                    <span><i class="fas fa-clock"></i> Arrive: 1:00 PM</span>
+                </div>
+                <ul class="room_features">
+                    <li><i class="fas fa-road"></i> Duration: 5H 12M</li>
+                    <li><i class="fas fa-ticket-alt"></i> One Way Ticket</li>
+                    <li><i class="fas fa-bus"></i> Comfortable Seating</li>
+                </ul>
+                <p class="description">
+                    A reliable bus with comfortable seating and onboard amenities.
+                </p>
+            </div>
+
+            <div class="hot_room_product">
+                <div class="price_tag">
+                    <h3>RM 100</h3>
+                    <span>/Round Trip</span>
+                </div>
+                <img src="bus2.jpg" alt="Bus X150">
+                <div class="hot_room_product_details">
+                    <h3>Bus X150</h3>
+                    <small><i class="fa fa-star"></i> 4.7</small>
+                </div>
+                <div class="travel_time">
+                    <span><i class="fas fa-clock"></i> Depart: 10:00 AM</span> -
+                    <span><i class="fas fa-clock"></i> Arrive: 3:00 PM</span>
+                </div>
+                <ul class="room_features">
+                    <li><i class="fas fa-road"></i> Duration: 5H</li>
+                    <li><i class="fas fa-ticket-alt"></i> Round Trip Ticket</li>
+                    <li><i class="fas fa-wifi"></i> Free Wi-Fi</li>
+                </ul>
+                <p class="description">A spacious bus perfect for family or group travel.</p>
+            </div>
+
+            <div class="hot_room_product">
+                <div class="price_tag">
+                    <h3>RM 80</h3>
+                    <span>/One Way</span>
+                </div>
+                <img src="bus3.jpg" alt="Bus L300">
+                <div class="hot_room_product_details">
+                    <h3>Bus L300</h3>
+                    <small><i class="fa fa-star"></i> 4.8</small>
+                </div>
+                <div class="travel_time">
+                    <span><i class="fas fa-clock"></i> Depart: 6:00 PM</span> -
+                    <span><i class="fas fa-clock"></i> Arrive: 11:00 PM</span>
+                </div>
+                <ul class="room_features">
+                    <li><i class="fas fa-road"></i> Duration: 5H</li>
+                    <li><i class="fas fa-chair"></i> Reclining Seats</li>
+                    <li><i class="fas fa-charging-station"></i> Charging Ports</li>
+                </ul>
+                <p class="description">Modern bus with reclining seats and onboard facilities.</p>
+            </div>
+
+            <div class="hot_room_product">
+                <div class="price_tag">
+                    <h3>RM 50</h3>
+                    <span>/One Way</span>
+                </div>
+                <img src="bus4.jpg" alt="Bus Z400">
+                <div class="hot_room_product_details">
+                    <h3>Bus Z400</h3>
+                    <small><i class="fa fa-star"></i> 4.6</small>
+                </div>
+                <div class="travel_time">
+                    <span><i class="fas fa-clock"></i> Depart: 7:30 AM</span> -
+                    <span><i class="fas fa-clock"></i> Arrive: 12:30 PM</span>
+                </div>
+                <ul class="room_features">
+                    <li><i class="fas fa-road"></i> Duration: 5H</li>
+                    <li><i class="fas fa-fan"></i> Air-Conditioned</li>
+                    <li><i class="fas fa-utensils"></i> Onboard Snacks</li>
+                </ul>
+                <p class="description">Budget-friendly option for daily commutes.</p>
+            </div>
+        </div>
+    </div>
+
+  
