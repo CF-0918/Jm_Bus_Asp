@@ -23,19 +23,10 @@
 </head>
 <body>
     <div class="info">@Html.Raw(TempData["Info"])</div>
-    @* <nav class="user_login_status_nav"> *@
-
-    @*     <div class="user-profile-nav "> *@
-    @*         <a href="#"> *@
-    @*             <i class="fas fa-user-circle"></i> *@
-    @*             <img src="/photo/images/founder.jpg" alt="profile picture" /> *@
-    @*             <span>Hello, Yong</span> *@
-    @*         </a> *@
-
-    @*     </div> *@
-    @* </nav> *@
+  
 
     @if (User.Identity!.IsAuthenticated){
+
         <nav class="user_login_status_nav">
             <a href="/Account/LogOut">Log Out</a>
         </nav>
@@ -67,13 +58,55 @@
             </a>
         </ul>
 
-        <ul>
-            <a href="https://wa.me/60128082165?text=Hi%20JMBus%20customer%20service,%0A%0AI%20hope%20you're%20doing%20well.%20I%20would%20like%20to%20inquire%20about%20your%20services.%20Could%20you%20please%20provide%20more%20information%20on%20the%20following%3F%0A%0AThank%20you%20in%20advance%20for%20your%20assistance.%20Best%20regards."
-               class="nav_whatsapp">
-                <i class="fab fa-whatsapp"></i> WhatsApp
-            </a>
+        @if (User.Identity!.IsAuthenticated)
+        {
+            var user = db.Members.FirstOrDefault(m => m.Email == User.Identity!.Name);
 
-        </ul>
+            <ul>
+                @if (user != null)
+                {
+                    <div class="user-profile-nav">
+                        <a href="#">
+                            <!-- Profile icon -->
+                            <i class="fas fa-user-circle"></i>
+
+                            <!-- Display profile picture -->
+                            <img src="/photo/users/@user.PhotoURL" alt="profile picture" />
+
+                            <span>
+                                @user.FirstName |
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <span>Admin</span>
+                                }
+                                @if (User.IsInRole("Staff"))
+                                {
+                                    <span>Staff</span>
+                                }
+                                @if (User.IsInRole("Member"))
+                                {
+                                    <span>Member</span>
+                                }
+                            </span>
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <span>User not found.</span>
+                }
+            </ul>
+        }
+        else
+        {
+            <ul>
+                    <a href="https://wa.me/60128082165?text=Hi%20JMBus%20customer%20service,%0A%0AI%20hope%20you're%20doing%20well.%20I%20would%20like%20to%20inquire%20about%20your%20services.%20Could%20you%20please%20provide%20more%20information%20on%20the%20following%3F%0A%0AThank%20you%20in%20advance%20for%20your%20assistance.%20Best%20regards."
+                       class="nav_whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+            </ul>
+        }
+
 
     </nav>
 

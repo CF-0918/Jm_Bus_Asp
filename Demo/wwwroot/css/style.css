@@ -22,11 +22,13 @@ body {
     transform: translate(-50%, 0);
     top: -100px;
     opacity: 0;
+    z-index:1000;
 }
 
     .info:not(:empty) {
         animation: fade 5s;
     }
+
 
 @keyframes fade {
     0% {
@@ -47,6 +49,32 @@ body {
     100% {
         top: -100px;
         opacity: 0;
+    }
+}
+.resendEmailLink {
+    color: #007bff; /* Primary blue color */
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease; 
+    animation: flash 1.5s infinite; /* Flash effect */
+}
+i.fa-envelope {
+    margin-right: 8px; /* Space between the icon and the text */
+    font-size: 18px; /* Icon size */
+    vertical-align: middle; /* Align the icon with the text */
+}
+
+@keyframes flash {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
     }
 }
 /* Sidebar styling */
@@ -1000,6 +1028,10 @@ body {
     border-bottom: 2px solid #c9c7c7;
     text-align: end;
     padding: 5px 0px;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    align-items:center;
 }
 
     .user_login_status_nav a {
@@ -1051,18 +1083,17 @@ body {
     }
 
 .navbar_user {
+    position:sticky;
+    top:0;
     display: flex;
     margin-top: 10px;
     justify-content: space-around;
     align-items: center;
     background-color: #fcfdfd;
     color: #312f2f;
-    position: sticky;
-    top: 0;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     /* Add a subtle shadow */
-    z-index: 1000;
-    /* Ensure it stays above other elements */
+    z-index: 1;
 }
 
     .navbar_user .logo_container img {

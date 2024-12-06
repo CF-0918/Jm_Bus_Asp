@@ -4,7 +4,6 @@
     ViewBag.Title = "Account | Login";
 }
 
-<p>@TempData["Info"]</p>
 <div class="login_container">
     <div class="left_image">
     </div>
@@ -39,7 +38,20 @@
          
 
             <button class="login_button">Login</button>
-            <div style="margin-top:20px;color:#40a6d2;padding-left:28px;">
+
+            @if (!string.IsNullOrEmpty(ViewBag.ResendEmailLink))
+            {
+                <p class="mt-2">
+                    <b>Resend Email Activation?</b>
+                    <a class="resendEmailLink" href="@ViewBag.ResendEmailLink">
+                        <i class="fa fa-envelope"></i> Resend
+                    </a>
+                </p>
+
+            }
+
+
+            <div style="margin-top:15px;color:#40a6d2;padding-left:28px;">
                 <a class="hyperlink_login" href="/Account/ResetPassword">Having Problems On Your Account ?</a> |
                 Don't have an account? <a class="hyperlink_login" href="/Account/Register">Sign Up</a>
             </div>

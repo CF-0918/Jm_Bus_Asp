@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Demo.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
@@ -70,13 +71,33 @@ public class AccountController : Controller
             return View(vm);
         }
 
-        // Successful login
-        TempData["FailedAttempts"] = 0; // Reset failed attempts
-        TempData["LockoutEnd"] = null; // Clear lockout time
-        TempData["Info"] = "Login successfully.";
+        // Reset attempts on successful login
+        TempData["FailedAttempts"] = 0;
+        TempData["LockoutEnd"] = null;
 
-        // Sign in
-        hp.SignIn(u.Email, u.Role, vm.RememberMe);
+        // Handle user status and email verification
+        if (u.EmailVerified == 1 && u.Status == "Active")
+        {
+            TempData["Info"] = "Login successfully.";
+            hp.SignIn(u.Email, u.Role, vm.RememberMe);
+        }
+        else if (u.EmailVerified == 0 && u.Status == "Active")
+        {
+            TempData["Info"] = "Your account has not been activated.";
+            ViewBag.ResendEmailLink = Url.Action("ResendActivation", "Account", new { email = u.Email }, "https");
+            return View(vm);
+        }
+        else if (u.Status == "Block")
+        {
+            TempData["Info"] = "Your account is currently blocked. Please contact support.";
+            return View(vm);
+        }
+        else
+        {
+            TempData["Info"] = "Your account access is restricted. Please contact support.";
+            return View(vm);
+        }
+
 
         // Handle return URL
         if (string.IsNullOrEmpty(returnURL))
@@ -189,12 +210,19 @@ public class AccountController : Controller
     }
 
 
-    private void SendActivationLink(User u, string tokenId)
+    private void SendActivationLink(User u, string tokenId,bool resend=false)
     {
         var fullName = $"{u.FirstName} {u.LastName}";
         var mail = new MailMessage();
         mail.To.Add(new MailAddress(u.Email, fullName));
-        mail.Subject = "Account Activation - Secure Your Access";
+        if (!resend)
+        {
+            mail.Subject = "Account Activation - Secure Your Access";
+        }
+        else
+        {
+            mail.Subject = "Resend Account Activation - Secure Your Access";
+        }
         mail.IsBodyHtml = true;
 
         // Generate the activation URL
@@ -265,6 +293,7 @@ public class AccountController : Controller
 
     public IActionResult Activate(string token)
     {
+        // Retrieve token record and include associated user
         var tokenRecord = db.Tokens.Include(t => t.User).FirstOrDefault(t => t.Id == token);
 
         if (tokenRecord == null)
@@ -273,33 +302,86 @@ public class AccountController : Controller
             return RedirectToAction("Login");
         }
 
+        // Check if the token has expired
         if (DateTime.Now > tokenRecord.Expired)
         {
-            TempData["Info"] = "Activation link expired.";
+            // Remove expired token
+            db.Tokens.Remove(tokenRecord);
+            db.SaveChanges();
+
+            TempData["Info"] = "Activation link has expired. Please request a new one.";
             return RedirectToAction("Login");
         }
 
-        // Activate user
+        // Get the user associated with the token
         var user = tokenRecord.User;
-        if (user != null&&user.Status!="Block"&&user.EmailVerified==0)
+        if (user != null && user.Status != "Block" && user.EmailVerified == 0)
         {
-            // Activate the user and remove the token
+            // Activate the user account
             user.EmailVerified = 1;
+
+            // Remove the token as it is no longer needed
             db.Tokens.Remove(tokenRecord);
 
-            // Save all changes at once
+            // Save all changes in one go
             db.SaveChanges();
 
-            TempData["Info"] = "Account activated successfully!";
-            return RedirectToAction("Login");
+            TempData["Info"] = "Account activated successfully! You can now log in.";
         }
         else
         {
-            TempData["Info"] = "Some Reason Cause Failed to activate account.";
+            TempData["Info"] = "Account activation failed. Please check the status of your account or contact support.";
         }
 
-        return View();
+        return RedirectToAction("Login");
     }
+
+
+    public IActionResult ResendActivation(string? email)
+    {
+        // Check if the email is provided
+        if (string.IsNullOrEmpty(email))
+        {
+            TempData["Info"] = "Email address is required.";
+            return RedirectToAction("Login");
+        }
+
+        // Find user in the database
+        var user = db.Users.FirstOrDefault(u => u.Email == email);
+        if (user == null || user.EmailVerified != 0 || user.Status != "Active")
+        {
+            TempData["Info"] = "Invalid request to resend activation. Please check the account status.";
+            return RedirectToAction("Login");
+        }
+
+        // Check for existing token and delete it if valid
+        var existingToken = db.Tokens.FirstOrDefault(t => t.UserId == user.Id);
+        if (existingToken != null)
+        {
+            db.Tokens.Remove(existingToken);
+            db.SaveChanges();
+        }
+
+        // Generate and save a new token
+        string randomTokenId = GenerateRandomToken(); // Assumes this method exists and generates a unique token
+        var token = new Token
+        {
+            Id = randomTokenId,
+            UserId = user.Id,
+            Expired = DateTime.Now.AddMinutes(5) // Token valid for 5 minutes
+        };
+        db.Tokens.Add(token);
+        db.SaveChanges();
+
+        // Send the activation email
+        SendActivationLink(user, randomTokenId, true); // Assumes this method exists and handles email sending
+
+        // Inform the user of success
+        TempData["Info"] = "Activation email has been resent successfully!";
+        return RedirectToAction("Login");
+    }
+
+
 
 
     // GET: Account/UpdatePassword
