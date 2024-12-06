@@ -8,7 +8,47 @@ body {
     overflow-x: hidden;
     /* Enables horizontal scroll if content overflows */
 }
+/* Flash Message -------------------------------------------------------------- */
 
+.info {
+    position: fixed;
+    background: #666;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px 20px;
+    max-width: 500px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    top: -100px;
+    opacity: 0;
+}
+
+    .info:not(:empty) {
+        animation: fade 5s;
+    }
+
+@keyframes fade {
+    0% {
+        top: -100px;
+        opacity: 0;
+    }
+
+    10% {
+        top: 100px;
+        opacity: 1;
+    }
+
+    90% {
+        top: 100px;
+        opacity: 1;
+    }
+
+    100% {
+        top: -100px;
+        opacity: 0;
+    }
+}
 /* Sidebar styling */
 .side-bar {
     height: 100vh;

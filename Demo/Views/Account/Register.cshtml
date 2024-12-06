@@ -41,9 +41,8 @@
                 <label asp-for="Gender"></label>
                 <select asp-for="Gender">
                     <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
                 </select>
                 <span class="errorMessage" asp-validation-for="Gender"></span>
             </div>
@@ -90,15 +89,15 @@
                 <span class="errorMessage" asp-validation-for="Country"></span>
             </div>
 
-                <div class="file-upload" id="dropArea">
+            <div class="file-upload" id="dropArea">
                 <label asp-for="Photo"></label>
-                    <p>Drag and Drop file</p>
+                <p>Drag and Drop file</p>
                 <label class="upload">
                     <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
-                    <img src="/photo/images/photo.jpg" height="200" width="200">
+                    <img src="/photo/images/photo.jpg" height="200" width="200" alt="preview">
                 </label>
-                <span asp-validation-for="Photo"></span>
-                </div>
+                <span class="errorMessage" asp-validation-for="Photo"></span>
+            </div>
 
          
             </div>

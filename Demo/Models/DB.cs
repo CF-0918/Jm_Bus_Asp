@@ -14,6 +14,8 @@ public class DB : DbContext
     public DbSet<Admin> Admins { get; set; }
     public DbSet<Staff> Staffs { get; set; }
     public DbSet<Member> Members { get; set; }
+
+    public DbSet<Token> Tokens { get; set; }
 }
 
 // Entity Classes -------------------------------------------------------------
@@ -43,7 +45,26 @@ public class User
     [MaxLength(50)]
     public string Country { get; set; }
 
+    [MaxLength(100)]
+    public string PhotoURL { get; set; }
+    [MaxLength(10)]
+    public string Status { get; set; }
+    [MaxLength(1)]
+    public int EmailVerified {  get; set; }
     public string Role => GetType().Name;
+
+    public Token Token { get; set; }
+}
+
+public class Token
+{
+    [Key]
+    public string Id { get; set; }
+    public DateTime Expired { get; set; }
+
+    // Foreign Key
+    public string UserId { get; set; }
+    public User User { get; set; }
 }
 
 // TODO
@@ -53,12 +74,10 @@ public class Admin : User
 }
 public class Staff : User
 {
-    public string PhotoURL { get; set; }
 }
 
 // TODO
 public class Member : User
 {
-    [MaxLength(100)]
-    public string PhotoURL { get; set; }
+
 }

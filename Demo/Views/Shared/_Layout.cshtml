@@ -22,6 +22,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
 </head>
 <body>
+    <div class="info">@Html.Raw(TempData["Info"])</div>
     @* <nav class="user_login_status_nav"> *@
 
     @*     <div class="user-profile-nav "> *@
@@ -34,9 +35,16 @@
     @*     </div> *@
     @* </nav> *@
 
-    <nav class="user_login_status_nav">
-        <a href="/Account/Login">Login / Register</a>
-    </nav>
+    @if (User.Identity!.IsAuthenticated){
+        <nav class="user_login_status_nav">
+            <a href="/Account/LogOut">Log Out</a>
+        </nav>
+    }else{
+        <nav class="user_login_status_nav">
+            <a href="/Account/Login">Login / Register</a>
+        </nav>
+    }
+
     <nav class="navbar_user">
         <div class="logo_container">
             <img src="/photo/images/logo_JMBus.png" />

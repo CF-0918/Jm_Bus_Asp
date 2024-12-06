@@ -4,12 +4,13 @@
     ViewBag.Title = "Account | Login";
 }
 
+<p>@TempData["Info"]</p>
 <div class="login_container">
     <div class="left_image">
     </div>
     <div class="right_form">
         <form class="login_form" method="post">
-            <div asp-validation-summary="ModelOnly"></div>
+            <div class="errorMessage" asp-validation-summary="ModelOnly"></div>
             <img src="/photo/images/logoremovebg-preview.png" />
             <h2>Login</h2>
 
@@ -32,7 +33,7 @@
 
             <div class="input_box_login">
                 <label>
-                    <input asp-for="RememberMe">Remember Me
+                    <input asp-for="RememberMe"> &nbsp;Remember Me
                 </label>
             </div>
          

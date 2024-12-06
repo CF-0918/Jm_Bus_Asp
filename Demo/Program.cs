@@ -14,7 +14,12 @@ builder.Services.AddAuthentication().AddCookie();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Culture = en-MY, ms-MY, zh-CN, ja-JP, ko-KR, etc.
+app.UseRequestLocalization("en-MY");
+
 app.MapDefaultControllerRoute();
 app.Run();

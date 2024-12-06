@@ -38,7 +38,6 @@ public class RegisterVM
     [Display(Name = "Identification Card No")]
     public string IcNo { get; set; }
 
-    [StringLength(1)]
     public char Gender { get; set; }
 
     [StringLength(50)]
