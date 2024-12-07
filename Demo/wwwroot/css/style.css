@@ -2478,15 +2478,40 @@ input[type="range"]::-webkit-slider-thumb {
             outline: none;
             border-color: #007bff;
         }
-
-/* Right section (ticket and invoice lists) styling */
-.ticket_invoice_list_right {
-    flex: 2;
-    min-width: 500px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.user_profile_status_div {
+    margin:0;
+    padding:0;
+    text-align: center; /* Center-align content */
+    position: relative; /* To position the child element absolutely */
 }
+    .user_profile_status_div.active{
+        color:green;
+    }
+
+    .user_profile_status_rounded {
+        position: absolute;
+        top: 50%; /* Vertically center the circle */
+        left: 44%; /* Horizontally center the circle */
+        transform: translate(-50%, -50%); /* Adjust for proper centering */
+        width: 10px; /* Circle size */
+        height: 10px; /* Circle size */
+        background-color: grey; /* Default color for inactive status */
+        border-radius: 50%; /* Make it a circle */
+    }
+
+    .user_profile_status_rounded.active {
+        background-color: green; /* Active status color */
+    }
+
+
+    /* Right section (ticket and invoice lists) styling */
+    .ticket_invoice_list_right {
+        flex: 2;
+        min-width: 500px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
 .ticket_ongoing_list_container,
 .show_invoice_list {
@@ -2631,15 +2656,46 @@ input[type="range"]::-webkit-slider-thumb {
 
 .text_change_profile_pic {
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
     .text_change_profile_pic small {
         font-weight: 700;
         text-decoration: underline;
         font-family: Lato;
-        cursor: pointer;
     }
+/* Common styles for both buttons */
+.profile_button_update, .profile_button_reset {
+    margin-top:5px;
+    font-family: 'Arial', sans-serif; /* Clean font */
+    font-size: 16px; /* Standard readable size */
+    padding: 15px 23px; /* Comfortable padding */
+    border-radius: 5px; /* Smooth rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    border: none; /* Clean borderless design */
+}
+
+/* Submit button specific styles */
+.profile_button_update {
+    padding:15px 40px;
+    background-color: #4CAF50; /* A fresh green color */
+    color: white; /* Contrasting text color */
+    font-weight:700;
+    font-size:18px;
+}
+
+    .profile_button_update:hover {
+        background-color: #45a049; /* Slightly darker green on hover */
+    }
+
+/* Reset button specific styles */
+.profile_button_reset {
+    background-color:darkgrey; /* Vibrant red for reset */
+    color: white; /* Contrasting text color */
+}
+
+
 
 /* General overlay styling */
 /* Modal overlay style */

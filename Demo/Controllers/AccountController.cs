@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 using System.Net.Mail;
+using System.Reflection;
 
 namespace Demo.Controllers;
 
@@ -423,66 +425,91 @@ public class AccountController : Controller
     //    return View();
     //}
 
-    //// GET: Account/UpdateProfile
-    //// TODO
-    //[Authorize(Roles = "Member")]
-    //public IActionResult UpdateProfile()
-    //{
-    //    // Get member record based on email (PK)
-    //    // TODO
-    //    var m = db.Members.Find(User.Identity!.Name);
-    //    if (m == null) return RedirectToAction("Index", "Home");
+   // GET: Account/UpdateProfile
+   [Authorize(Roles = "Member")]
+    public IActionResult UpdateProfile()
+    {
+        // Get member record based on email (PK)
+        // TODO
+        var m = db.Users.FirstOrDefault(u => u.Email == User.Identity!.Name);
+        if (m == null) return RedirectToAction("Index", "Home");
 
-    //    var vm = new UpdateProfileVM
-    //    {
-    //        // TODO
-    //        Email = m.Email,
-    //        Name = m.Name,
-    //        PhotoURL = m.PhotoURL,
-    //    };
+        var vm = new UpdateProfileVM
+        {
+            Id = m.Id,
+            FirstName =m.FirstName,
+            LastName = m.LastName,
+            Age = m.Age,
+            IcNo = m.IcNo,
+            Gender = m.Gender,
+            Position = m.Position,
+            Email = m.Email,
+            PhoneNo = m.Phone,
+            Country = m.Country,
+            Status = m.Status,
+            PhotoURL = m.PhotoURL,
+        };
 
-    //    return View(vm);
-    //}
+        return View(vm);
+    }
 
     //// POST: Account/UpdateProfile
     //// TODO
-    //[Authorize(Roles = "Member")]
-    //[HttpPost]
-    //public IActionResult UpdateProfile(UpdateProfileVM vm)
-    //{
-    //    // Get member record based on email (PK)
-    //    // TODO
-    //    var m = db.Members.Find(User.Identity!.Name);
-    //    if (m == null) return RedirectToAction("Index", "Home");
+    [Authorize(Roles = "Member")]
+    [HttpPost]
+    public IActionResult UpdateProfile(UpdateProfileVM vm)
+    {
+        var m = db.Users.FirstOrDefault(u => u.Email == User.Identity!.Name);
+        if (m == null) return RedirectToAction("Index", "Home");
 
-    //    if (vm.Photo != null)
-    //    {
-    //        var err = hp.ValidatePhoto(vm.Photo);
-    //        if (err != "") ModelState.AddModelError("Photo", err);
-    //    }
+        if (vm.Photo != null)
+        {
+            var err = hp.ValidatePhoto(vm.Photo);
+            if (err != "") ModelState.AddModelError("Photo", err);
+        }
 
-    //    if (ModelState.IsValid)
-    //    {
-    //        // TODO
-    //        m.Name = vm.Name;
+        if (ModelState.IsValid)
+        {
+        
+            m.FirstName = vm.FirstName;
+            m.LastName = vm.LastName;
+            m.Gender = vm.Gender;
+            m.Position = vm.Position;
+            m.Phone = vm.PhoneNo;
+            m.Country = vm.Country;
+ 
 
-    //        if (vm.Photo != null)
-    //        {
-    //            hp.DeletePhoto(m.PhotoURL, "photos");
-    //            m.PhotoURL = hp.SavePhoto(vm.Photo, "photos");
-    //        }
+            if (vm.Photo != null)
+            {
+                hp.DeletePhoto(m.PhotoURL, "photo/users");
+                m.PhotoURL = hp.SavePhoto(vm.Photo, "photo/users");
+            }
 
-    //        db.SaveChanges();
+            db.SaveChanges();
 
-    //        TempData["Info"] = "Profile updated.";
-    //        return RedirectToAction();
-    //    }
+            TempData["Info"] = "Profile updated.";
+            return RedirectToAction();
+        }
+        else
+        {
+            TempData["Info"] = "Profile Not updated.";
+            // TODO
+            vm.Id = m.Id;
+            vm.Email = m.Email;
+            vm.Age = m.Age;
+            vm.IcNo = m.IcNo;
+            vm.Status = m.Status;
+            vm.PhotoURL = m.PhotoURL;
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                Console.WriteLine($"ModelState error: {error.ErrorMessage}");
+            }
+        }
+  
 
-    //    // TODO
-    //    vm.Email = m.Email;
-    //    vm.PhotoURL = m.PhotoURL;
-    //    return View(vm);
-    //}
+
+        return View(vm);
+    }
 
     //// GET: Account/ResetPassword
     //public IActionResult ResetPassword()

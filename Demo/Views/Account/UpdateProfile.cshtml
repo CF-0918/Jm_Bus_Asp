@@ -1,0 +1,150 @@
+﻿ @model UpdateProfileVM 
+
+@{
+    ViewBag.Title = "Account | Profile";
+}
+ <!--- Profile Section -->
+<section class="user_profile_container">
+    <div class="user_profile_details_left">
+        <form method="post" action="" enctype="multipart/form-data">
+            <div class="profile_img_user_container">
+                <label class="upload">
+                    <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
+                    <img src="/photo/users/@Model.PhotoURL" alt="userPhoto" class="profile_img_user">
+                    <span class="errorMessage" asp-validation-for="Photo"></span>
+                </label>
+            </div>
+            <div class="text_change_profile_pic">
+                <small>ID : @Model.Id</small><br/>
+            </div>
+
+            <div class="user_profile_status_div active">
+                <span class="user_profile_status_rounded active"></span>
+                <b>Active</b>
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="FirstName"></label> 
+                    <input asp-for="FirstName" data-upper autofocus>
+                     <span class="errorMessage" asp-validation-for="FirstName"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" data-upper>
+                    <span class="errorMessage" asp-validation-for="LastName"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Age"></label>
+                      @Model.Age
+                </div>
+                <div class="form-group">
+                    <label asp-for="IcNo"></label>
+                    @Model.IcNo
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Gender"></label>
+                    <select asp-for="Gender">
+                        <option value="">Select Gender</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                    <span class="errorMessage" asp-validation-for="Gender"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Position"></label>
+                    <input asp-for="Position" data-upper>
+                    <span class="errorMessage" asp-validation-for="Position"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Email"></label>
+                 @Model.Email
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNo"></label>
+                    <input asp-for="PhoneNo" data-digit>
+                    <span class="errorMessage" asp-validation-for="PhoneNo"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Country"></label>
+                    <select asp-for="Country">
+                        <option value="Malaysian" selected>Malaysian</option>
+                    </select>
+                    <span class="errorMessage" asp-validation-for="Country"></span>
+                </div>
+                <div class="form-group d-flex justify-content-around g-2 align-items-center">
+                    <button type="reset" class="profile_button_reset">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+
+                    <button type="submit" class="profile_button_update">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                   
+                </div>
+            </div>
+         
+        </form>
+    </div>
+
+    <div class="ticket_invoice_list_right">
+        <div class="ticket_ongoing_list_container">
+            <h4>
+                <i class="fas fa-ticket"></i>
+                Ticket On going
+            </h4>
+
+            <div class="ticket_ongoing_list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Route</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Seat No</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>T001</td>
+                            <td>KL <i class="fas fa-arrow-right"></i> JB</td>
+                            <td class="on_going_status">On Going</td>
+                            <td>28/1/2024</td>
+                            <td>A2,A3</td>
+                            <td><a href="#">View</a></td>
+                        </tr>
+                        <tr>
+                            <td>T002</td>
+                            <td>Selangor <i class="fas fa-exchange"></i>Melaka</td>
+                            <td class="on_going_status">On Going</td>
+                            <td>30/5/2024 <i class="fas fa-exchange"></i> 3/6/2024 </td>
+                            <td>A4</td>
+                            <td><a href="#">View</a></td>
+                        </tr>
+                        <tr>
+                            <td>T003</td>
+                            <td>KL <i class="fas fa-exchange"></i> JB</td>
+                            <td class="ticket_cancel_status">Cancel</td>
+                            <td>29/6/2024 <i class="fas fa-exchange"></i> 3/7/2024 </td>
+                            <td>A1,A5,A7</td>
+                            <td><a class="view_button" href="#">View</a></td>
+                        </tr>
+
+                </table>
+
+            </div>
+        </div>
+
+</section>
