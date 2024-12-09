@@ -32,18 +32,15 @@ public class User
     public int Age { get; set; }
     [MaxLength (15)]
     public string IcNo { get; set; }
-    [MaxLength (1)]
+
     public char Gender { get; set; }
-    [MaxLength(15)]
-    public string Position { get; set; }
-    [ MaxLength(50)]
+
+    [MaxLength(50)]
     public string Email { get; set; }
     [MaxLength(50)]
     public string Phone { get; set; }
     [MaxLength(100)]
     public string Hash { get; set; }
-    [MaxLength(50)]
-    public string Country { get; set; }
 
     [MaxLength(100)]
     public string PhotoURL { get; set; }
@@ -54,6 +51,22 @@ public class User
     public string Role => GetType().Name;
 
     public Token Token { get; set; }
+}
+public class Admin : User
+{
+
+}
+public class Staff : User
+{
+}
+
+// TODO
+public class Member : User
+{
+    [MaxLength(50)]
+    public string Position { get; set; }
+    [MaxLength(50)]
+    public string Country { get; set; }
 }
 
 public class Token
@@ -68,16 +81,4 @@ public class Token
 }
 
 // TODO
-public class Admin : User
-{
 
-}
-public class Staff : User
-{
-}
-
-// TODO
-public class Member : User
-{
-
-}

@@ -431,7 +431,7 @@ public class AccountController : Controller
     {
         // Get member record based on email (PK)
         // TODO
-        var m = db.Users.FirstOrDefault(u => u.Email == User.Identity!.Name);
+        var m = db.Members.FirstOrDefault(u => u.Email == User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
         var vm = new UpdateProfileVM
@@ -459,7 +459,7 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult UpdateProfile(UpdateProfileVM vm)
     {
-        var m = db.Users.FirstOrDefault(u => u.Email == User.Identity!.Name);
+        var m = db.Members.FirstOrDefault(u => u.Email == User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
         if (vm.Photo != null)
