@@ -10,7 +10,7 @@ public class HomeController : Controller
         return View();
     }
 
-    [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "Member")]
     public IActionResult RentBusService()
     {
         return View();

@@ -86,6 +86,12 @@ public class AccountController : Controller
         {
             TempData["Info"] = "Login successfully.";
             hp.SignIn(u.Email, u.Role, vm.RememberMe);
+
+            if (u.Role != "Member")
+            {
+                RedirectToAction("/Maintenance/Dashboard");
+            }
+        
         }
         else if (u.EmailVerified == 0 && u.Status == "Active")
         {
