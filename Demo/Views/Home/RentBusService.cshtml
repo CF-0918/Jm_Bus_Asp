@@ -1,0 +1,109 @@
+﻿
+@model RentServiceFormVM;
+@{
+    ViewBag.Title = "Home | Rent Service Form";
+}
+<div class="container mt-5">
+    <h2 class="mb-4">Bus Rental Booking Form</h2>
+    <form>
+
+        <div class="form-row row">
+            <!-- Start Date -->
+            <div class="form-group col-3">
+                <label for="startDate"><i class="fas fa-calendar-alt"></i> Start Date</label>
+                <input type="date" class="form-control" id="startDate" required>
+            </div>
+
+            <!-- End Date -->
+            <div class="form-group col-3">
+                <label for="endDate"><i class="fas fa-calendar-alt"></i> End Date</label>
+                <input type="date" class="form-control" id="endDate" required>
+            </div>
+
+            <!-- Start Time -->
+            <div class="form-group col-3">
+                <label for="startTime "><i class="fas fa-clock"></i> Depart Time</label>
+                <input type="time" class="form-control" id="startTime" required>
+            </div>
+
+            <!-- End Time -->
+            <div class="form-group col-3">
+                <label for="endTime"><i class="fas fa-clock"></i>Time Back</label>
+                <input type="time" class="form-control" id="endTime" required>
+            </div>
+
+        </div>
+
+        <div class="form-row row">
+            <!-- Your Place -->
+            <div class="form-group col-6">
+                <label for="yourPlace"><i class="fas fa-map-marker-alt"></i> Your Place</label>
+                <input type="text" class="form-control" id="yourPlace" placeholder="Enter your location" required>
+            </div>
+
+            <!-- Place Will Be Travel -->
+            <div class="form-group col-6">
+                <label for="destination"><i class="fas fa-map-marker-alt"></i> Destination</label>
+                <input type="text" class="form-control" id="destination" placeholder="Enter destination" required>
+            </div>
+        </div>
+
+
+        <div class="form-row row">
+            <!-- Purpose -->
+            <div class="form-group col-6">
+                <label for="purpose"><i class="fas fa-info-circle"></i> Purpose</label>
+                <select class="" id="purpose" required>
+                    <option value="">Select Purpose</option>
+                    <option value="travel">Travel</option>
+                    <option value="business">Business</option>
+                    <option value="vacation">Vacation</option>
+                    <option value="school_trip">School Trip</option>
+                </select>
+            </div>
+
+            <!-- Number of People -->
+            <div class="form-group col-6">
+                <label for="numPeople"><i class="fas fa-users"></i> Number of People</label>
+                <input type="number" class="form-control" id="numPeople" placeholder="Enter number of people"
+                       required>
+            </div>
+        </div>
+
+        <div class="form-row row">
+            <!-- Person In Charge -->
+            <div class="form-group col-4">
+                <label for="personInCharge"><i class="fas fa-user-tie"></i> Person in Charge</label>
+                <input type="text" class="form-control" id="personInCharge" placeholder="Enter name" required>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="form-group col-4">
+                <label for="phoneNumber"><i class="fas fa-phone-alt"></i> Phone Number</label>
+                <input type="tel" class="form-control" id="phoneNumber" placeholder="Enter phone number" required>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group col-4">
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+            </div>
+        </div>
+
+
+        <div class="form-row row">
+            <!-- Special Requests -->
+            <div class="form-group col-12">
+                <label for="specialRequests"><i class="fas fa-comment-dots"></i> Special Requests</label>
+                <textarea class="form-control" id="specialRequests" rows="3"
+                          placeholder="Any special requirements"></textarea>
+            </div>
+        </div>
+
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary mt-3">
+            <i class="fas fa-paper-plane"></i> Submit Booking
+        </button>
+    </form>
+</div>

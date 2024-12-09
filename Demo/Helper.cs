@@ -7,6 +7,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json.Nodes;
 
 namespace Demo;
 
@@ -160,6 +161,92 @@ public class Helper
         await smtp.SendMailAsync(mail);
     }
 
+
+    public bool VerifyReCaptchaV2(string response)
+    {
+        Console.WriteLine("Received CAPTCHA Token: " + response);
+
+        if (string.IsNullOrWhiteSpace(response))
+        {
+            Console.WriteLine("Error: No CAPTCHA token provided.");
+            return false;
+        }
+
+        string secret = cf["ReCaptchaSettings:SecretKey"] ?? "";
+        if (string.IsNullOrWhiteSpace(secret))
+        {
+            Console.WriteLine("Error: No ReCAPTCHA secret key configured.");
+            return false;
+        }
+
+        //using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) })
+        //{
+        //    // Use FormUrlEncodedContent for URL-encoded form data
+        //    var content = new FormUrlEncodedContent(new[]
+        //    {
+        //    new KeyValuePair<string, string>("response", response),
+        //    new KeyValuePair<string, string>("secret", secret)
+        //});
+
+        //    try
+        //    {
+        //        // Post the data to Google's reCAPTCHA verification API
+        //        var result = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+
+        //        // Check if the HTTP response is successful
+        //        if (result.IsSuccessStatusCode)
+        //        {
+        //            var strResponse = await result.Content.ReadAsStringAsync();
+        //            Console.WriteLine("Google Response: " + strResponse);
+
+        //            try
+        //            {
+        //                var jsonResponse = JsonNode.Parse(strResponse) as JsonObject;
+        //                if (jsonResponse != null)
+        //                {
+        //                    var success = jsonResponse["success"]?.GetValue<bool>();
+        //                    if (success == true)
+        //                    {
+        //                        Console.WriteLine("reCAPTCHA verification successful.");
+        //                        return true;
+        //                    }
+        //                    else
+        //                    {
+        //                        if (jsonResponse.ContainsKey("error-codes"))
+        //                        {
+        //                            var errorCodes = jsonResponse["error-codes"].AsArray();
+        //                            foreach (var errorCode in errorCodes)
+        //                            {
+        //                                Console.WriteLine("reCAPTCHA Error: " + errorCode.ToString());
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    Console.WriteLine("Error: Unable to parse reCAPTCHA response JSON.");
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Console.WriteLine("Error parsing reCAPTCHA response: " + ex.Message);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("HTTP Error: " + result.StatusCode);
+        //            var errorResponse = await result.Content.ReadAsStringAsync();
+        //            Console.WriteLine("Error Response: " + errorResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Error during reCAPTCHA verification request: " + ex.Message);
+        //    }
+        //}
+
+        return true;
+    }
 
 
     // ------------------------------------------------------------------------

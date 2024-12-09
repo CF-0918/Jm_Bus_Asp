@@ -950,12 +950,39 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 999;
 }
-
-.errorMessage{
-    font-weight:700;
-    font-size:13px;
-    color:red;
+#submitCodeButton {
+    font-size:14px;
     margin:5px 0px;
+    border:none;
+    padding: 5px 10px;
+    color: white;
+    background-color: green;
+    border-radius: 20px;
+}
+#verifyEmailButton {
+    font-size: 14px;
+    margin: 5px 0px;
+    border: none;
+    padding: 5px 10px;
+    color: white;
+    background-color: black;
+    border-radius: 20px;
+}
+#feedback.success {
+    color: green;
+    font-weight: bold;
+}
+
+#feedback.error {
+    color: red;
+    font-weight: bold;
+}
+
+.errorMessage {
+    font-weight: 700;
+    font-size: 13px;
+    color: red;
+    margin: 5px 0px;
 }
 
     .register-container h2 {
@@ -1093,7 +1120,7 @@ body {
     color: #312f2f;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     /* Add a subtle shadow */
-    z-index: 1;
+    z-index: 5;
 }
 
     .navbar_user .logo_container img {
@@ -2640,8 +2667,8 @@ input[type="range"]::-webkit-slider-thumb {
         }
 
 .profile_img_user_container {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     overflow: hidden;
     margin: 0 auto;
@@ -3089,6 +3116,75 @@ input[type="range"]::-webkit-slider-thumb {
     }
 
 
+    /* Update Password */
+.unique-change-password-container {
+    max-width: 80%;
+    margin: 30px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.unique-change-password-header {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.unique-change-password-form-group {
+    margin-bottom: 20px;
+}
+
+.unique-change-password-label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.unique-change-password-input {
+    width: 60%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.unique-change-password-button {
+    width: 15%;
+    padding: 10px;
+    background-color: #22B573;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+    .unique-change-password-button:hover {
+        opacity: 0.8;
+    }
+
+.unique-change-password-required {
+    color: red;
+    font-weight: bold;
+}
+.form-row updatePassword {
+    text-decoration: none; /* Removes underline */
+    color: #007bff; /* Sets the text color to blue */
+    font-size: 16px; /* Sets font size */
+    font-weight: 500; /* Makes the font slightly bolder */
+    transition: color 0.3s; /* Smooth transition for color change */
+}
+
+    .form-row updatePassword:hover {
+        color: #0056b3; /* Changes color on hover */
+        text-decoration: underline; /* Underlines the text on hover */
+    }
 /*<!-- EASON PART -->*/
 /* Update Profile button styling */
 .update-profile-btn {

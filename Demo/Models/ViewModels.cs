@@ -48,8 +48,13 @@ public class RegisterVM
     [StringLength(100)]
     [Remote("CheckEmail", "Account", ErrorMessage = "Duplicated email.")]
     public string Email { get; set; }
+    [MaxLength(6)]
+    [Display(Name = "Verfication Code")]
+    public string VerificationNumberEmail{  get; set; }
 
-  
+    [Required(ErrorMessage = "Email hasn't been verified.")]
+    public string EmailVerifiedHiddenField { get; set; }
+
     [StringLength(15)]
     [Display(Name = "Phone Number")]
     public string PhoneNo { get; set; }
@@ -131,4 +136,11 @@ public class ResetPasswordVM
     [StringLength(100)]
     [EmailAddress]
     public string Email { get; set; }
+    public string GoogleCaptchaToken { get; set; }
+}
+
+//Jayden Part
+public class RentServiceFormVM
+{
+    public string RentId;
 }

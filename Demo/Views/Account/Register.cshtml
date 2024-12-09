@@ -10,6 +10,7 @@
 
         <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
+        <!-- First and Last Name -->
         <div class="form-row">
             <div class="form-group">
                 <label asp-for="FirstName"></label>
@@ -23,6 +24,7 @@
             </div>
         </div>
 
+        <!-- Age and IC Number -->
         <div class="form-row">
             <div class="form-group">
                 <label asp-for="Age"></label>
@@ -31,11 +33,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="IcNo"></label>
-                <input asp-for="IcNo" placeholder="000000-00-0000" data-icNo>
+                <input asp-for="IcNo" id="icNo" placeholder="000000-00-0000" data-icNo>
                 <span class="errorMessage" asp-validation-for="IcNo"></span>
             </div>
         </div>
 
+        <!-- Gender and Position -->
         <div class="form-row">
             <div class="form-group">
                 <label asp-for="Gender"></label>
@@ -53,19 +56,38 @@
             </div>
         </div>
 
+        <!-- Email Verification -->
         <div class="form-row">
             <div class="form-group">
                 <label asp-for="Email"></label>
                 <input asp-for="Email">
                 <span class="errorMessage" asp-validation-for="Email"></span>
+                <div class="verified_email_container">
+                    <button type="button" id="verifyEmailButton">Verify Email</button>
+                    <br />
+                    <span id="feedback"></span>
+                </div>
+
+                <div id="verificationSection" style="display: none;">
+                    <label asp-for="VerificationNumberEmail"></label>
+                    <input asp-for="VerificationNumberEmail" id="VerificationNumberEmail">
+                    <span class="errorMessage" asp-validation-for="VerificationNumberEmail"></span>
+                </div>
+
+
+                <input type="hidden" asp-for="EmailVerifiedHiddenField"/>
+                <span class="errorMessage" id="EmailVerifiedHiddenField" asp-validation-for="EmailVerifiedHiddenField"></span>
             </div>
+
+            <!-- Phone Number -->
             <div class="form-group">
                 <label asp-for="PhoneNo"></label>
-                <input asp-for="PhoneNo" data-digit>
+                <input asp-for="PhoneNo" id="phoneNo" data-digit>
                 <span class="errorMessage" asp-validation-for="PhoneNo"></span>
             </div>
         </div>
 
+        <!-- Password and Confirm Password -->
         <div class="form-row">
             <div class="form-group">
                 <label asp-for="Password"></label>
@@ -77,13 +99,13 @@
                 <input asp-for="ConfirmPassword" type="password">
                 <span class="errorMessage" asp-validation-for="ConfirmPassword"></span>
             </div>
-
         </div>
 
+        <!-- Country and Photo Upload -->
         <div class="form-row">
             <div class="form-group">
                 <label asp-for="Country"></label>
-                <select asp-for="Country" >
+                <select asp-for="Country">
                     <option value="Malaysian" selected>Malaysian</option>
                 </select>
                 <span class="errorMessage" asp-validation-for="Country"></span>
@@ -98,11 +120,77 @@
                 </label>
                 <span class="errorMessage" asp-validation-for="Photo"></span>
             </div>
+        </div>
 
-         
-            </div>
-     
-
-        <button type="submit" class="submit-btn">Register</button>
+        <button type="submit" class="submit-btn" id="registerButton">Register</button>
     </form>
 </div>
+
+@section foot {
+  <script>
+             $(document).ready(function () {
+            // Step 1: Send verification email
+            $('#verifyEmailButton').on('click', function () {
+                const email = $('#Email').val();
+                if (!email) {
+                    $('#feedback').text('Please enter your email.').removeClass('success').addClass('error');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Account/SendEmailVerifiedNumber',
+                    type: 'POST',
+                    data: { email: email },
+                    beforeSend: function () {
+                        $('#feedback').text('Sending verification email...').removeClass('success error');
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#feedback').text('Verification email sent. Please check your email for the code.').removeClass('error').addClass('success');
+                            $('#verificationSection').show(); // Show the verification input
+                        } else {
+                            $('#feedback').text(response.message || 'Failed to send verification email.').removeClass('success').addClass('error');
+                        }
+                    },
+                    error: function () {
+                        $('#feedback').text('An error occurred. Please try again.').removeClass('success').addClass('error');
+                    }
+                });
+            });
+
+            // Step 2: Submit verification code
+            $('#VerificationNumberEmail').on('input', function () {
+                const code = $('#VerificationNumberEmail').val();
+                const email = $('#Email').val();
+
+                $.ajax({
+                    url: '/Account/ValidateCode',
+                    type: 'POST',
+                    data: { email: email, code: code },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#feedback').text('Email verified successfully! You can now register.').removeClass('error').addClass('success');
+
+                            $('#submitCodeButton').prop('disabled', true);
+                           $('#verifyEmailButton').prop('disabled', true);
+                              $('#VerificationNumberEmail').prop('readonly', true);  // Set the readonly property
+                            $('#Email').prop('readonly', true);   // Set the readonly property
+                            $('#EmailVerifiedHiddenField').hide();
+                            $('#EmailVerifiedHiddenField').val("EmailVerified");  // Correct syntax to set the value
+
+                            
+
+                        } else {
+                            $('#feedback').text(response.message || 'Invalid verification code.').removeClass('success').addClass('error');
+                        }
+                    },
+                    error: function () {
+                        $('#feedback').text('An error occurred. Please try again.').removeClass('success').addClass('error');
+                    }
+                });
+            });
+        });
+
+</script>
+
+}
