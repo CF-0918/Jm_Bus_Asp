@@ -187,3 +187,35 @@ public class CreateStaffVM
 
     public IFormFile Photo { get; set; }
 }
+
+public class StaffAdminProfileVM
+{
+    public string? Id { get; set; }
+
+    [StringLength(50, MinimumLength = 2)]
+    [Display(Name = "First Name")]
+    public string FirstName { get; set; }
+
+    [StringLength(50, MinimumLength = 2)]
+    [Display(Name = "Last Name")]
+    public string LastName { get; set; }
+
+    public int? Age { get; set; }
+
+    public string? IcNo { get; set; }
+
+    public char Gender { get; set; }
+
+    public string? Email { get; set; }
+
+
+    [StringLength(15)]
+    [Display(Name = "Phone Number")]
+    public string PhoneNo { get; set; }
+
+
+    public string? Status { get; set; }
+
+    public string? PhotoURL { get; set; }
+    public IFormFile? Photo { get; set; }
+}

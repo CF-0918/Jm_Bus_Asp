@@ -3256,21 +3256,21 @@ input[type="range"]::-webkit-slider-thumb {
             line-height: 20px;
         }
 
-        .profile-info .status.active .rounded_status {
+        .profile-info .status.Active .rounded_status {
             background-color: green;
         }
 
-        .profile-info .status.suspend .rounded_status {
+        .profile-info .status.Blocked .rounded_status {
             background-color: red;
         }
 
         /* Default Active status text */
-        .profile-info .status.active, .invoice_status.paid, .on_going_status {
+        .profile-info .status.Active, .invoice_status.paid, .on_going_status {
             color: green;
             /* Green for active */
         }
 
-        .profile-info .status.suspend, .invoice_status.cancel, .ticket_cancel_status {
+        .profile-info .status.Blocked, .invoice_status.cancel, .ticket_cancel_status {
             color: red;
             /* Green for active */
         }

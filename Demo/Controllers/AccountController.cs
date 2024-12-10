@@ -1,5 +1,6 @@
 ﻿using Demo.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
@@ -618,9 +619,6 @@ public class AccountController : Controller
             vm.PhotoURL = m.PhotoURL;
 
         }
-
-
-
         return View(vm);
     }
 
@@ -791,6 +789,76 @@ public class AccountController : Controller
         }
 
         // If validation fails, return to the view
+        return View(vm);
+    }
+
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult UpdateManagementProfile()
+    {
+        // Get staff/admin  record based on email (PK)
+        var m = db.Users.Find(User.Identity!.Name);
+        if (m == null) return RedirectToAction("Dashboard", "Account");
+
+        var vm = new StaffAdminProfileVM
+        {
+            Id = m.Id,
+            FirstName = m.FirstName,
+            LastName = m.LastName,
+            Age = m.Age,
+            IcNo = m.IcNo,
+            Gender = m.Gender,
+            Email = m.Email,
+            PhoneNo = m.Phone,
+            Status = m.Status,
+            PhotoURL = m.PhotoURL,
+        };
+
+        return View(vm);
+    }
+    [Authorize(Roles = "Staff,Admin")]
+
+    [HttpPost]
+    public IActionResult UpdateManagementProfile(StaffAdminProfileVM vm)
+    {
+        var m = db.Users.Find(User.Identity!.Name);
+        if (m == null) return RedirectToAction("Dashboard", "Account");
+
+        if (vm.Photo != null)
+        {
+            var err = hp.ValidatePhoto(vm.Photo);
+            if (err != "") ModelState.AddModelError("Photo", err);
+        }
+
+        if (ModelState.IsValid)
+        {
+
+            m.FirstName = vm.FirstName;
+            m.LastName = vm.LastName;
+            m.Gender = vm.Gender;
+            m.Phone = vm.PhoneNo;
+
+            if (vm.Photo != null)
+            {
+                hp.DeletePhoto(m.PhotoURL, "photo/users");
+                m.PhotoURL = hp.SavePhoto(vm.Photo, "photo/users");
+            }
+
+            db.SaveChanges();
+
+            TempData["Info"] = "Profile updated.";
+            return RedirectToAction();
+        }
+        else
+        {
+            TempData["Info"] = "Profile Not updated.";
+            vm.Id = m.Id;
+            vm.Email = m.Email;
+            vm.Age = m.Age;
+            vm.IcNo = m.IcNo;
+            vm.Status = m.Status;
+            vm.PhotoURL = m.PhotoURL;
+
+        }
         return View(vm);
     }
 }

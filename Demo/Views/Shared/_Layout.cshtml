@@ -45,10 +45,10 @@
             @if (!User.IsInRole("Staff") && !User.IsInRole("Admin"))
             {
                 <a href="/">
-                <li><i class="fas fa-home"></i> Home</li>
+                    <li><i class="fas fa-home"></i> Home</li>
                 </a>
                 <a href="/Home/About">
-                <li><i class="fas fa-users"></i> About Us</li>
+                    <li><i class="fas fa-users"></i> About Us</li>
                 </a>
             }
 
@@ -62,19 +62,19 @@
                 </a>
                 <a href="">
                     <li><i class="fas fa-trophy"></i> Rewards</li>
-            </a>
+                </a>
             }else if(User.IsInRole("Staff")||User.IsInRole("Admin")){
                 <a href="/Maintenance/Dashboard">
-                <li><i class="fas fa-bus"></i>Dashboard</li>
+                    <li><i class="fas fa-bus"></i>Dashboard</li>
                 </a>
                 <a href="/Maintenance/AddSchedule">
-                <li><i class="fas fa-bus"></i>Schedule</li>
+                    <li><i class="fas fa-bus"></i>Schedule</li>
                 </a>
                 <a href="/Maintenance/ManageRentBooking">
-                <li><i class="fas fa-bus"></i>Rent Booking</li>
+                    <li><i class="fas fa-bus"></i>Rent Booking</li>
                 </a>
                 <a href="/Maintenance/Report">
-                <li><i class="fas fa-bus"></i>Report</li>
+                    <li><i class="fas fa-bus"></i>Report</li>
                 </a>
             }
         </ul>
@@ -83,50 +83,55 @@
         {
             var user = db.Users.Find(User.Identity!.Name);
 
-            <ul>
-                @if (user != null)
-                {
-                    <div class="user-profile-nav">
-                        <a href="/Account/UpdateProfile">
-                            <!-- Profile icon -->
-                            <i class="fas fa-user-circle"></i>
+            if (user != null)
+            {
+                string profileUrl = User.IsInRole("Member")
+                ? "/Account/UpdateProfile"
+                : "/Account/UpdateManagementProfile";
 
-                            <!-- Display profile picture -->
-                            <img src="/photo/users/@user.PhotoURL" alt="profile picture" />
+                <div class="user-profile-nav">
+                    <a href="@profileUrl">
+                        <!-- Profile icon -->
+                        <i class="fas fa-user-circle"></i>
 
-                            <span>
-                                @user.FirstName |
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <span>Admin</span>
-                                }
-                                @if (User.IsInRole("Staff"))
-                                {
-                                    <span>Staff</span>
-                                }
-                                @if (User.IsInRole("Member"))
-                                {
-                                    <span>Member</span>
-                                }
-                            </span>
-                        </a>
-                    </div>
-                }
-                else
-                {
-                    <span>User not found.</span>
-                }
-            </ul>
+                        <!-- Display profile picture -->
+                        <img src="/photo/users/@user.PhotoURL" alt="profile picture" />
+
+                        <span>
+                            @user.FirstName |
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <span>Admin</span>
+                            }
+                            else if (User.IsInRole("Staff"))
+                            {
+                                <span>Staff</span>
+                            }
+                            else if (User.IsInRole("Member"))
+                            {
+                                <span>Member</span>
+                            }
+                        </span>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <span>User not found.</span>
+            }
         }
         else
         {
             <ul>
+                <li>
                     <a href="https://wa.me/60128082165?text=Hi%20JMBus%20customer%20service,%0A%0AI%20hope%20you're%20doing%20well.%20I%20would%20like%20to%20inquire%20about%20your%20services.%20Could%20you%20please%20provide%20more%20information%20on%20the%20following%3F%0A%0AThank%20you%20in%20advance%20for%20your%20assistance.%20Best%20regards."
                        class="nav_whatsapp">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </a>
+                </li>
             </ul>
         }
+
 
 
     </nav>
