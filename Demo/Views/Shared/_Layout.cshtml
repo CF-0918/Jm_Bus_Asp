@@ -81,7 +81,7 @@
 
         @if (User.Identity!.IsAuthenticated)
         {
-            var user = db.Members.FirstOrDefault(m => m.Email == User.Identity!.Name);
+            var user = db.Users.Find(User.Identity!.Name);
 
             <ul>
                 @if (user != null)

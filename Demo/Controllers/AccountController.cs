@@ -85,13 +85,13 @@ public class AccountController : Controller
         if (u.EmailVerified == 1 && u.Status == "Active")
         {
             TempData["Info"] = "Login successfully.";
-            hp.SignIn(u.Email, u.Role, vm.RememberMe);
+            hp.SignIn(u.Id, u.Role, vm.RememberMe);
 
             if (u.Role != "Member")
             {
-                RedirectToAction("/Maintenance/Dashboard");
+                return RedirectToAction("Dashboard", "Maintenance");
             }
-        
+
         }
         else if (u.EmailVerified == 0 && u.Status == "Active")
         {
@@ -393,7 +393,7 @@ public class AccountController : Controller
         }
         else if (tableName == "Staffs")
         {
-            currentMaxId = db.Users.Max(u => u.Id) ?? "U0000"; // Adjust default prefix if needed
+            currentMaxId = db.Staffs.Max(u => u.Id) ?? "U0000"; // Adjust default prefix if needed
         }
         // Add more table cases as required
         else
@@ -517,7 +517,7 @@ public class AccountController : Controller
     {
         // Get user (admin or member) record based on email (PK)
 
-        var u = db.Users.FirstOrDefault(u => u.Email == User.Identity!.Name);
+        var u = db.Users.Find(User.Identity!.Name);
 
         if (u == null) return RedirectToAction("Index", "Home");
 
@@ -547,7 +547,7 @@ public class AccountController : Controller
     {
         // Get member record based on email (PK)
         // TODO
-        var m = db.Members.FirstOrDefault(u => u.Email == User.Identity!.Name);
+        var m = db.Members.Find(User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
         var vm = new UpdateProfileVM
@@ -575,7 +575,7 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult UpdateProfile(UpdateProfileVM vm)
     {
-        var m = db.Members.FirstOrDefault(u => u.Email == User.Identity!.Name);
+        var m = db.Members.Find(User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
         if (vm.Photo != null)
@@ -714,5 +714,83 @@ public class AccountController : Controller
         return View(vm);
     }
 
+    //Eason Part Staff CRUD
+    // GET: Staff/Create
+    public IActionResult CreateStaff()
+    {
+        return View();
+    }
+    [HttpPost]
+    public IActionResult CreateStaff(CreateStaffVM vm)
+    {
+        // Check for Email Duplication
+        if (!string.IsNullOrEmpty(vm.Email) && db.Users.Any(u => u.Email == vm.Email))
+        {
+            ModelState.AddModelError("Email", "Duplicated Email.");
+        }
 
+        // Validate Password Match
+        if (!string.IsNullOrEmpty(vm.Password) && vm.Password != vm.ConfirmPassword)
+        {
+            ModelState.AddModelError("ConfirmPassword", "Password and Confirm Password do not match.");
+        }
+
+        // Validate Photo
+        if (vm.Photo != null)
+        {
+            var err = hp.ValidatePhoto(vm.Photo);
+            if (!string.IsNullOrEmpty(err))
+            {
+                ModelState.AddModelError("Photo", err);
+            }
+        }
+
+        // If ModelState is valid, create the staff member
+        if (ModelState.IsValid)
+        {
+            // Generate unique staff ID
+            string nextIdForStaff = GetNextPrefixId("Staffs");
+
+            // Create the User entity
+            var newStaff = new Staff
+            {
+                Id = nextIdForStaff,
+                FirstName = vm.FirstName,
+                LastName = vm.LastName,
+                Email = vm.Email,
+                Age = vm.Age,
+                IcNo    = vm.IcNo,
+                Gender=vm.Gender,
+                Phone = vm.PhoneNo,
+                Hash = hp.HashPassword(vm.Password),
+                PhotoURL = hp.SavePhoto(vm.Photo, "photo/users"),
+                Status = "Active",
+                EmailVerified=0,
+            };
+
+            // Add and save
+            db.Staffs.Add(newStaff);
+            db.SaveChanges();
+
+            // Generate and save token
+            string randomTokenId = GenerateRandomToken();
+            var token = new Token
+            {
+                Id = randomTokenId,
+                UserId = nextIdForStaff,
+                Expired = DateTime.Now.AddMinutes(5) // Token valid for 5 minutes
+            };
+            db.Tokens.Add(token);
+            db.SaveChanges();
+
+            // Send activation email
+            SendActivationLink(newStaff, randomTokenId);
+
+            TempData["Info"] = "Staff Registered successfully. Pleas Active email within 5 minutes.";
+            return RedirectToAction("CreateStaff");
+        }
+
+        // If validation fails, return to the view
+        return View(vm);
+    }
 }

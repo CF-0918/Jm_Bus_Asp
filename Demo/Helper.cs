@@ -94,11 +94,11 @@ public class Helper
                == PasswordVerificationResult.Success;
     }
 
-    public void SignIn(string email, string role, bool rememberMe)
+    public void SignIn(string id, string role, bool rememberMe)
     {
         List<Claim> claims =
         [
-            new(ClaimTypes.Name, email),
+            new(ClaimTypes.Name, id),
             new(ClaimTypes.Role, role),
         ];
 
