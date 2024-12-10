@@ -1,0 +1,125 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Staff>
+
+@{
+    string[] fields = new string[] { "Id", "Name", "Email", "Phone" };
+}
+
+@Html.Hidden("sort", "", new { form = "f" })
+@Html.Hidden("dir", "", new { form = "f" })
+<link rel="stylesheet" href="/css/pager.css">
+
+<form method="post" action="/Maintenance/DeleteMany" id="deleteManyForm">
+    <p>
+        <button type="button" data-check="ids">Check All</button>
+        <button type="button" data-uncheck="ids">Uncheck All</button>
+        <button type="submit">Delete Checked</button>
+    </p>
+</form>
+<!-- Pagination Message -->
+<p>
+    @Model.Count() of @Model.TotalItemCount record(s) |
+    Page @Model.PageNumber of @Model.PageCount
+</p>
+
+<div class="container">
+    <!-- AJAX form for search -->
+    <form data-ajax="true"
+          data-ajax-update="#target"
+          data-ajax-loading="#loader"
+          id="f">
+        <div class="form-group">
+            <input type="text" name="name" autofocus value="@ViewBag.Name" placeholder="Search by name" class="form-control" id="name" />
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+        <img src="/images/loader.gif" id="loader" style="display: none" />
+    </form>
+
+    <!-- Table to display staff list -->
+    <table class="table" id="target">
+        <thead>
+            <tr>
+                <th></th>
+       
+                <th>
+                    <a asp-action="StaffList" asp-route-sort="FullName" asp-route-dir="@(ViewBag.Sort == "FullName" && ViewBag.Dir == "asc" ? "des" : "asc")">Name</a>
+                </th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Action</th> <!-- Action column for Edit and Delete buttons -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var staff in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="ids" value="@staff.Id" />
+                    </td>
+                    
+                    <td>@staff.FirstName @staff.LastName</td> <!-- Merged FirstName and LastName -->
+                    <td>@staff.Email</td>
+                    <td>@staff.Phone</td>
+                    <td>@staff.Status</td>
+                    <td>
+                        <!-- Edit and Delete actions -->
+                        <a href="@Url.Action("StaffDetails", "Maintenance", new { id = staff.Id })"class="btn btn-info btn-sm">View Details</a>
+                        <a href="@Url.Action("EditStaff", "Maintenance", new { id = staff.Id })" class="btn btn-warning btn-sm">Edit</a>
+                        <form method="post" action="/Maintenance/DeleteStaff/@staff.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this staff member?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+
+    <!-- Pagination -->
+    <div class="pagination">
+        @Html.PagedListPager(Model, page => Url.Action("StaffList", new { name = ViewBag.Name, sort = ViewBag.Sort, dir = ViewBag.Dir, page }))
+    </div>
+</div>
+
+@section foot {
+    <!-- Add jQuery if it's not already included -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        let timer = null;
+
+        // Focus at the end of the input field after page load
+        document.addEventListener('DOMContentLoaded', function () {
+            var input = document.getElementById('name');
+            if (input) {
+                input.setSelectionRange(input.value.length, input.value.length); // Set cursor at the end
+                input.focus(); // Focus on the input field
+            }
+        });
+
+        // Handle input event for the search field
+        $('#name').on('input', function (e) {
+            clearTimeout(timer); // Clear the previous timeout
+            timer = setTimeout(function () {
+                // Submit the form after 500ms delay
+                $(e.target.form).submit();
+            }, 500);
+        });
+
+                // Check All Button
+        document.querySelector('[data-check="ids"]').addEventListener('click', function() {
+            document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
+                checkbox.checked = true;
+            });
+        });
+
+        // Uncheck All Button
+        document.querySelector('[data-uncheck="ids"]').addEventListener('click', function() {
+            document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
+                checkbox.checked = false;
+            });
+        });
+    </script>
+}

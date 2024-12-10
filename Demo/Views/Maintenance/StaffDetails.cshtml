@@ -1,0 +1,128 @@
+﻿@model StaffDetailsVM
+
+@{
+    ViewBag.Title = "Account | Profile";
+}
+<!--- Profile Section -->
+<div class="container">
+    <!-- Back Button -->
+    <div class="back-button-container">
+        <a href="@Url.Action("StaffList", "Maintenance")" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Staff List
+        </a>
+    </div>
+    <section class="user_profile_container">
+        <div class="user_profile_details_left">
+            <form method="post" action="" enctype="multipart/form-data">
+                <div class="profile_img_user_container">
+                    <label class="upload">
+                        <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
+                        <img src="@Url.Content("~/photo/users/" + Model.PhotoURL)" alt="userPhoto" class="profile_img_user">
+                    </label>
+                </div>
+                <div class="text_change_profile_pic">
+                    <small>ID : @Model.Id</small><br />
+                </div>
+
+                <div class="user_profile_status_div @(Model.Status == "Active" ? "active" : "inactive")">
+                    <span class="user_profile_status_rounded @(Model.Status == "Active" ? "active" : "inactive")"></span>
+                    <b>@Model.Status</b>
+                </div>
+
+                <!-- First Name & Last Name -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="FirstName"></label>
+                        <input asp-for="FirstName" class="grayed-out" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LastName"></label>
+                        <input asp-for="LastName" class="grayed-out" readonly />
+                    </div>
+                </div>
+
+                <!-- Age & IC Number -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Age"></label>
+                        <input asp-for="Age" class="grayed-out" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="IcNo"></label>
+                        <input asp-for="IcNo" class="grayed-out" readonly />
+                    </div>
+                </div>
+
+                <!-- Gender Selection -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Gender"></label>
+                        <select asp-for="Gender" class="grayed-out" disabled>
+                            <option value="">Select Gender</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label asp-for="PhoneNo"></label>
+                        <input asp-for="PhoneNo" class="grayed-out" readonly />
+                    </div>
+                </div>
+
+                <!-- Email Address -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" class="grayed-out" readonly />
+                    </div>
+                </div>
+
+@*                 <!-- Submit and Reset Buttons -->
+                <div class="form-row d-flex justify-content-around g-2 align-items-center">
+                    <button type="reset" class="profile_button_reset">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+
+                    <button type="submit" class="profile_button_update">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div> *@
+
+                <!-- Update Password Link -->
+                <div class="form-row">
+                    <a class="updatePassword" href="/Account/UpdatePassword">Update Password</a>
+                </div>
+
+@*                 <!-- Edit Button -->
+                <div class="form-row text-center">
+                    <button type="button" id="editButton" class="profile_button_edit">Edit</button>
+                </div> *@
+
+            </form>
+        </div>
+    </section>
+</div>
+@* @section foot{
+    <script>
+        document.getElementById("editButton").addEventListener("click", function () {
+            // Get all input elements with class 'grayed-out'
+            var inputs = document.querySelectorAll(".grayed-out");
+
+            // Toggle readonly/disabled on each input
+            inputs.forEach(function (input) {
+                if (input.type !== "select-one") {
+                    input.removeAttribute("readonly");
+                } else {
+                    input.removeAttribute("disabled");
+                }
+                input.classList.remove("grayed-out");
+            });
+
+            // Change the button text to "Save Changes"
+            this.textContent = "Save Changes";
+        });
+    </script> *@
+
+}
