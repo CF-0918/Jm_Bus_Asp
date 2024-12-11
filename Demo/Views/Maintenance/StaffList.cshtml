@@ -1,27 +1,27 @@
-﻿@using X.PagedList
-@using X.PagedList.Mvc.Core
-@model IPagedList<Staff>
-
-@{
-    string[] fields = new string[] { "Id", "Name", "Email", "Phone" };
+﻿@{
+    ViewBag.Title = "Maintenance | Staff List";
 }
+
+@* @{
+    string[] fields = new string[] { "Id", "Name", "Email", "Phone" };
+} *@
 
 @Html.Hidden("sort", "", new { form = "f" })
 @Html.Hidden("dir", "", new { form = "f" })
 <link rel="stylesheet" href="/css/pager.css">
 
-<form method="post" action="/Maintenance/DeleteMany" id="deleteManyForm">
+@* <form method="post" action="/Maintenance/DeleteMany" id="deleteManyForm">
     <p>
         <button type="button" data-check="ids">Check All</button>
         <button type="button" data-uncheck="ids">Uncheck All</button>
         <button type="submit">Delete Checked</button>
     </p>
-</form>
+</form> *@
 <!-- Pagination Message -->
-<p>
+@* <p>
     @Model.Count() of @Model.TotalItemCount record(s) |
     Page @Model.PageNumber of @Model.PageCount
-</p>
+</p> *@
 
 <div class="container">
     <!-- AJAX form for search -->
@@ -30,13 +30,13 @@
           data-ajax-loading="#loader"
           id="f">
         <div class="form-group">
-            <input type="text" name="name" autofocus value="@ViewBag.Name" placeholder="Search by name" class="form-control" id="name" />
+            <input type="search" name="name" autofocus value="@ViewBag.Name" placeholder="Search by name" class="form-control" id="name" />
         </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-        <img src="/images/loader.gif" id="loader" style="display: none" />
+        <button class="btn btn-primary">Search</button>
+        <img src="/photo/images/loader.gif" id="loader" style="display: none" />
     </form>
 
-    <!-- Table to display staff list -->
+@*     <!-- Table to display staff list -->
     <table class="table" id="target">
         <thead>
             <tr>
@@ -74,22 +74,24 @@
                 </tr>
             }
         </tbody>
-    </table>
+    </table> *@
     
+    <div id="target">
+        <partial name="_StaffListPartial">
+    </div>
 
-    <!-- Pagination -->
+@*     <!-- Pagination -->
     <div class="pagination">
         @Html.PagedListPager(Model, page => Url.Action("StaffList", new { name = ViewBag.Name, sort = ViewBag.Sort, dir = ViewBag.Dir, page }))
     </div>
-</div>
+</div> *@
 
 @section foot {
     <!-- Add jQuery if it's not already included -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@*     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
 
     <script>
-        let timer = null;
-
+        
         // Focus at the end of the input field after page load
         document.addEventListener('DOMContentLoaded', function () {
             var input = document.getElementById('name');
@@ -99,13 +101,13 @@
             }
         });
 
+            let timer = null;
         // Handle input event for the search field
-        $('#name').on('input', function (e) {
+        $('#name').on('input', e => {
             clearTimeout(timer); // Clear the previous timeout
-            timer = setTimeout(function () {
+                timer = setTimeout(() => $(e.target.form).submit(), 500);
                 // Submit the form after 500ms delay
-                $(e.target.form).submit();
-            }, 500);
+                
         });
 
                 // Check All Button

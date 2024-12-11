@@ -70,11 +70,11 @@ namespace Demo.Controllers
                 return RedirectToAction(null, new { name, sort, dir, page = paged.PageCount });
             }
 
-            //// If it's an Ajax request, return a partial view
-            //if (Request.IsAjax())
-            //{
-            //    return PartialView("_StaffListPartial", paged);
-            //}
+            // If it's an Ajax request, return a partial view
+            if (Request.IsAjax())
+            {
+                return PartialView("_StaffListPartial", paged);
+            }
 
             return View(paged); // Return the paged list to the view
         }
