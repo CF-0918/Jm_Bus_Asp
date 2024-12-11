@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Demo.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList.Extensions;
 
 namespace Demo.Controllers
@@ -349,10 +352,178 @@ namespace Demo.Controllers
             return View(vm);
         }
 
+        [Authorize(Roles = "Staff,Admin")]
+        public IActionResult AddBus()
+        {
+            // Fetch the list of categories from the database
+            ViewBag.CategoryList = new SelectList(db.CategoryBuses, "Id", "Name");
+            return View();
+        }
 
+
+        [Authorize(Roles = "Staff,Admin")]
+        [HttpPost]
+        public IActionResult AddBus(AddBusVM vm)
+        {
+            if (vm.Photo != null)
+            {
+                var err = hp.ValidatePhoto(vm.Photo);
+                if (err != "") ModelState.AddModelError("Photo", err);
+            }
+
+
+            if (ModelState.IsValid)
+            {
+                // Generate Unique Bus ID
+                string newBusId;
+                var lastBus = db.Buses.OrderByDescending(b => b.Id).FirstOrDefault();
+                if (lastBus != null)
+                {
+                    int numericPart = int.Parse(lastBus.Id.Substring(1)); // Extract numeric part after 'B'
+                    newBusId = "B" + (numericPart + 1).ToString("D3"); // Increment and format as B001, B002, etc.
+                }
+                else
+                {
+                    newBusId = "B001"; // First bus ID
+                }
+
+                // Create Bus Entity
+                var newBus = new Bus
+                {
+                    Id = newBusId,
+                    Name=vm.Name,
+                    BusPlate = vm.BusPlate,
+                    Status = vm.Status,
+                    Capacity = vm.Capacity,
+                    PhotoURL = hp.SavePhoto(vm.Photo, "photo/users"),
+                    CategoryBusId = vm.CategoryBusId
+                };
+
+                db.Buses.Add(newBus);
+                db.SaveChanges();
+
+                //save the seat 
+                for (int i = 1; i <= vm.Capacity; i++)
+                {
+                    var seat = new Seat
+                    {
+                        BusId = newBus.Id,              // Foreign key linking the seat to the bus
+                        SeatNo = "Seat" + i.ToString("D2") // Format seat number as S01, S02, etc.
+                    };
+                    db.Seats.Add(seat);
+                }
+                db.SaveChanges();
+
+
+                TempData["Info"] = "Bus Added Successfully.";
+                return RedirectToAction("ShowBusList", "Maintenance");
+            }
+            // Fetch the list of categories from the database
+            ViewBag.CategoryList = new SelectList(db.CategoryBuses, "Id", "Name");
+            return View(vm);
+        }
+
+        //Get Request [Show Bus List]
+        public IActionResult ShowBusList(string? name, string? sort, string? dir, int page = 1)
+        {
+            // (1) Searching ------------------------
+            ViewBag.Name = name = name?.Trim() ?? "";
+
+            var searched = db.Buses.Where(s => s.Name.Contains(name));
+
+            // (2) Sorting --------------------------
+            ViewBag.Sort = sort;
+            ViewBag.Dir = dir;
+
+            Func<Bus, object> fn = sort switch
+            {
+                "Id" => s => s.Id,
+                "Name" => s => s.Name,
+                "Status" => s => s.Status,
+                "Capacity" => s => s.Capacity,
+                _ => s => s.Id,
+            };
+
+            var sorted = dir == "des" ?
+                         searched.OrderByDescending(fn) :
+                         searched.OrderBy(fn);
+
+            // (3) Paging ---------------------------
+            if (page < 1)
+            {
+                return RedirectToAction(null, new { name, sort, dir, page = 1 });
+            }
+
+            var m = sorted.ToPagedList(page, 10);
+
+            if (page > m.PageCount && m.PageCount > 0)
+            {
+                return RedirectToAction(null, new { name, sort, dir, page = m.PageCount });
+            }
+
+
+            if (Request.IsAjax())
+            {
+                return PartialView("_BusList", m);
+            }
+
+
+            return View(m);
+        }
+
+        [Authorize(Roles = "Staff,Admin")]
+        public IActionResult AddCategoryBus()
+        {
+            // Pass existing categories to the view for display
+            ViewBag.CategoryBuses = db.CategoryBuses;
+            return View();
+        }
+
+        [Authorize(Roles = "Staff,Admin")]
+        [HttpPost]
+        public IActionResult AddCategoryBus(AddCategoryBus vm)
+        {
+            if (ModelState.IsValid)
+            {
+                // Determine the new ID
+                string newId;
+                var lastCategory = db.CategoryBuses.OrderByDescending(c => c.Id).FirstOrDefault();
+                if (lastCategory != null)
+                {
+                    // Extract the numeric part, increment it, and format as CB###
+                    int lastNumber = int.Parse(lastCategory.Id.Substring(2));
+                    newId = "CB" + (lastNumber + 1).ToString("D3");
+                }
+                else
+                {
+                    // First entry, start with CB001
+                    newId = "CB001";
+                }
+
+                // Create and add the new category
+                var newCategory = new CategoryBus
+                {
+                    Id = newId,
+                    Name = vm.Name
+                };
+                db.CategoryBuses.Add(newCategory);
+                db.SaveChanges();
+
+                // Provide feedback to the user
+                TempData["Info"] = $"{vm.Name} has been added!";
+                return RedirectToAction();
+            }
+            else
+            {
+                TempData["Error"] = "Invalid input. Please correct the errors and try again.";
+            }
+
+            // Reload categories for the view
+            ViewBag.CategoryBuses = db.CategoryBuses;
+            return View(vm);
+        }
 
 
     }
-
 
 }

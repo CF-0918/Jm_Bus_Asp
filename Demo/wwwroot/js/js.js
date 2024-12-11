@@ -142,15 +142,20 @@ $(document).ready(function () {
         // Get the current value
         const value = e.target.value;
 
-        // Remove any non-alphabetic characters and convert to uppercase
-        const sanitizedValue = value.replace(/[^A-Za-z]/g, '').toUpperCase();
+        // Remove any non-alphabetic characters except spaces and convert to uppercase
+        const sanitizedValue = value.replace(/[^A-Za-z\s]/g, '').toUpperCase();
 
-        // Update the input field with the sanitized value
+        // Get the cursor positions before updating the value
         const a = e.target.selectionStart;
         const b = e.target.selectionEnd;
+
+        // Update the input field with the sanitized value
         e.target.value = sanitizedValue;
+
+        // Restore the cursor positions
         e.target.setSelectionRange(a, b);
     });
+
 
 
     $('[data-digit]').on('input', function (e) {

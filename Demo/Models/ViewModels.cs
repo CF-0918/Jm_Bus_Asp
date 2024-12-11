@@ -310,3 +310,36 @@ public class MemberDetailsVM
     public string? PhotoURL { get; set; }
     public IFormFile Photo { get; set; }
 }
+
+public class AddCategoryBus
+{
+    [Required(ErrorMessage = "Category name is required.")]
+    [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters.")]
+    public string Name { get; set; }
+}
+
+
+public class AddBusVM
+{
+    public string Name { get; set; }
+
+    [Required(ErrorMessage = "Bus plate is required.")]
+    [RegularExpression(@"^[A-Z]{3}[0-9]{4}$", ErrorMessage = "Bus plate must start with three uppercase letters followed by four digits (e.g., VHA5309).")]
+
+    public string BusPlate { get; set; }
+
+    [Required(ErrorMessage = "Status is required.")]
+    [RegularExpression(@"^(Active|Inactive)$", ErrorMessage = "Status must be either 'Active' or 'Inactive'.")]
+    public string Status { get; set; }
+
+    [Required(ErrorMessage = "Capacity is required.")]
+    [Range(10, 50, ErrorMessage = "Capacity must be between 10 and 50.")]
+    public int Capacity { get; set; }
+
+    public IFormFile Photo { get; set; }
+
+    [Required(ErrorMessage = "Category Bus ID is required.")]
+    [RegularExpression(@"^[A-Z0-9\-]{1,20}$", ErrorMessage = "Category Bus ID must be alphanumeric and up to 20 characters.")]
+    [Display(Name="Category")]
+    public string CategoryBusId { get; set; }
+}

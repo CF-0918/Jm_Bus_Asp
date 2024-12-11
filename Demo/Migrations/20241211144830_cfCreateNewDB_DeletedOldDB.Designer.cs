@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20241210103026_asd6")]
-    partial class asd6
+    [Migration("20241211144830_cfCreateNewDB_DeletedOldDB")]
+    partial class cfCreateNewDB_DeletedOldDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,105 @@ namespace Demo.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Demo.Models.Bus", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BusPlate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CategoryBusId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoURL")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryBusId");
+
+                    b.ToTable("Buses");
+                });
+
+            modelBuilder.Entity("Demo.Models.CategoryBus", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CategoryBuses");
+                });
+
+            modelBuilder.Entity("Demo.Models.Schedule", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("ArrivalTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BusId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DepartureTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Route")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusId");
+
+                    b.ToTable("Schedule");
+                });
+
+            modelBuilder.Entity("Demo.Models.Seat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BusId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SeatNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusId");
+
+                    b.ToTable("Seats");
+                });
 
             modelBuilder.Entity("Demo.Models.Token", b =>
                 {
@@ -148,6 +247,39 @@ namespace Demo.Migrations
                     b.HasDiscriminator().HasValue("Staff");
                 });
 
+            modelBuilder.Entity("Demo.Models.Bus", b =>
+                {
+                    b.HasOne("Demo.Models.CategoryBus", "CategoryBus")
+                        .WithMany("Buses")
+                        .HasForeignKey("CategoryBusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CategoryBus");
+                });
+
+            modelBuilder.Entity("Demo.Models.Schedule", b =>
+                {
+                    b.HasOne("Demo.Models.Bus", "Bus")
+                        .WithMany("Schedules")
+                        .HasForeignKey("BusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bus");
+                });
+
+            modelBuilder.Entity("Demo.Models.Seat", b =>
+                {
+                    b.HasOne("Demo.Models.Bus", "Bus")
+                        .WithMany("Seats")
+                        .HasForeignKey("BusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bus");
+                });
+
             modelBuilder.Entity("Demo.Models.Token", b =>
                 {
                     b.HasOne("Demo.Models.User", "User")
@@ -157,6 +289,18 @@ namespace Demo.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Demo.Models.Bus", b =>
+                {
+                    b.Navigation("Schedules");
+
+                    b.Navigation("Seats");
+                });
+
+            modelBuilder.Entity("Demo.Models.CategoryBus", b =>
+                {
+                    b.Navigation("Buses");
                 });
 
             modelBuilder.Entity("Demo.Models.User", b =>

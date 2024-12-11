@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Maintenance | Bus List";
+}
+
+<form data-ajax="true"
+      data-ajax-update="#target"
+      data-ajax-loading="#loader"
+      id="f">
+    @Html.TextBox("name", "",
+            new { type = "search", autofocus = "", data_trim = "" })
+    <button>Search</button>
+    <img src="/images/loader.gif" id="loader" style="display: none">
+</form>
+
+<div id="target">
+    <partial name="_BusList">
+</div>
+
+@section foot {
+    <script>
+        let timer = null;
+
+        $('#name').on('input', e => {
+            clearTimeout(timer);
+            timer = setTimeout(() => $(e.target.form).submit(), 500);
+        });
+    </script>
+}

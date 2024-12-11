@@ -1,0 +1,74 @@
+﻿@model AddBusVM;
+
+@{
+    ViewBag.Title = "Maintenance | Add Bus";
+}
+
+<h2 class="text-center">Add New Bus</h2>
+
+
+<form asp-action="AddBus" method="post" class="container" enctype="multipart/form-data">
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <div class="form-row">
+        <div class="form-group col">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" autofocus>
+            <span class="errorMessage" asp-validation-for="Name"></span>
+        </div>
+        <!-- Column 1: Bus Plate -->
+        <div class="form-group col">
+            <label asp-for="BusPlate"></label>
+            <input asp-for="BusPlate">
+            <span class="errorMessage" asp-validation-for="BusPlate"></span>
+        </div>
+        <!-- Column 2: Status -->
+        <div class="form-group col">
+            <label asp-for="Status"></label>
+            <select asp-for="Status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+            <span class="errorMessage" asp-validation-for="Status"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <!-- Column 1: Capacity -->
+        <div class="form-group col">
+            <label asp-for="Capacity"></label>
+            <input asp-for="Capacity" type="number">
+            <span class="errorMessage" asp-validation-for="Capacity"></span>
+        </div>
+        <!-- Column 2: Category Bus -->
+        <div class="form-group col">
+            <label asp-for="CategoryBusId"></label>
+            <select asp-for="CategoryBusId" asp-items="ViewBag.CategoryList">
+                <option value="">Select a category</option>
+            </select>
+
+            <span class="errorMessage" asp-validation-for="CategoryBusId"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="file-upload" id="dropArea">
+            <label asp-for="Photo"></label>
+            <p>Drag and Drop file</p>
+            <label class="upload">
+                <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
+                <img src="/photo/images/photo.jpg" height="200" width="200" alt="preview">
+            </label>
+            <span class="errorMessage" asp-validation-for="Photo"></span>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-row">
+        <div class="form-group col">
+            <button type="submit" class="btn btn-primary">Add Bus</button>
+        </div>
+    </div>
+</form>
+
