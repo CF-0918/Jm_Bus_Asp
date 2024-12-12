@@ -3,12 +3,26 @@
     IEnumerable<Voucher> vouchers = ViewBag.Vouchers;
 }
 
+<div class="container mt-5">
+    <div class="row justify-content-center text-center">
+        <div class="col-12">
+            <h2 class="voucher-title mb-3">Redeem Your Voucher Here</h2>
+            <span class="voucher-description">Get Lots Of Exclusive Promotions By Applying Vouchers When Checking Out Goods</span>
+        </div>
+    </div>
+</div>
+<h4 class="ml-3 my-1">My Points : @ViewBag.Points</h4>
 <section class="voucher_redeem_container">
     <div class="voucher_grid">
         @foreach (var v in vouchers)
         {
             <div class="voucher">
-                <div class="voucher_header" style="background-color: #0071c5;">@v.Name</div>
+                @{
+                    var voucherClass = v.Qty == 0 ? "voucher_header fullyRedeem" : $"voucher_header {@v.Status}";
+                }
+
+                <div class="@voucherClass">@v.Name</div>
+
                 <div class="voucher_body">
                     <p class="voucher_description">
                         <b>Description:</b>

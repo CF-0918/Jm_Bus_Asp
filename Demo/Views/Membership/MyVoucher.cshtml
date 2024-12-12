@@ -4,7 +4,7 @@
     ViewBag.Title = "Membership | My Vouchers";
 }
 
-<h2>My Vouchers</h2>
+<h2 class="text-center my-3">My Vouchers</h2>
 
 <section class="voucher_redeem_container">
     <div class="voucher_grid">
@@ -22,11 +22,11 @@
                         </p>
                         <p class="voucher_date">
                             <i class="fas fa-calendar-alt"></i>
-                            <b>Valid Date:</b> @v.StartDate - @v.EndDate
+                            <b>Valid Date:</b> @v.StartDate.ToString("yyyy-MM-dd") - @v.EndDate.ToString("yyyy-MM-dd")
                         </p>
                         <p class="voucher_value">
                             <i class="fas fa-money-bill-wave"></i>
-                            <b>Cash:</b> <span>RM @v.CashDiscount</span>
+                            <b>Cash:</b> <span>RM @v.CashDiscount.ToString("0.00")</span>
                         </p>
                         <p class="voucher_points">
                             <i class="fas fa-coins" style="color: #FFD700;"></i>

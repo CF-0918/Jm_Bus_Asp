@@ -114,12 +114,12 @@
         <!-- Membership Level -->
         <div class="membership_level_container">
             <div class="membership_level_box">
-                <div class="membership_level_image">
-                    <img src="trophy.png" alt="Membership Level">
+                <div class="membership_level_image ">
+                    <img class="@ViewBag.MemberShipDetails.RankName" src="/photo/images/trophy.png" alt="Membership Level">
                 </div>
-                <h2>MemberShip Level: Gold</h2>
-                <p><i class="fas fa-coins"></i> Points: 3000 pts</p>
-                <span><i class="fas fa-wallet"></i> Total Spend: RM 3000</span>
+                <h2>MemberShip Level: @ViewBag.MemberShipDetails.RankName</h2>
+                <p><i class="fas fa-coins"></i> Points: @ViewBag.MemberShipDetails.Points pts</p>
+                <span><i class="fas fa-wallet"></i> Total Spend: RM @ViewBag.MemberShipDetails.MinSpend </span>
             </div>
         </div>
     </div>

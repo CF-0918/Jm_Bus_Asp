@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Demo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -258,8 +259,7 @@ public class MembershipController : Controller
 
         return View(m);
     }
-
-    //Get
+    // GET: VoucherRedeem
     [Authorize(Roles = "Member")]
     public IActionResult VoucherRedeem()
     {
@@ -268,11 +268,20 @@ public class MembershipController : Controller
                     v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
                     v.Status != "Draft" &&
                     v.Status != "Inactive"
-                    ).ToList();
+                ).ToList();
         ViewBag.Vouchers = validVouchers;
+
+ 
+        var member = db.Members.Find(User.Identity!.Name);
+        if (member != null)
+        {
+            ViewBag.Points = member.Points;
+        }
+
         return View();
     }
 
+    // POST: VoucherRedeem
     [Authorize(Roles = "Member")]
     [HttpPost]
     public IActionResult VoucherRedeem(VoucherRedeem vm)
@@ -280,9 +289,9 @@ public class MembershipController : Controller
         if (ModelState.IsValid)
         {
             // Get current member ID from the logged-in user
-            string memberId = User.Identity.Name;
+            string memberId = User.Identity!.Name;
 
-            // Find the voucher and check its validity
+            // Get the voucher and check its validity
             var voucher = db.Vouchers.FirstOrDefault(v =>
                 v.Id == vm.Id &&
                 v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
@@ -290,36 +299,58 @@ public class MembershipController : Controller
                 v.Status != "Inactive" &&
                 v.Qty > 0);
 
+            var member = db.Members.Find(memberId);
+            if (member == null) return RedirectToAction("Index", "Home");
+
             if (voucher == null)
             {
-
+                // Handle case where voucher is invalid
                 ViewBag.Vouchers = db.Vouchers.Where(v =>
                     v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
                     v.Status != "Draft" &&
-                    v.Status != "Inactive"
-                    ).ToList();
-
+                    v.Status != "Inactive").ToList();
+                ViewBag.Points = member.Points;
                 TempData["Info"] = "Voucher is either expired, inactive, or fully redeemed.";
                 return View(vm);
             }
 
-            // Insert the redemption record into the MemberVoucher table
-            var memberVoucher = new MemberVoucher
+            // Get the member data to check if they have enough points
+            if (member.Points < voucher.PointNeeded)
             {
-                MemberId = memberId,
-                VoucherId = voucher.Id,
-                Amount = 1 // Assuming one voucher redeemed per action
-            };
+                TempData["Info"] = "You do not have enough points to redeem this voucher.";
+                ViewBag.Vouchers = db.Vouchers.Where(v =>
+                    v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
+                    v.Status != "Draft" &&
+                    v.Status != "Inactive").ToList();
+                ViewBag.Points = member.Points;
+                return View(vm);
+            }
 
-            db.MemberVouchers.Add(memberVoucher);
+            // Handle redemption logic (insert or update MemberVoucher record)
+            var currentVoucher = db.MemberVouchers.FirstOrDefault(mv => mv.VoucherId == vm.Id && mv.MemberId == memberId);
+            if (currentVoucher == null)
+            {
+                // Insert a new redemption record
+                var memberVoucher = new MemberVoucher
+                {
+                    MemberId = memberId,
+                    VoucherId = voucher.Id,
+                    Amount = 1 // Assuming one voucher redeemed per action
+                };
+                db.MemberVouchers.Add(memberVoucher);
+            }
+            else
+            {
+                currentVoucher.Amount += 1;
+            }
 
-            // Reduce the quantity of the voucher
+            // Reduce the voucher quantity // user points
             voucher.Qty--;
-
+            member.Points = member.Points - voucher.PointNeeded;
             // Save changes to the database
             db.SaveChanges();
-            TempData["Info"] = "Success Redeem ! <a href='/Membership/MyVoucher'>View Voucher</a>'";
 
+            TempData["Info"] = "Success! You have successfully redeemed your voucher. <a href='/Membership/MyVoucher' class='text-white'>View Voucher</a>";
             return RedirectToAction("VoucherRedeem");
         }
 
@@ -329,34 +360,43 @@ public class MembershipController : Controller
                      v.Status != "Draft" &&
                      v.Status != "Inactive"
                      ).ToList();
+
+        // Get member points for the view
+        var memberForPoints = db.Members.FirstOrDefault(m => m.Id == User.Identity!.Name);
+        if (memberForPoints != null)
+        {
+            ViewBag.Points = memberForPoints.Points;
+        }
+
         return View(vm);
     }
+
+
 
     [Authorize(Roles = "Member")]
     public IActionResult MyVoucher()
     {
-        var userId = User.Identity.Name; // Assuming this holds the member's ID
+        var userId = User.Identity.Name;
 
         var vouchers = db.MemberVouchers
             .Where(mv => mv.MemberId == userId)
             .Include(mv => mv.Voucher)
             .Select(mv => new VoucherViewModel
             {
-                VoucherId=mv.VoucherId,
+                VoucherId = mv.VoucherId,
                 VoucherName = mv.Voucher.Name,
                 Description = mv.Voucher.Description,
                 StartDate = mv.Voucher.StartDate,
-                EndDate =mv.Voucher.EndDate,
+                EndDate = mv.Voucher.EndDate,
                 CashDiscount = mv.Voucher.CashDiscount,
                 PointNeeded = mv.Voucher.PointNeeded,
                 Status = mv.Voucher.Status,
                 Amount = mv.Amount
             }).ToList();
 
-        ViewBag.Vouchers = vouchers;
-        return View();
+        // Ensure you're passing the model to the view directly
+        return View(vouchers);
     }
-
 
 
 }

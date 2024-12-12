@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.ConstrainedExecution;
 using System.Text.Json;
 
 namespace Demo.Controllers;
@@ -550,10 +551,11 @@ public class AccountController : Controller
     public IActionResult UpdateProfile()
     {
         // Get member record based on email (PK)
-        // TODO
-        var m = db.Members.Find(User.Identity!.Name);
+        // Get member record based on email (PK)
+        var m = db.Members.Include(member => member.Rank).FirstOrDefault(member => member.Id == User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
+        // Create a view model and populate it with member data
         var vm = new UpdateProfileVM
         {
             Id = m.Id,
@@ -570,8 +572,30 @@ public class AccountController : Controller
             PhotoURL = m.PhotoURL,
         };
 
-        ViewBag.VouchersQty=db.MemberVouchers.Where(vm=>vm.MemberId==User.Identity.Name).Count();
+        // Get the number of vouchers the member has
+        ViewBag.VouchersQty = db.MemberVouchers.Where(vm => vm.MemberId == User.Identity!.Name).Count();
+
+        // Get membership rank details and pass it to the ViewBag
+        if (m.Rank != null)
+        {
+            ViewBag.MemberShipDetails = new
+            {
+                RankName = m.Rank.Name,
+                Points = m.Points,
+                MinSpend=m.MinSpend
+            };
+        }
+        else
+        {
+            ViewBag.MemberShipDetails = new
+            {
+                RankName = "No Rank", // Default value if no rank exists
+                Points = 0 // Default value if no rank exists
+            };
+        }
+
         return View(vm);
+
     }
 
     //// POST: Account/UpdateProfile
@@ -623,6 +647,7 @@ public class AccountController : Controller
             vm.PhotoURL = m.PhotoURL;
 
         }
+        ViewBag.VouchersQty = db.MemberVouchers.Where(vm => vm.MemberId == User.Identity.Name).Count();
         return View(vm);
     }
 
