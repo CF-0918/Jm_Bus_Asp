@@ -104,7 +104,11 @@
             </div>
             <a href="" class="ticket_quick_buttons"><i class="fas fa-ticket-alt"></i> Ticket<i class=""></i> <span class="total_notification">1</span></a>
             <a href="" class="history_quick_buttons"><i class="fas fa-history"></i> History<i class=""></i> <span class="total_notification">1</span></a>
-            <a href="" class="voucher_quick_buttons"><i class="fas fa-gift"></i> My Voucher<i class=""></i> <span class="total_notification">1</span></a>
+            <a href="/Membership/MyVoucher" class="voucher_quick_buttons">
+                <i class="fas fa-gift"></i> My Voucher
+                <span class="total_notification">@ViewBag.VouchersQty</span>
+            </a>
+
         </div>
 
         <!-- Membership Level -->

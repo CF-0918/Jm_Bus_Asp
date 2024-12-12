@@ -18,6 +18,7 @@ public class DB : DbContext
     public DbSet<Member> Members { get; set; }
     public DbSet<Rank> Ranks { get; set; }
     public DbSet<Voucher> Vouchers { get; set; }
+    public DbSet<MemberVoucher> MemberVouchers { get; set; }
 
     public DbSet<Token> Tokens { get; set; }
     public DbSet<CategoryBus> CategoryBuses { get; set; }
@@ -86,7 +87,8 @@ public class Member : User
     public Rank Rank { get; set; }
     public string RankId {  get; set; }
 
-    public List <Voucher> Voucher { get; set; }
+    // Navigation property to track the vouchers the member has redeemed
+    public List<MemberVoucher> MemberVoucher { get; set; }
 }
 
 public class Voucher
@@ -101,13 +103,29 @@ public class Voucher
 
     public int CashDiscount {  get; set; }
 
+    public int Qty {  get; set; }
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }
 
     public string Status { get; set; }
-    public List<Member> Member { get; set; }
+    // Navigation property to track which members have redeemed this voucher
+    public List<MemberVoucher> MemberVoucher { get; set; }
 }
 
+// This class represents the join table between Member and Voucher
+public class MemberVoucher
+{
+    [Key]
+    public int Id { get; set; }  // Unique identifier for this record
+
+    public string MemberId { get; set; }
+    public virtual Member Member { get; set; }  // Navigation property to Member
+
+    public string VoucherId { get; set; }
+    public virtual Voucher Voucher { get; set; }  // Navigation property to Voucher
+
+    public int Amount { get; set; }  // How many times the voucher has been redeemed by this member
+}
 public class Rank
 {
     [Key]

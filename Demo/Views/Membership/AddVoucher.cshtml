@@ -29,20 +29,26 @@
             <input type="number" asp-for="CashDiscount">
             <span class="errorMessage" asp-validation-for="CashDiscount"></span>
         </div>
+        <div class="form-group col">
+            <label asp-for="Qty"></label>
+            <input type="number" asp-for="Qty">
+            <span class="errorMessage" asp-validation-for="Qty"></span>
+        </div>
     </div>
 
     <div class="form-row">
-        <div class="form-group col">
+        <div class="form-group">
             <label asp-for="StartDate"></label>
-            <input asp-for="StartDate"/>
-            <span class="errorMessage" asp-validation-for="StartDate"></span>
+            <input asp-for="StartDate" class="form-control" type="date" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
         </div>
 
-        <div class="form-group col">
+        <div class="form-group">
             <label asp-for="EndDate"></label>
-            <input  asp-for="EndDate"/>
-            <span class="errorMessage" asp-validation-for="EndDate"></span>
+            <input asp-for="EndDate" class="form-control" type="date" />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
         </div>
+
     </div>
 
     <div class="form-group col">

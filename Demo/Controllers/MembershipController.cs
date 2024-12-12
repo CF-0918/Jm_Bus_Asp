@@ -1,5 +1,7 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using X.PagedList.Extensions;
 
 namespace Demo.Controllers;
@@ -22,7 +24,20 @@ public class MembershipController : Controller
     {
         return !db.Ranks.Any(r => r.Name == name);
     }
-  
+
+    public bool CheckRangeDate(DateOnly EndDate, DateOnly StartDate)
+    {
+        return EndDate > StartDate; // Returns true if EndDate is greater than StartDate
+    }
+
+    public bool CheckDateIsTodayOrGreaterThan(DateOnly StartDate)
+    {
+        return StartDate >= DateOnly.FromDateTime(DateTime.Today);
+    }
+
+
+
+
     public string GetNextPrefixId(string tableName)
     {
         string currentMaxId = "";
@@ -48,13 +63,14 @@ public class MembershipController : Controller
         return nextId;
     }
     //Get
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult AddVoucher()
     {
-
         return View();
     }
 
     [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult AddVoucher(VoucherVM vm)
     {
 
@@ -71,6 +87,10 @@ public class MembershipController : Controller
         {
             ModelState.AddModelError("CashDiscount", "Cash Discount  must be between RM 0 and RM 100.");
         }
+        if (vm.EndDate < vm.StartDate)
+        {
+            ModelState.AddModelError("EndDate", "End date must be later than or equal to the start date.");
+        }
 
         if (ModelState.IsValid)
         {
@@ -85,6 +105,7 @@ public class MembershipController : Controller
                 StartDate=vm.StartDate,
                 EndDate=vm.EndDate,
                 Status=vm.Status,
+                Qty=vm.Qty,
             });
             db.SaveChanges();
             TempData["Info"] = $"{newVoucherId} Added.";
@@ -102,6 +123,7 @@ public class MembershipController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult Rank(RankVM vm)
     {
         if (ModelState.IsValid("Name") &&db.Ranks.Any(r => r.Name == vm.Name))
@@ -137,7 +159,8 @@ public class MembershipController : Controller
         return View(vm);
     }
 
-   //Get Request
+    //Get Request
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult ShowRankList(string? name, string? sort, string? dir, int page = 1)
     {
         // (1) Searching ------------------------
@@ -186,6 +209,7 @@ public class MembershipController : Controller
         return View(m);
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult ShowVoucherList(string? name, string? sort, string? dir, int page = 1)
     {
         // (1) Searching ------------------------
@@ -204,6 +228,7 @@ public class MembershipController : Controller
             "Description" => s => s.Description,
             "PointNeeded" => s => s.PointNeeded,
             "CashDiscount" => s => s.CashDiscount,
+            "Qty" => s => s.Qty,
             _ => s => s.Id,
         };
 
@@ -234,9 +259,104 @@ public class MembershipController : Controller
         return View(m);
     }
 
+    //Get
+    [Authorize(Roles = "Member")]
     public IActionResult VoucherRedeem()
     {
-
+        // Get valid vouchers where EndDate is greater than or equal to current date
+        var validVouchers = db.Vouchers.Where(v =>
+                    v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
+                    v.Status != "Draft" &&
+                    v.Status != "Inactive"
+                    ).ToList();
+        ViewBag.Vouchers = validVouchers;
         return View();
     }
+
+    [Authorize(Roles = "Member")]
+    [HttpPost]
+    public IActionResult VoucherRedeem(VoucherRedeem vm)
+    {
+        if (ModelState.IsValid)
+        {
+            // Get current member ID from the logged-in user
+            string memberId = User.Identity.Name;
+
+            // Find the voucher and check its validity
+            var voucher = db.Vouchers.FirstOrDefault(v =>
+                v.Id == vm.Id &&
+                v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
+                v.Status != "Draft" &&
+                v.Status != "Inactive" &&
+                v.Qty > 0);
+
+            if (voucher == null)
+            {
+
+                ViewBag.Vouchers = db.Vouchers.Where(v =>
+                    v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
+                    v.Status != "Draft" &&
+                    v.Status != "Inactive"
+                    ).ToList();
+
+                TempData["Info"] = "Voucher is either expired, inactive, or fully redeemed.";
+                return View(vm);
+            }
+
+            // Insert the redemption record into the MemberVoucher table
+            var memberVoucher = new MemberVoucher
+            {
+                MemberId = memberId,
+                VoucherId = voucher.Id,
+                Amount = 1 // Assuming one voucher redeemed per action
+            };
+
+            db.MemberVouchers.Add(memberVoucher);
+
+            // Reduce the quantity of the voucher
+            voucher.Qty--;
+
+            // Save changes to the database
+            db.SaveChanges();
+            TempData["Info"] = "Success Redeem ! <a href='/Membership/MyVoucher'>View Voucher</a>'";
+
+            return RedirectToAction("VoucherRedeem");
+        }
+
+        // If model state is invalid, pass valid vouchers to the view
+        ViewBag.Vouchers = db.Vouchers.Where(v =>
+                     v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
+                     v.Status != "Draft" &&
+                     v.Status != "Inactive"
+                     ).ToList();
+        return View(vm);
+    }
+
+    [Authorize(Roles = "Member")]
+    public IActionResult MyVoucher()
+    {
+        var userId = User.Identity.Name; // Assuming this holds the member's ID
+
+        var vouchers = db.MemberVouchers
+            .Where(mv => mv.MemberId == userId)
+            .Include(mv => mv.Voucher)
+            .Select(mv => new VoucherViewModel
+            {
+                VoucherId=mv.VoucherId,
+                VoucherName = mv.Voucher.Name,
+                Description = mv.Voucher.Description,
+                StartDate = mv.Voucher.StartDate,
+                EndDate =mv.Voucher.EndDate,
+                CashDiscount = mv.Voucher.CashDiscount,
+                PointNeeded = mv.Voucher.PointNeeded,
+                Status = mv.Voucher.Status,
+                Amount = mv.Amount
+            }).ToList();
+
+        ViewBag.Vouchers = vouchers;
+        return View();
+    }
+
+
+
 }

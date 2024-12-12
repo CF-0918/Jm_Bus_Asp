@@ -1,52 +1,53 @@
-﻿<section class="voucher_redeem_container">
+﻿@{
+    ViewBag.Title = "Membership | Voucher Redeem";
+    IEnumerable<Voucher> vouchers = ViewBag.Vouchers;
+}
+
+<section class="voucher_redeem_container">
     <div class="voucher_grid">
-        <div class="voucher">
-            <div class="voucher_header" style="background-color: #0071c5;">RM 50 off</div>
-            <div class="voucher_body">
-                <p class="voucher_description">
-                    <b>Description:</b>
-                    <span>This voucher is applicable to various purchases, including sdshdshid, osjdsjdsj, and more!</span>
-                </p>
-                <p class="voucher_date">
-                    <i class="fas fa-calendar-alt"></i>
-                    <b>Valid Date:</b> 1 Jun 24 - 1 July 24
-                </p>
-                <p class="voucher_value">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <b>Cash:</b> <span>RM 50</span>
-                </p>
+        @foreach (var v in vouchers)
+        {
+            <div class="voucher">
+                <div class="voucher_header" style="background-color: #0071c5;">@v.Name</div>
+                <div class="voucher_body">
+                    <p class="voucher_description">
+                        <b>Description:</b>
+                        <span>@v.Description</span>
+                    </p>
+                    <p class="voucher_date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <b>Valid Date:</b> @v.StartDate - @v.EndDate
+                    </p>
+                    <p class="voucher_value">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <b>Cash:</b> <span>@v.CashDiscount</span>
+                    </p>
 
-                <p class="voucher_points">
-                    <i class="fas fa-coins"></i>
-                    <b>Points Needed:</b> 1800 pts
-                </p>
-                <button class="redeem_btn">Redeem</button>
-            </div>
+                    <p class="voucher_points">
+                        <i class="fas fa-coins"></i>
+                        <b>Points Needed:</b> @v.PointNeeded pts
+                    </p>
 
-        </div>
-        <div class="voucher">
-            <div class="voucher_header" style="background-color: #00704a;">$2 off</div>
-            <div class="voucher_body">
-                <h4>Starbucks</h4>
-                <p>Valid: Jun 3 - Jun 16</p>
-                <button class="redeem_btn">Redeem</button>
+                    <p class="voucher_status">
+                        <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
+                        <span>Status:</span> <span class="status_active">Active</span>
+                    </p>
+
+                    <p class="voucher_qty">
+                        <i class="fas fa-box" style="color: #007bff; margin-right: 5px;"></i>
+                        <b>Voucher Left :</b> <span>@v.Qty</span>
+                    </p>
+                    @if(v.Qty==0){
+                        <button type="button" class="redeem_btn fullyRedeem">Fully Redeem</button>
+                    }else{
+                        <form method="post">
+                            @Html.Hidden("Id", v.Id)
+                            <button type="submit" class="redeem_btn">Redeem</button>
+                        </form>
+                    }
+  
+                </div>
             </div>
-        </div>
-        <div class="voucher">
-            <div class="voucher_header" style="background-color: #ff4081;">3 rides 15% off</div>
-            <div class="voucher_body">
-                <h4>Lyft</h4>
-                <p>Valid: May 26 - Jun 8</p>
-                <button class="redeem_btn">Redeem</button>
-            </div>
-        </div>
-        <div class="voucher">
-            <div class="voucher_header" style="background-color: #333333;">5% off</div>
-            <div class="voucher_body">
-                <h4>Apple online store</h4>
-                <p>Valid: Jun 1 - Jun 24</p>
-                <button class="redeem_btn">Redeem</button>
-            </div>
-        </div>
+        }
     </div>
 </section>

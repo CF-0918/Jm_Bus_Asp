@@ -3527,9 +3527,16 @@ input[type="range"]::-webkit-slider-thumb {
     width: 100%;
     text-align: center;
 }
-
-    .redeem_btn:hover {
-        background-color: #218838;
-        transform: scale(1.05);
+    .redeem_btn.fullyRedeem{
+        background-color:grey;
     }
+        .redeem_btn.fullyRedeem:hover {
+            background-color:lightgrey;
+            transform: scale(1.05);
+        }
+
+        .redeem_btn:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
   

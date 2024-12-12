@@ -570,6 +570,7 @@ public class AccountController : Controller
             PhotoURL = m.PhotoURL,
         };
 
+        ViewBag.VouchersQty=db.MemberVouchers.Where(vm=>vm.MemberId==User.Identity.Name).Count();
         return View(vm);
     }
 

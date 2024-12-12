@@ -1,0 +1,52 @@
+﻿@model IEnumerable<VoucherViewModel>
+
+@{
+    ViewBag.Title = "Membership | My Vouchers";
+}
+
+<h2>My Vouchers</h2>
+
+<section class="voucher_redeem_container">
+    <div class="voucher_grid">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var v in Model)
+            {
+                <div class="voucher">
+                    <div class="voucher_header" style="background-color: #0071c5; color: white;">
+                        @v.VoucherName
+                    </div>
+                    <div class="voucher_body">
+                        <p class="voucher_description">
+                            <b>Description:</b> <span>@v.Description</span>
+                        </p>
+                        <p class="voucher_date">
+                            <i class="fas fa-calendar-alt"></i>
+                            <b>Valid Date:</b> @v.StartDate - @v.EndDate
+                        </p>
+                        <p class="voucher_value">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <b>Cash:</b> <span>RM @v.CashDiscount</span>
+                        </p>
+                        <p class="voucher_points">
+                            <i class="fas fa-coins" style="color: #FFD700;"></i>
+                            <b>Points Needed:</b> @v.PointNeeded pts
+                        </p>
+                        <p class="voucher_status">
+                            <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
+                            <b>Status:</b> <span class="status_active">@v.Status</span>
+                        </p>
+                        <p class="voucher_qty">
+                            <i class="fas fa-box" style="color: #007bff; margin-right: 5px;"></i>
+                            <b>Qty:</b> <span>@v.Amount</span>
+                        </p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No vouchers available at this time.</p>
+        }
+    </div>
+</section>

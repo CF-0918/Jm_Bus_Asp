@@ -139,17 +139,27 @@ public class VoucherVM
     public int PointNeeded { get; set; }
 
     [Display(Name = "Value (RM)")]
-    public int CashDiscount { get; set; } 
-
+    public int CashDiscount { get; set; }
+    [Remote("CheckDateIsTodayOrGreaterThan", "Membership", ErrorMessage = "Start Date Should Not Be Past")]
     public DateOnly StartDate { get; set; }
+
+    [Remote(action: "CheckRangeDate", controller: "Membership", AdditionalFields = nameof(StartDate) ,ErrorMessage = "End Date Should Be Greater Than Start Date.")]
     public DateOnly EndDate { get; set; }
 
-    public string Status {  get; set; }
+    public string Status { get; set; }
+
+    [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
+    public int Qty { get; set; }
 
     [StringLength(100)]
     public string Description { get; set; }
 }
 
+
+public class VoucherRedeem
+{
+    public string Id { get; set; }
+}
 public class RankVM
 {
     [StringLength(50)]
@@ -169,7 +179,18 @@ public class RankVM
     public int Discounts { get; set; }
 }
 
-
+public class VoucherViewModel
+{
+    public string VoucherId { get; set; }
+    public string VoucherName { get; set; }
+    public string Description { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public decimal CashDiscount { get; set; }
+    public int PointNeeded { get; set; }
+    public string Status { get; set; }
+    public int Amount { get; set; } 
+}
 public class ResetPasswordVM
 {
     [StringLength(100)]

@@ -20,15 +20,18 @@ namespace Demo.Controllers
             this.en = en;
             this.hp = hp;
         }
+        [Authorize(Roles = "Staff,Admin")]
         public IActionResult Dashboard()
         {
             return View();
         }
+        [Authorize(Roles = "Staff,Admin")]
         public IActionResult MemberMaintenance()
         {
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult StaffList(string? name, string? sort, string? dir, int page = 1)
         {
             // (1) Searching ------------------------
@@ -81,6 +84,7 @@ namespace Demo.Controllers
 
         // Individual Deletion
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteStaff(string? id)
         {
             var staff = db.Staffs.Find(id);
@@ -98,6 +102,7 @@ namespace Demo.Controllers
 
         // POST: Maintenance/DeleteMany
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteMany(string[] ids)
         {
             if (ids != null && ids.Length > 0)
@@ -112,8 +117,7 @@ namespace Demo.Controllers
             return RedirectToAction("StaffList"); // Redirect to the staff list page
         }
 
-        // GET: Account/UpdateProfile
-        //[Authorize(Roles = "Member")]
+        [Authorize(Roles = "Admin")]
         public IActionResult StaffDetails(string id)
         {
             // Get member record based on email (PK)
@@ -140,10 +144,8 @@ namespace Demo.Controllers
             return View(vm);
         }
 
-        //// POST: Account/UpdateProfile
-        //// TODO
-        //[Authorize(Roles = "Member")]
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult StaffDetails(StaffDetailsVM vm)
         {
             var staff = db.Staffs.FirstOrDefault(s => s.Id == vm.Id);
@@ -191,6 +193,8 @@ namespace Demo.Controllers
             }
             return View(vm);
         }
+
+        [Authorize(Roles = "Staff,Admin")]
         public IActionResult MemberList(string? name, string? sort, string? dir, int page = 1)
         {
             // (1) Searching ------------------------
@@ -241,6 +245,7 @@ namespace Demo.Controllers
             return View(paged); // Return the paged list to the view
         }
         [HttpPost]
+        [Authorize(Roles = "Staff,Admin")]
         public IActionResult DeleteMember(string? id)
         {
             var member = db.Members.Find(id);
@@ -258,6 +263,7 @@ namespace Demo.Controllers
 
         // POST: Maintenance/DeleteMany
         [HttpPost]
+        [Authorize(Roles = "Staff,Admin")]
         public IActionResult DeleteManyMembers(string[] ids)
         {
             if (ids != null && ids.Length > 0)
@@ -272,8 +278,7 @@ namespace Demo.Controllers
             return RedirectToAction("MemberList"); // Redirect to the member list page
         }
 
-        // GET: Account/UpdateProfile
-        //[Authorize(Roles = "Member")]
+        [Authorize(Roles = "Staff,Admin")]
         public IActionResult MemberDetails(string id)
         {
             // Get member record based on email (PK)
@@ -300,10 +305,9 @@ namespace Demo.Controllers
             return View(vm);
         }
 
-        //// POST: Account/UpdateProfile
-        //// TODO
-        //[Authorize(Roles = "Member")]
+       
         [HttpPost]
+        [Authorize(Roles = "Staff,Admin")]
         public IActionResult MemberDetails(MemberDetailsVM vm)
         {
             var member = db.Members.FirstOrDefault(s => s.Id == vm.Id);
