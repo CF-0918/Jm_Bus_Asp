@@ -3,7 +3,7 @@
 @model IPagedList<Staff>
 
 @{
-    string[] fields = { "Name", "Email", "Phone", "Status", "Action" };
+    string[] fields = { "", "Name", "Email", "Phone", "Status" };
 }
 
 @Html.Hidden("sort", "", new { form = "f" })
@@ -23,18 +23,28 @@
 
 <table class="table" id="target">
     <thead>
-        <tr>
-            <th></th>
+            <tr>
+                @foreach (var f in fields)
+                {
+                    string d = "asc";
+                    string c = "";
 
-            <th>
-                <a asp-action="StaffList" asp-route-sort="FullName" asp-route-dir="@(ViewBag.Sort == "FullName" && ViewBag.Dir == "asc" ? "des" : "asc")">Name</a>
-            </th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th>Action</th> <!-- Action column for Edit and Delete buttons -->
-        </tr>
-    </thead>
+                    if (f == ViewBag.Sort)
+                    {
+                        d = ViewBag.Dir == "des" ? "asc" : "des";
+                        c = ViewBag.Dir;
+                    }
+
+                    <th>
+                        <a data-ajax="true"
+                           data-ajax-update="#target"
+                           data-ajax-loading="#loader"
+                           href="?name=@ViewBag.Name&sort=@f&dir=@d" class="@c">@f</a>
+                    </th>
+                }
+                <th></th>
+            </tr>
+            </thead>
     <tbody>
         @foreach (var staff in Model)
         {
@@ -51,9 +61,19 @@
                     <!-- Edit and Delete actions -->
                     <a href="@Url.Action("StaffDetails", "Maintenance", new { id = staff.Id })" class="btn btn-info btn-sm">View Details</a>
                     <a href="@Url.Action("EditStaff", "Maintenance", new { id = staff.Id })" class="btn btn-warning btn-sm">Edit</a>
-                    <form method="post" action="/Maintenance/DeleteStaff/@staff.Id" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this staff member?')">Delete</button>
-                    </form>
+                        @if (staff.Status != "Inactive")
+                        {
+                            <form method="post" action="/Maintenance/DeleteStaff/@staff.Id" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Delete</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" action="/Maintenance/EnableStaff/@staff.Id" style="display:inline;">
+                                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable this staff member?')">Enable</button>
+                            </form>
+                        }
+
                 </td>
             </tr>
         }

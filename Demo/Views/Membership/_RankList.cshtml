@@ -14,6 +14,13 @@
     Page @Model.PageNumber of @Model.PageCount
 </p>
 
+<form method="post" action="/Maintenance/DeleteManyRank" id="deleteManyForm">
+    <p>
+        <button type="button" data-check="ids">Check All</button>
+        <button type="button" data-uncheck="ids">Uncheck All</button>
+        <button type="submit">Delete Checked</button>
+    </p>
+
 <table class="table" id="target">
     <tr>
         <th>#</th>
@@ -53,6 +60,7 @@
         </tr>
     }
 </table>
+</form>
 
 
 <div>

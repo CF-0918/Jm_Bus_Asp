@@ -3,7 +3,7 @@
 @model IPagedList<Bus>
 
 @{
-    string[] fields = ["Id", "Name", "Status", "Capacity"];
+    string[] fields = ["", "Id", "Name", "Status", "Capacity"];
 }
 
 @Html.Hidden("sort", "", new { form = "f" })
@@ -13,6 +13,13 @@
     @Model.Count() of @Model.TotalItemCount record(s) |
     Page @Model.PageNumber of @Model.PageCount
 </p>
+
+<form method="post" action="/Maintenance/DeleteManyBus" id="deleteManyForm">
+    <p>
+        <button type="button" data-check="ids">Check All</button>
+        <button type="button" data-uncheck="ids">Uncheck All</button>
+        <button type="submit">Delete Checked</button>
+    </p>
 
 <table class="table" id="target">
     <tr>
@@ -40,6 +47,9 @@
     @foreach (var s in Model)
     {
         <tr>
+                            <td>
+                    <input type="checkbox" name="ids" value="@s.Id" />
+                </td>
             <td>@s.Id</td>
             <td>@s.Name</td>
             <td>@s.Status</td>
@@ -50,6 +60,7 @@
         </tr>
     }
 </table>
+</form>
 
 
 <div>
