@@ -93,62 +93,31 @@
                    
                 </div>
             </div>
-
-            <div class="form-row">
-                <a class="updatePassword" href="/Account/UpdatePassword">Update Password</a>
-              </div>
-         
         </form>
     </div>
 
-    <div class="ticket_invoice_list_right">
-        <div class="ticket_ongoing_list_container">
-            <h4>
-                <i class="fas fa-ticket"></i>
-                Ticket On going
-            </h4>
+    <div class="voucher_list_right">
+        <!-- Quick Buttons -->
+        <div class="profile_quick_buttons">
+            <div style="margin-right:10px;">
+                <a class="update_password_buttons" href="/Account/UpdatePassword">Update Password <i class="fas fa-lock"></i></a>
+            </div>
+            <a href="" class="ticket_quick_buttons"><i class="fas fa-ticket-alt"></i> Ticket<i class=""></i> <span class="total_notification">1</span></a>
+            <a href="" class="history_quick_buttons"><i class="fas fa-history"></i> History<i class=""></i> <span class="total_notification">1</span></a>
+            <a href="" class="voucher_quick_buttons"><i class="fas fa-gift"></i> My Voucher<i class=""></i> <span class="total_notification">1</span></a>
+        </div>
 
-            <div class="ticket_ongoing_list">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ticket ID</th>
-                            <th>Route</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Seat No</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>T001</td>
-                            <td>KL <i class="fas fa-arrow-right"></i> JB</td>
-                            <td class="on_going_status">On Going</td>
-                            <td>28/1/2024</td>
-                            <td>A2,A3</td>
-                            <td><a href="#">View</a></td>
-                        </tr>
-                        <tr>
-                            <td>T002</td>
-                            <td>Selangor <i class="fas fa-exchange"></i>Melaka</td>
-                            <td class="on_going_status">On Going</td>
-                            <td>30/5/2024 <i class="fas fa-exchange"></i> 3/6/2024 </td>
-                            <td>A4</td>
-                            <td><a href="#">View</a></td>
-                        </tr>
-                        <tr>
-                            <td>T003</td>
-                            <td>KL <i class="fas fa-exchange"></i> JB</td>
-                            <td class="ticket_cancel_status">Cancel</td>
-                            <td>29/6/2024 <i class="fas fa-exchange"></i> 3/7/2024 </td>
-                            <td>A1,A5,A7</td>
-                            <td><a class="view_button" href="#">View</a></td>
-                        </tr>
-
-                </table>
-
+        <!-- Membership Level -->
+        <div class="membership_level_container">
+            <div class="membership_level_box">
+                <div class="membership_level_image">
+                    <img src="trophy.png" alt="Membership Level">
+                </div>
+                <h2>MemberShip Level: Gold</h2>
+                <p><i class="fas fa-coins"></i> Points: 3000 pts</p>
+                <span><i class="fas fa-wallet"></i> Total Spend: RM 3000</span>
             </div>
         </div>
+    </div>
 
 </section>

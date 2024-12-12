@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace Demo.Models;
 
@@ -15,6 +16,8 @@ public class DB : DbContext
     public DbSet<Admin> Admins { get; set; }
     public DbSet<Staff> Staffs { get; set; }
     public DbSet<Member> Members { get; set; }
+    public DbSet<Rank> Ranks { get; set; }
+    public DbSet<Voucher> Vouchers { get; set; }
 
     public DbSet<Token> Tokens { get; set; }
     public DbSet<CategoryBus> CategoryBuses { get; set; }
@@ -73,6 +76,47 @@ public class Member : User
     public string Position { get; set; }
     [MaxLength(50)]
     public string Country { get; set; }
+
+    //New add membership concept
+    public int Points { get; set; }
+
+    public decimal MinSpend {  get; set; }
+
+    //navigation property
+    public Rank Rank { get; set; }
+    public string RankId {  get; set; }
+
+    public List <Voucher> Voucher { get; set; }
+}
+
+public class Voucher
+{
+    [Key]
+    public string Id { get; set; }
+    public string Name { get; set; }
+
+    public int PointNeeded {  get; set; }
+
+    public string Description { get; set; }
+
+    public int CashDiscount {  get; set; }
+
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+
+    public string Status { get; set; }
+    public List<Member> Member { get; set; }
+}
+
+public class Rank
+{
+    [Key]
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public  int MinSpend {  get; set; }    
+    public int Discounts {  get; set; }
+    public List<Member> Member { get; set; }
 }
 
 public class Token

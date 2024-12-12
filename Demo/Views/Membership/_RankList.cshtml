@@ -1,9 +1,9 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
-@model IPagedList<Bus>
+@model IPagedList<Rank>
 
 @{
-    string[] fields = ["Id", "Name", "Status", "Capacity"];
+    string[] fields = ["Id", "Name", "Description", "MinSpend","Discounts"];
 }
 
 @Html.Hidden("sort", "", new { form = "f" })
@@ -16,6 +16,7 @@
 
 <table class="table" id="target">
     <tr>
+        <th>#</th>
         @foreach (var f in fields)
         {
             string d = "asc";
@@ -40,10 +41,12 @@
     @foreach (var s in Model)
     {
         <tr>
+            <td><input type="checkbox" value="@s.Id"/></td>
             <td>@s.Id</td>
             <td>@s.Name</td>
-            <td>@s.Status</td>
-            <td>@s.Capacity</td>
+            <td>@s.Description</td>
+            <td>RM @s.MinSpend</td>
+            <td>@s.Discounts %</td>
             <td>
                 <button data-get="/Home/Detail/@s.Id">Detail</button>
             </td>

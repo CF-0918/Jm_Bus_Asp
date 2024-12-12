@@ -202,6 +202,9 @@ public class AccountController : Controller
                 PhotoURL = hp.SavePhoto(vm.Photo, "photo/users"),
                 Status = "Active",
                 EmailVerified = 0,
+                Points=0,
+                MinSpend=0,
+                RankId="R0001"
             };
             db.Members.Add(newMember);
             db.SaveChanges();

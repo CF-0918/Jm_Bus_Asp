@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 body {
@@ -51,6 +51,19 @@ body {
         opacity: 0;
     }
 }
+
+.table th a.asc::after {
+    content: ' ▴';
+}
+
+.table th a.des::after {
+    content: ' ▾';
+}
+
+.table tr:has(input:checked) td {
+    background: #999;
+}
+
 .resendEmailLink {
     color: #007bff; /* Primary blue color */
     text-decoration: none;
@@ -1056,7 +1069,7 @@ body {
     top: 100%;
     left: 0;
     background-color: #f9f9f9;
-    min-width: 160px;
+    width: 200px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     padding: 12px 16px;
     z-index: 1;
@@ -2427,140 +2440,138 @@ input[type="range"]::-webkit-slider-thumb {
     }
 
 
-    /* Right section (ticket and invoice lists) styling */
-    .ticket_invoice_list_right {
-        flex: 2;
-        min-width: 500px;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-.ticket_ongoing_list_container,
-.show_invoice_list {
-    background: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-    .ticket_ongoing_list_container h4 {
-        margin-bottom: 15px;
-        color: #007bff;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-
-    .show_invoice_list h4 {
-        margin-bottom: 15px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-
-    .ticket_ongoing_list table,
-    .show_invoice_list table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-.ticket_ongoing_list th {
-    text-align: left;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-}
-
-.show_invoice_list th {
-    text-align: left;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 10px;
-    background-color: #0a0a0a;
-    color: #fff;
-}
-
-.ticket_ongoing_list td,
-.show_invoice_list td {
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-}
-
-    .ticket_ongoing_list td a,
-    .show_invoice_list td a {
-        padding: 5px 8px;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: 0.3s ease-in-out;
-    }
-
-    .ticket_ongoing_list td a {
-        border: 2px solid #007bff;
-    }
-
-    .show_invoice_list td a {
-        border: 2px solid #0a0a0a;
-        color: #000;
-    }
-
-        .ticket_ongoing_list td a:hover,
-        .show_invoice_list td a:hover {
-            text-decoration: none;
-        }
-
-    .ticket_ongoing_list td a:hover {
-        background-color: #007bff;
-        color: #fff;
-    }
-
-    .show_invoice_list td a:hover {
-        background-color: #000;
-        color: #fff;
-    }
-
-.view_more_btn, .view_more_btn_invoice {
-    display: block;
-    width: 100%;
+    /* Right section (voucher lists) styling */
+.voucher_list_right {
+    flex: 2;
+    min-width: 500px;
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0;
-    margin: 0;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-    .view_more_btn a {
-        border: 2px solid #007BFF;
-        background-color: #007BFF;
-        padding: 5px 15px;
-        border-radius: 20px;
+/* Profile Quick Buttons */
+.profile_quick_buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+    .profile_quick_buttons a {
+        flex: 1;
+        text-align: center;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: capitalize;
+        text-decoration: none;
         color: #fff;
-        margin: 0;
-        margin-right: 15px;
-        margin-top: 10px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
-        .view_more_btn a:hover {
-            background-color: #0056b3;
-            color: #fff;
-        }
-
-    .view_more_btn_invoice a {
-        border: 2px solid #000;
-        background-color: #fff;
-        padding: 5px 15px;
-        border-radius: 20px;
-        color: #000;
-        margin: 0;
-        margin-right: 15px;
-        margin-top: 10px;
+    .profile_quick_buttons a {
+        position: relative;
     }
 
-        .view_more_btn_invoice a:hover {
-            background-color: #000;
-            color: #fff;
-        }
+.total_notification {
+    position: absolute;
+    text-align: center;
+    top: -20%;
+    right: 5%;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    transition: opacity 0.3s ease;
+}
+/* Different Colors for Buttons */
+.update_password_buttons{
+    background-color:grey;
+}
+.ticket_quick_buttons {
+    background-color: #118f2e;
+}
+
+.history_quick_buttons {
+    background-color: #2a2727;
+}
+
+.voucher_quick_buttons {
+    background-color: #ed4609;
+}
+
+.profile_quick_buttons a:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+    color: white;
+}
+
+/* Membership Level Container */
+.membership_level_container {
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    text-align: center;
+}
+
+.membership_level_box {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: #f4f6f8;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Round Image */
+.membership_level_image img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: contain;
+    background-color: gold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 5px; /* Optional: Add padding to create space between image and border */
+}
+
+
+.membership_level_box h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0071c5;
+}
+
+.membership_level_box p {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+}
+
+.membership_level_box span {
+    font-size: 16px;
+    color: #555;
+}
+
+
+
+
 
 .profile_img_user_container {
     width: 200px;
@@ -3384,3 +3395,141 @@ input[type="range"]::-webkit-slider-thumb {
         color: white; /* Change text color to white on hover */
     }
 /*<!-- END OF EASON PART -->*/
+
+/* Rewards Page Redeem Voucher */
+.voucher_redeem_container {
+    padding: 20px;
+}
+
+.voucher_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.voucher {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+    .voucher:hover {
+        transform: translateY(-5px);
+    }
+
+.voucher_header {
+    padding: 15px;
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    position: relative;
+}
+
+    .voucher_header::after {
+        margin-top: 5px;
+        content: "";
+        display: block;
+        height: 10px;
+        width: 100%;
+        background: repeating-linear-gradient( -45deg, #fff, #fff 5px, transparent 5px, transparent 10px );
+    }
+
+.voucher_body {
+    padding: 15px;
+    text-align: left;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+}
+
+    .voucher_body p {
+        margin: 10px 0;
+        line-height: 1.5;
+        font-size: 14px;
+    }
+
+    .voucher_body .voucher_description {
+        font-size: 16px;
+        font-weight: 500;
+        color: #444;
+        margin-bottom: 15px;
+    }
+
+        .voucher_body .voucher_description span {
+            color: #555;
+            display: block;
+            margin-top: 5px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+.voucher_value {
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .voucher_value i {
+        color: #28a745;
+        font-size: 20px;
+        margin-right: 10px;
+    }
+
+    .voucher_value b {
+        color: #0071c5;
+        margin-right: 5px;
+    }
+
+    .voucher_value span {
+        color: #000;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+
+.voucher_body .voucher_date,
+.voucher_body .voucher_points {
+    font-size: 14px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+}
+
+    .voucher_body .voucher_date i,
+    .voucher_body .voucher_points i {
+        color: #0071c5;
+        font-size: 16px;
+        margin-right: 8px;
+    }
+
+.redeem_btn {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 10px;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+    .redeem_btn:hover {
+        background-color: #218838;
+        transform: scale(1.05);
+    }
+  

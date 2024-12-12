@@ -60,65 +60,80 @@
                 <a href="/Home/RentBusService">
                     <li><i class="fas fa-key"></i> Rent Service</li>
                 </a>
-                <a href="">
+                <a href="/Membership/VoucherRedeem">
                     <li><i class="fas fa-trophy"></i> Rewards</li>
                 </a>
             }else if(User.IsInRole("Staff")||User.IsInRole("Admin")){
                 <!-- Dashboard -->
                 <li class="menu-item dashboard-item">
                     <a href="/Maintenance/Dashboard" class="menu-link">
-                        <i class="fas fa-tachometer-alt"></i>Dashboard
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
                 </li>
 
                 <!-- Schedule Dropdown -->
                 <li class="menu-item dropdown-schedule">
                     <a href="#" class="menu-link">
-                        <i class="fas fa-calendar-alt"></i>Schedule
+                        <i class="fas fa-calendar-alt"></i> Schedule
                         <i class="fa fa-caret-down"></i> <!-- Dropdown Icon -->
                     </a>
                     <div class="dropdown-content-schedule">
-                        <p><a href="#">Add Schedule</a></p>
+                        <p><a href="#"><i class="fas fa-plus"></i> Add Schedule</a></p>
+                        <p><a href="#"><i class="fas fa-plus"></i> Show Schedule</a></p>
+                        <p><a href="#"><i class="fas fa-plus"></i> Manage Ticket</a></p>
+                        <p><a href="/Maintenance/RentBookingList"><i class="fas fa-folder-plus"></i> Manage Booking</a></p>
                     </div>
                 </li>
 
                 <!-- Bus Dropdown -->
                 <li class="menu-item dropdown-bus">
                     <a href="/Maintenance/ShowBusList" class="menu-link">
-                        <i class="fas fa-bus"></i>Bus
+                        <i class="fas fa-bus"></i> Bus
                         <i class="fa fa-caret-down"></i> <!-- Dropdown Icon -->
                     </a>
                     <div class="dropdown-content-bus">
-                        <p><a href="/Maintenance/AddBus">Add Bus</a></p>
-                        <p><a href="/Maintenance/AddCategoryBus">Add Category</a></p>
+                        <p><a href="/Maintenance/AddBus"><i class="fas fa-plus"></i> Add Bus</a></p>
+                        <p><a href="/Maintenance/ShowBusList"><i class="fas fa-list"></i> Show Bus</a></p>
+                        <p><a href="/Maintenance/AddCategoryBus"><i class="fas fa-folder-plus"></i> Add Category</a></p>
                     </div>
                 </li>
 
-                <!-- Booking -->
-                <li class="menu-item booking-item">
+                <!-- Membership Dropdown -->
+                <li class="menu-item dropdown-bus">
                     <a href="#" class="menu-link">
-                        <i class="fas fa-ticket-alt"></i>Booking
+                        <i class="fas fa-id-card-alt"></i> Membership
+                        <i class="fa fa-caret-down"></i> <!-- Dropdown Icon -->
                     </a>
+                    <div class="dropdown-content-bus">
+                        <p><a href="/Membership/Rank"><i class="fas fa-trophy"></i> Add Rank</a></p>
+                        <p><a href="/Membership/ShowRankList"><i class="fas fa-list"></i> Show Rank</a></p>
+                        <p><a href="/Membership/AddVoucher"><i class="fas fa-gift"></i> Add Voucher</a></p>
+                        <p><a href="/Membership/ShowVoucherList"><i class="fas fa-tags"></i> Show Voucher</a></p>
+                    </div>
                 </li>
 
                 <!-- Member -->
                 <li class="menu-item member-item">
                     <a href="/Maintenance/MemberList" class="menu-link">
-                        <i class="fas fa-users"></i>Member
+                        <i class="fas fa-users"></i> Member
                     </a>
                 </li>
 
+
+            }
+             @if (User.IsInRole("Admin")){
+                <li class="menu-item member-item">
+                    <a href="/Maintenance/StaffList" class="menu-link">
+                        <i class="fas fa-users"></i>Staff
+                    </a>
+                </li>
+            }
+
+            @if(User.IsInRole("Staff") || User.IsInRole("Admin")){
                 <!-- Report -->
                 <li class="menu-item report-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-chart-line"></i>Report
-                    </a>
-                </li>
-            }
-            else if (User.IsInRole("Admin")){
-                <li class="menu-item member-item">
-                    <a href="/Maintenance/StaffList" class="menu-link">
-                        <i class="fas fa-users"></i>Staff
                     </a>
                 </li>
             }

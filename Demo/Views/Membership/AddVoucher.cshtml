@@ -1,0 +1,74 @@
+﻿@model VoucherVM;
+
+@{
+    ViewBag.Title = "Membership | Add Voucher";
+}
+
+<h2 class="text-center">Add Voucher <i class="fa fa-tag"></i></h2>
+
+
+<form method="post" class="container" enctype="multipart/form-data">
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <div class="form-row">
+        <div class="form-group col">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" autofocus>
+            <span class="errorMessage" asp-validation-for="Name"></span>
+        </div>
+
+        <div class="form-group col">
+            <label asp-for="PointNeeded"></label>
+            <input type="number" asp-for="PointNeeded" />
+            <span class="errorMessage" asp-validation-for="PointNeeded"></span>
+        </div>
+
+        <div class="form-group col">
+            <label asp-for="CashDiscount"></label>
+            <input type="number" asp-for="CashDiscount">
+            <span class="errorMessage" asp-validation-for="CashDiscount"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col">
+            <label asp-for="StartDate"></label>
+            <input asp-for="StartDate"/>
+            <span class="errorMessage" asp-validation-for="StartDate"></span>
+        </div>
+
+        <div class="form-group col">
+            <label asp-for="EndDate"></label>
+            <input  asp-for="EndDate"/>
+            <span class="errorMessage" asp-validation-for="EndDate"></span>
+        </div>
+    </div>
+
+    <div class="form-group col">
+        <label asp-for="Status"></label>
+        <select asp-for="Status">
+            <option value="" disabled>Please Select</option>
+            <option value="Active">Active</option>
+            <option value="Draft">Draft</option>
+        </select>
+        <span class="errorMessage" asp-validation-for="Status"></span>
+    </div>
+
+
+    <div class="form-row">
+        <div class="form-group col">
+            <label asp-for="Description"></label>
+            <textarea class="form-control" asp-for="Description"></textarea>
+            <span class="errorMessage" asp-validation-for="Description"></span>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-row">
+        <div class="form-group col">
+            <button type="submit" class="btn btn-primary">Add Voucher <i class="fas fa-tag"></i></button>
+        </div>
+    </div>
+</form>
+

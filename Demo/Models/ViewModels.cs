@@ -131,6 +131,45 @@ public class UpdateProfileVM
     public IFormFile? Photo { get; set; }
 }
 
+public class VoucherVM
+{
+    [StringLength(50)]
+    public string Name { get; set; }
+
+    public int PointNeeded { get; set; }
+
+    [Display(Name = "Value (RM)")]
+    public int CashDiscount { get; set; } 
+
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+
+    public string Status {  get; set; }
+
+    [StringLength(100)]
+    public string Description { get; set; }
+}
+
+public class RankVM
+{
+    [StringLength(50)]
+    [Display(Name = "Rank Name")]
+    [Remote("CheckRankName", "Membership", ErrorMessage = "Duplicated Rank Name.")]
+    public string Name { get; set; }
+
+    [StringLength(100)]
+    public string Description { get; set; }
+
+    [Display(Name = "Min Spend")]
+    [Range(0, int.MaxValue, ErrorMessage = "Min Spend must be a positive value.")]
+    public int MinSpend { get; set; }
+
+    [Range(0, 100, ErrorMessage = "Discounts Percentage must be between 0 and 100.")]
+    [Display(Name = "Discounts Percentage (%)")]
+    public int Discounts { get; set; }
+}
+
+
 public class ResetPasswordVM
 {
     [StringLength(100)]
