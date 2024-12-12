@@ -87,18 +87,30 @@ namespace Demo.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteStaff(string? id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["Error"] = "Invalid staff ID.";
+                return RedirectToAction("StaffList");
+            }
+
             var staff = db.Staffs.Find(id);
 
             if (staff != null)
             {
-                db.Staffs.Remove(staff);
+                // Set the status to "Inactive" to disable the staff member
+                staff.Status = "Inactive";
                 db.SaveChanges();
 
-                TempData["Info"] = "Record deleted.";
+                TempData["Info"] = "Staff member disabled.";
+            }
+            else
+            {
+                TempData["Error"] = "Staff member not found.";
             }
 
-            return Redirect(Request.Headers.Referer.ToString()); // Redirect to the previous page
+            return RedirectToAction("StaffList");
         }
+
 
         // POST: Maintenance/DeleteMany
         [HttpPost]
@@ -107,17 +119,53 @@ namespace Demo.Controllers
         {
             if (ids != null && ids.Length > 0)
             {
-                var staffToDelete = db.Staffs.Where(s => ids.Contains(s.Id)).ToList();
-                db.Staffs.RemoveRange(staffToDelete);
+                // Fetch staff records to disable
+                var staffToDisable = db.Staffs.Where(s => ids.Contains(s.Id)).ToList();
+
+                // Set their status to "Inactive"
+                foreach (var staff in staffToDisable)
+                {
+                    staff.Status = "Inactive";
+                }
+
+                // Save changes to the database
                 db.SaveChanges();
 
-                TempData["Info"] = $"{staffToDelete.Count} staff member(s) deleted.";
+                TempData["Info"] = $"{staffToDisable.Count} staff member(s) disabled.";
             }
 
             return RedirectToAction("StaffList"); // Redirect to the staff list page
         }
 
-        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public IActionResult EnableStaff(string? id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["Error"] = "Invalid staff ID.";
+                return RedirectToAction("StaffList");
+            }
+
+            var staff = db.Staffs.Find(id);
+
+            if (staff != null)
+            {
+                // Set the status to "Active" to enable the staff member
+                staff.Status = "Active";
+                db.SaveChanges();
+
+                TempData["Info"] = "Staff member enabled.";
+            }
+            else
+            {
+                TempData["Error"] = "Staff member not found.";
+            }
+
+            return RedirectToAction("StaffList");
+        }
+
+        // GET: Account/UpdateProfile
+        //[Authorize(Roles = "Member")]
         public IActionResult StaffDetails(string id)
         {
             // Get member record based on email (PK)
@@ -248,18 +296,31 @@ namespace Demo.Controllers
         [Authorize(Roles = "Staff,Admin")]
         public IActionResult DeleteMember(string? id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["Error"] = "Invalid member ID.";
+                return RedirectToAction("MemberList"); // Adjust as necessary for the member list view
+            }
+
             var member = db.Members.Find(id);
 
             if (member != null)
             {
-                db.Members.Remove(member);
+                // Set the status to "Inactive" to disable the member (instead of deleting)
+                member.Status = "Inactive";
                 db.SaveChanges();
 
-                TempData["Info"] = "Record deleted.";
+                TempData["Info"] = "Member disabled.";
+            }
+            else
+            {
+                TempData["Error"] = "Member not found.";
             }
 
-            return Redirect(Request.Headers.Referer.ToString()); // Redirect to the previous page
+            return RedirectToAction("MemberList"); // Redirect to the member list page
         }
+
+
 
         // POST: Maintenance/DeleteMany
         [HttpPost]
@@ -268,17 +329,53 @@ namespace Demo.Controllers
         {
             if (ids != null && ids.Length > 0)
             {
-                var memberToDelete = db.Members.Where(s => ids.Contains(s.Id)).ToList();
-                db.Members.RemoveRange(memberToDelete);
+                // Fetch the members to update based on the provided IDs
+                var membersToUpdate = db.Members.Where(s => ids.Contains(s.Id)).ToList();
+
+                // Update the Status property to "Inactive"
+                foreach (var member in membersToUpdate)
+                {
+                    member.Status = "Inactive";
+                }
+
+                // Save the changes to the database
                 db.SaveChanges();
 
-                TempData["Info"] = $"{memberToDelete.Count} member member(s) deleted.";
+                TempData["Info"] = $"{membersToUpdate.Count} member(s) set to inactive.";
             }
 
             return RedirectToAction("MemberList"); // Redirect to the member list page
         }
 
-        [Authorize(Roles = "Staff,Admin")]
+        [HttpPost]
+        public IActionResult EnableMember(string? id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["Error"] = "Invalid member ID.";
+                return RedirectToAction("MemberList"); // Adjust as necessary for the member list view
+            }
+
+            var member = db.Members.Find(id);
+
+            if (member != null)
+            {
+                // Set the status to "Active" to enable the member
+                member.Status = "Active";
+                db.SaveChanges();
+
+                TempData["Info"] = "Member enabled.";
+            }
+            else
+            {
+                TempData["Error"] = "Member not found.";
+            }
+
+            return RedirectToAction("MemberList"); // Redirect to the member list page
+        }
+
+        // GET: Account/UpdateProfile
+        //[Authorize(Roles = "Member")]
         public IActionResult MemberDetails(string id)
         {
             // Get member record based on email (PK)
