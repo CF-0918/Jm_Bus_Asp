@@ -1,0 +1,90 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<RouteLocation>
+
+@{
+    string[] fields = ["", "Id", "Depart", "Destination", "Hour","Min"];
+}
+
+@Html.Hidden("sort", "", new { form = "f" })
+@Html.Hidden("dir", "", new { form = "f" })
+
+<p>
+    @Model.Count() of @Model.TotalItemCount record(s) |
+    Page @Model.PageNumber of @Model.PageCount
+</p>
+
+<form method="post" action="/Maintenance/" id="deleteManyForm">
+    <p>
+        <button type="button" data-check="ids">Check All</button>
+        <button type="button" data-uncheck="ids">Uncheck All</button>
+        <button type="submit">Delete Checked</button>
+    </p>
+
+    <table class="table" id="target">
+        <tr>
+            @foreach (var f in fields)
+            {
+                string d = "asc";
+                string c = "";
+
+                if (f == ViewBag.Sort)
+                {
+                    d = ViewBag.Dir == "des" ? "asc" : "des";
+                    c = ViewBag.Dir;
+                }
+
+                <th>
+                    <a data-ajax="true"
+                       data-ajax-update="#target"
+                       data-ajax-loading="#loader"
+                       href="?name=@ViewBag.Name&sort=@f&dir=@d" class="@c">@f</a>
+                </th>
+            }
+            <th></th>
+        </tr>
+
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" name="ids" value="@s.Id" />
+                </td>
+                <td>@s.Id</td>
+                <td>@s.Depart</td>
+                <td>@s.Destination</td>
+                <td>@s.Hour</td>
+                <td>@s.Min</td>
+                <td>
+                    <button data-get="/Home/Detail/@s.Id">Detail</button>
+                </td>
+            </tr>
+        }
+    </table>
+</form>
+
+
+<div>
+    @{
+        var options = PagedListRenderOptions.ClassicPlusFirstAndLast;
+        options.LinkToFirstPageFormat = "First";
+        options.LinkToLastPageFormat = "Last";
+        options.LinkToPreviousPageFormat = "Previous";
+        options.LinkToNextPageFormat = "Next";
+
+        var ajaxOptions = new AjaxOptions
+            {
+                HttpMethod = "get",
+                UpdateTargetId = "target",
+                LoadingElementId = "#loader"
+            };
+    }
+
+    @Html.PagedListPager(
+            Model,
+            page => $"?name={ViewBag.Name}&sort={ViewBag.Sort}&dir={ViewBag.Dir}&page={page}",
+            PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(options, ajaxOptions)
+            )
+</div>
+
+

@@ -403,3 +403,14 @@ public class AddBusVM
     [Display(Name="Category")]
     public string CategoryBusId { get; set; }
 }
+
+public class RouteVM
+{
+    public string Depart { get; set; }
+
+    [Remote("CheckDepartAndDestination", "Maintenance", ErrorMessage = "Destination should not be the same as Depart")]
+    public string Destination { get; set; }
+
+    public int EstimatedTimeHour { get; set; }
+    public int EstimatedTimeMin { get; set; }
+}

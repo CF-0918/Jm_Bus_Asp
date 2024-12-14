@@ -4,6 +4,7 @@ using Demo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Migrations
 {
     [DbContext(typeof(DB))]
-    partial class DBModelSnapshot : ModelSnapshot
+    [Migration("20241214065456_AddNewTableAndAlterScheduleColumn")]
+    partial class AddNewTableAndAlterScheduleColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,7 +127,7 @@ namespace Demo.Migrations
                     b.ToTable("Ranks");
                 });
 
-            modelBuilder.Entity("Demo.Models.RouteLocation", b =>
+            modelBuilder.Entity("Demo.Models.Route", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -145,7 +148,7 @@ namespace Demo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RouteLocations");
+                    b.ToTable("Routes");
                 });
 
             modelBuilder.Entity("Demo.Models.Schedule", b =>
@@ -179,7 +182,7 @@ namespace Demo.Migrations
                     b.Property<TimeOnly>("ReturnTime")
                         .HasColumnType("time");
 
-                    b.Property<string>("RouteLocationId")
+                    b.Property<string>("RouteId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -191,7 +194,7 @@ namespace Demo.Migrations
 
                     b.HasIndex("BusId");
 
-                    b.HasIndex("RouteLocationId");
+                    b.HasIndex("RouteId");
 
                     b.ToTable("Schedules");
                 });
@@ -429,15 +432,15 @@ namespace Demo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Demo.Models.RouteLocation", "RouteLocation")
+                    b.HasOne("Demo.Models.Route", "Route")
                         .WithMany("Schedules")
-                        .HasForeignKey("RouteLocationId")
+                        .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Bus");
 
-                    b.Navigation("RouteLocation");
+                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("Demo.Models.Seat", b =>
@@ -490,7 +493,7 @@ namespace Demo.Migrations
                     b.Navigation("Members");
                 });
 
-            modelBuilder.Entity("Demo.Models.RouteLocation", b =>
+            modelBuilder.Entity("Demo.Models.Route", b =>
                 {
                     b.Navigation("Schedules");
                 });

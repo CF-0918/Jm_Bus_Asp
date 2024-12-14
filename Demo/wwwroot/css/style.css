@@ -3563,3 +3563,22 @@ input[type="range"]::-webkit-slider-thumb {
     color: #555;
     font-style: italic;
 }
+
+
+/* Schedule & Route Css*/
+.schedule-container {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 800px;
+    margin: 30px auto;
+}
+
+    .schedule-container h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }

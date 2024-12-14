@@ -24,8 +24,9 @@ public class DB : DbContext
     public DbSet<CategoryBus> CategoryBuses { get; set; }
     public DbSet<Bus> Buses { get; set; }
     public DbSet<Seat> Seats { get; set; }
-    public DbSet<Schedule> Schedule { get; set; }
-    
+    public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<RouteLocation> RouteLocations { get; set; }
+
 }
 
 // Entity Classes -------------------------------------------------------------
@@ -134,7 +135,7 @@ public class Rank
     public string Description { get; set; }
     public  int MinSpend {  get; set; }    
     public int Discounts {  get; set; }
-    public List<Member> Member { get; set; }
+    public List<Member> Members { get; set; }
 }
 
 public class Token
@@ -201,14 +202,36 @@ public class Schedule
 {
     [Key]
     public string Id { get; set; }
+    public DateOnly DepartDate { get; set; }
+    public TimeOnly DepartTime { get; set; }
+    public string TicketType {  get; set; }
 
-    public DateTime DepartureTime { get; set; }
-    public DateTime ArrivalTime { get; set; }
-    public string Route { get; set; }
+    public DateOnly ReturnDate { get; set; }
+    public TimeOnly ReturnTime { get; set; }
+
+    public int Price {  get; set; }
+    public int DiscountPrice { get; set; }
+
+    public string Remark {  get; set; }
 
     // Foreign Key
     public string BusId { get; set; }
+    public string RouteLocationId { get; set; }
 
     // Navigation Property
-    public Bus Bus { get; set; } // One-to-Many relationship
+    public Bus Bus { get; set; } 
+    public RouteLocation RouteLocation { get; set; }
+}
+
+public class RouteLocation
+{
+    [Key]
+    public string Id { get; set; }
+    public string Depart {  get; set; }
+    public string Destination { get; set; }
+    public int Hour {  get; set; }
+    public int Min {  get; set; }
+
+    public List<Schedule> Schedules {  get; set; }
+
 }

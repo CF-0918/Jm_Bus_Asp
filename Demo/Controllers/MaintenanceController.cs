@@ -624,6 +624,118 @@ namespace Demo.Controllers
             return View(vm);
         }
 
+        public bool CheckDepartAndDestination(string destination, string depart)
+        {
+             return destination != depart;
+        }
+        public IActionResult AddRoute()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddRoute(RouteVM vm)
+        {
+            if (vm.Depart == vm.Destination)
+            {
+                ModelState.AddModelError("", "Depart and Destination Should Not Be The Same !");
+            }
+            if (vm.EstimatedTimeHour <= 0 || vm.EstimatedTimeHour > 12)
+            {
+                ModelState.AddModelError("EstimatedTimeHour", "Hour should not more than 12 h or less than 1");
+            }
+            if (vm.EstimatedTimeMin <= 0 || vm.EstimatedTimeMin > 60)
+            {
+                ModelState.AddModelError("EstimatedTimeHour", "Hour should not more than 60 m or less than 1");
+            }
+           bool DuplicatedRouteRecord=db.RouteLocations.Any(rl => rl.Depart == vm.Depart && rl.Destination == vm.Destination);
+            if (DuplicatedRouteRecord)
+            {
+                ModelState.AddModelError("", "Duplicated Same Record For Depart & Destinatio Locations");
+            }
+            if (ModelState.IsValid)
+            {
+                // Generate Unique Route ID
+                string newRouteId;
+                var lastRoute = db.RouteLocations.OrderByDescending(b => b.Id).FirstOrDefault();
+                if (lastRoute != null)
+                {
+                    int numericPart = int.Parse(lastRoute.Id.Substring(2));
+                    newRouteId = "RT" + (numericPart + 1).ToString("D3");
+                }
+                else
+                {
+                    newRouteId = "RT001"; // First Route ID
+                }
+
+                // Create Bus Entity
+                var newRoute = new RouteLocation
+                {
+                    Id = newRouteId,
+                    Depart = vm.Depart,
+                    Destination = vm.Destination,
+                    Hour = vm.EstimatedTimeHour,
+                    Min = vm.EstimatedTimeMin,
+                };
+
+                db.RouteLocations.Add(newRoute);
+                db.SaveChanges();
+                // Provide feedback to the user
+                TempData["Info"] = $"{newRouteId} has been added!";
+                return RedirectToAction("ShowRouteList");
+            }
+            return View(vm);
+        }
+
+        public IActionResult ShowRouteList(string? name, string? sort, string? dir, int page = 1)
+        {
+        
+            // (1) Searching ------------------------
+            ViewBag.Name = name = name?.Trim() ?? "";
+
+            var searched = db.RouteLocations.Where(s => s.Depart.Contains(name));
+
+            // (2) Sorting --------------------------
+            ViewBag.Sort = sort;
+            ViewBag.Dir = dir;
+
+            Func<RouteLocation, object> fn = sort switch
+            {
+                "Id" => s => s.Id,
+                "Depart" => s => s.Depart,
+                "Destination" => s => s.Destination,
+                "Hour" => s => s.Hour,
+                "Min" => s => s.Min,
+                _ => s => s.Id,
+            };
+
+            var sorted = dir == "des" ?
+                         searched.OrderByDescending(fn) :
+                         searched.OrderBy(fn);
+
+            // (3) Paging ---------------------------
+            if (page < 1)
+            {
+                return RedirectToAction(null, new { name, sort, dir, page = 1 });
+            }
+
+            var m = sorted.ToPagedList(page, 10);
+
+            if (page > m.PageCount && m.PageCount > 0)
+            {
+                return RedirectToAction(null, new { name, sort, dir, page = m.PageCount });
+            }
+
+
+            if (Request.IsAjax())
+            {
+                return PartialView("_RouteList", m);
+            }
+
+
+            return View(m);
+        
+    }
 
     }
 
