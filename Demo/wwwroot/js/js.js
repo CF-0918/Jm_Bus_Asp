@@ -1,7 +1,9 @@
 $(document).ready(function () {
     // Define the toggleSidebar function
     function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
+        const sidebar = document.getElement
+
+            ('sidebar');
         const rightContainer = document.getElementById('right_container');
         const table_account_container = document.getElementById('table_account_container');
         sidebar.classList.toggle('collapsed');

@@ -14,11 +14,11 @@
     Page @Model.PageNumber of @Model.PageCount
 </p>
 
-<form method="post" action="/Maintenance/DeleteManyRank" id="deleteManyForm">
+<form method="post" action="/Membership/DeleteManyRank" id="deleteManyForm">
     <p>
         <button type="button" data-check="ids">Check All</button>
         <button type="button" data-uncheck="ids">Uncheck All</button>
-        <button type="submit">Delete Checked</button>
+        <button type="submit">Disable Checked</button>
     </p>
 
 <table class="table" id="target">
@@ -48,14 +48,14 @@
     @foreach (var s in Model)
     {
         <tr>
-            <td><input type="checkbox" value="@s.Id"/></td>
+            <td><input type="checkbox" name="ids" value="@s.Id"/></td>
             <td>@s.Id</td>
             <td>@s.Name</td>
             <td>@s.Description</td>
             <td>RM @s.MinSpend</td>
             <td>@s.Discounts %</td>
             <td>
-                <button data-get="/Home/Detail/@s.Id">Detail</button>
+                    <a href="@Url.Action("EditRank", "Membership", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
             </td>
         </tr>
     }

@@ -1,0 +1,32 @@
+﻿@model EditCategoryBusVM
+
+@{
+    ViewBag.Title = "Maintenance | Edit Bus";
+}
+
+<div asp-validation-summary="All" class="validation-summary"></div>
+<div class="back-button-container">
+    <a href="@Url.Action("AddCategoryBus", "Maintenance")" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Category
+    </a>
+</div>
+<form asp-action="EditCategoryBus" method="POST" enctype="multipart/form-data" class="right_container collapsed" id="right_container">
+    <div class="profile-page">
+        <!-- Profile Info -->
+
+        <!-- Profile Form -->
+        <div class="profile-form">
+            <div class="grid">
+                <div class="form-group col">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" autofocus>
+                    <span class="errorMessage" asp-validation-for="Name"></span>
+                </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button type="submit" class="btn-info btn-sm btn btn-save-changes">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</form>

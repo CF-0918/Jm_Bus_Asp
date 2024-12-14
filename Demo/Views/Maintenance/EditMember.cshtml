@@ -1,0 +1,77 @@
+﻿@model EditMemberVM
+
+@{
+    ViewBag.Title = "Maintenance | Edit Member";
+}
+
+<div asp-validation-summary="All" class="validation-summary"></div>
+<div class="back-button-container">
+    <a href="@Url.Action("MemberList", "Maintenance")" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Member List
+    </a>
+</div>
+<form asp-action="EditMember" method="POST" enctype="multipart/form-data" class="right_container collapsed" id="right_container">
+    <div class="profile-page">
+        <!-- Profile Info -->
+        <div class="profile-info">
+            <div class="signup-date">@Model.Id</div>
+            <div class="profile_img_user_container">
+                <label class="upload">
+                    <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
+                    <img src="/photo/users/@Model.PhotoURL" alt="Staff Photo" class="profile_img_user">
+                    <span class="errorMessage" asp-validation-for="Photo"></span>
+                </label>
+            </div>
+            <div class="status @Model.Status">
+                <span class="rounded_status"></span>
+                <span class="status-text">@Model.Status</span>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="profile-form">
+            <div class="grid">
+                <div class="form-group">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" data-upper autofocus>
+                    <span class="errorMessage" asp-validation-for="FirstName"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" data-upper>
+                    <span class="errorMessage" asp-validation-for="LastName"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Age"></label>
+                    <input asp-for="Age" type="number">
+                    <span class="errorMessage" asp-validation-for="Age"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IcNo"></label>
+                    @Model.IcNo
+                </div>
+                <div class="form-group">
+                    <label asp-for="Gender"></label>
+                    <select asp-for="Gender">
+                        <option value="" disabled>Select Gender</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                    <span class="errorMessage" asp-validation-for="Gender"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email"></label>
+                    @Model.Email
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNo"></label>
+                    <input asp-for="PhoneNo" data-digit>
+                    <span class="errorMessage" asp-validation-for="PhoneNo"></span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button type="submit" class="btn-save-changes">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</form>

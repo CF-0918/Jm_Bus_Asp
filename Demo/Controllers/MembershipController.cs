@@ -2,6 +2,7 @@
 using Demo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList.Extensions;
 
@@ -160,6 +161,62 @@ public class MembershipController : Controller
         return View(vm);
     }
 
+    public IActionResult EditRank(string id)
+    {
+
+        // Get staff/admin  record based on email (PK)
+        var m = db.Ranks.Find(id);
+        if (m == null) return RedirectToAction("EditRank", "Membership");
+
+        var vm = new EditRankVM
+        {
+            Name = m.Name,
+            Description = m.Description,
+            Discounts = m.Discounts,
+            MinSpend = m.MinSpend,
+        };
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult EditRank(EditRankVM vm, string id)
+    {
+        var m = db.Ranks.Find(id);
+        if (db.Ranks.Any(r => r.Name == vm.Name && r.Id != id))
+        {
+            ModelState.AddModelError("Name", "Duplicated Rank Name.");
+        }
+
+        // Other validation and logic...
+
+
+        if (vm.MinSpend < 0)
+        {
+            ModelState.AddModelError("MinSpend", "Min Spend must be a positive value.");
+        }
+        if (vm.Discounts < 0 || vm.Discounts > 100)
+        {
+            ModelState.AddModelError("Discounts", "Discounts Percentage must be between 0 and 100.");
+        }
+
+        if (ModelState.IsValid)
+        {
+            {
+                m.Name = vm.Name;
+                m.Description = vm.Description;
+                m.Discounts = vm.Discounts;
+                m.MinSpend = vm.MinSpend;
+            };
+            db.SaveChanges();
+            TempData["Info"] = $"{vm.Name} Edited.";
+            return RedirectToAction();
+        }
+
+        return View(vm);
+    }
+
     //Get Request
     [Authorize(Roles = "Staff,Admin")]
     public IActionResult ShowRankList(string? name, string? sort, string? dir, int page = 1)
@@ -279,6 +336,153 @@ public class MembershipController : Controller
         }
 
         return View();
+    }
+
+    public IActionResult EditVoucher(string id)
+    {
+
+        // Get staff/admin  record based on email (PK)
+        var m = db.Vouchers.Find(id);
+        if (m == null) return RedirectToAction("EditVoucher", "Membership");
+
+        var vm = new EditVoucherVM
+        {
+            Name = m.Name,
+            Description = m.Description,
+            PointNeeded = m.PointNeeded,
+            CashDiscount = m.CashDiscount,
+            Qty = m.Qty,
+            StartDate = m.StartDate,
+            EndDate = m.EndDate,
+            Status = m.Status,
+        };
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult EditVoucher(EditVoucherVM vm, string id)
+    {
+        var m = db.Vouchers.Find(id);
+        if (db.Vouchers.Any(r => r.Name == vm.Name && r.Id != id))
+        {
+            ModelState.AddModelError("Name", "Duplicated Voucher Name.");
+        }
+
+        if (vm.PointNeeded < 0)
+        {
+            ModelState.AddModelError("PointNeeded", "Point must be a positive value.");
+        }
+        if (vm.CashDiscount < 0 || vm.CashDiscount > 101)
+        {
+            ModelState.AddModelError("CashDiscount", "Cash Discount  must be between RM 0 and RM 100.");
+        }
+        if (vm.EndDate < vm.StartDate)
+        {
+            ModelState.AddModelError("EndDate", "End date must be later than or equal to the start date.");
+        }
+
+        if (ModelState.IsValid)
+        {
+            {
+                m.Name = vm.Name;
+                m.Description = vm.Description;
+                m.PointNeeded = vm.CashDiscount;
+                m.CashDiscount = vm.CashDiscount;
+                m.Qty = vm.Qty;
+                m.StartDate = vm.StartDate;
+                m.EndDate = vm.EndDate;
+                m.Status = vm.Status;
+            };
+            db.SaveChanges();
+            TempData["Info"] = $"{vm.Name} Edited.";
+            return RedirectToAction();
+        }
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult DeleteVoucher(string? id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            TempData["Error"] = "Invalid voucher ID.";
+            return RedirectToAction("ShowVoucherList"); // Adjust as necessary for the bus list view
+        }
+
+        var voucher = db.Vouchers.Find(id);
+
+        if (voucher != null)
+        {
+            // Set the status to "Inactive" to disable the bus (instead of deleting)
+            voucher.Status = "Draft";
+            db.SaveChanges();
+
+            TempData["Info"] = "Voucher disabled.";
+        }
+        else
+        {
+            TempData["Error"] = "Voucher not found.";
+        }
+
+        return RedirectToAction("ShowVoucherList"); // Redirect to the bus list page
+    }
+
+
+
+    // POST: Maintenance/DeleteMany
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult DeleteManyVoucher(string[] ids)
+    {
+        if (ids != null && ids.Length > 0)
+        {
+            // Fetch the buss to update based on the provided IDs
+            var voucherToUpdate = db.Vouchers.Where(s => ids.Contains(s.Id)).ToList();
+
+            // Update the Status property to "Inactive"
+            foreach (var voucher in voucherToUpdate)
+            {
+                voucher.Status = "Draft";
+            }
+
+            // Save the changes to the database
+            db.SaveChanges();
+
+            TempData["Info"] = $"{voucherToUpdate.Count} voucher(s) set to inactive.";
+        }
+
+        return RedirectToAction("ShowVoucherList"); // Redirect to the bus list page
+    }
+
+    [HttpPost]
+    public IActionResult EnableVoucher(string? id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            TempData["Error"] = "Invalid voucher ID.";
+            return RedirectToAction("ShowVoucherList"); // Adjust as necessary for the bus list view
+        }
+
+        var bus = db.Vouchers.Find(id);
+
+        if (bus != null)
+        {
+            // Set the status to "Active" to enable the bus
+            bus.Status = "Active";
+            db.SaveChanges();
+
+            TempData["Info"] = "Voucher enabled.";
+        }
+        else
+        {
+            TempData["Error"] = "Voucher not found.";
+        }
+
+        return RedirectToAction("ShowVoucherList"); // Redirect to the bus list page
     }
 
     // POST: VoucherRedeem

@@ -18,7 +18,7 @@
     <p>
         <button type="button" data-check="ids">Check All</button>
         <button type="button" data-uncheck="ids">Uncheck All</button>
-        <button type="submit">Delete Checked</button>
+        <button type="submit">Disable Checked</button>
     </p>
 
 <table class="table" id="target">
@@ -64,7 +64,7 @@
                         @if (member.Status != "Inactive")
                         {
                             <form method="post" action="/Maintenance/DeleteMember/@member.Id" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Disable</button>
                             </form>
                         }
                         else

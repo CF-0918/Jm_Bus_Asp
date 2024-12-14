@@ -1,0 +1,68 @@
+﻿@model EditBusVM
+
+@{
+    ViewBag.Title = "Maintenance | Edit Bus";
+}
+
+<div asp-validation-summary="All" class="validation-summary"></div>
+<div class="back-button-container">
+    <a href="@Url.Action("ShowBusList", "Maintenance")" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Bus List
+    </a>
+</div>
+<form asp-action="EditBus" method="POST" enctype="multipart/form-data" class="right_container collapsed" id="right_container">
+    <div class="profile-page">
+        <!-- Profile Info -->
+        <div class="profile-info">
+            <div class="signup-date">@Model.Id</div>
+            <div class="profile_img_user_container">
+                <label class="upload">
+                    <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
+                    <img src="/photo/users/@Model.PhotoURL" alt="Bus Photo" class="profile_img_user">
+                    <span class="errorMessage" asp-validation-for="Photo"></span>
+                </label>
+            </div>
+            <div class="status @Model.Status">
+                <span class="rounded_status"></span>
+                <span class="status-text">@Model.Status</span>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="profile-form">
+            <div class="grid">
+                <div class="form-group col">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" autofocus>
+                    <span class="errorMessage" asp-validation-for="Name"></span>
+                </div>
+                <!-- Column 1: Bus Plate -->
+                <div class="form-group col">
+                    <label asp-for="BusPlate"></label>
+                    <input asp-for="BusPlate">
+                    <span class="errorMessage" asp-validation-for="BusPlate"></span>
+                </div>
+                <div class="form-row">
+                    <!-- Column 1: Capacity -->
+                    <div class="form-group col">
+                        <label asp-for="Capacity"></label>
+                        <input asp-for="Capacity" type="number">
+                        <span class="errorMessage" asp-validation-for="Capacity"></span>
+                    </div>
+                    <!-- Column 2: Category Bus -->
+                    <div class="form-group col">
+                        <label asp-for="CategoryBusId"></label>
+                        <select asp-for="CategoryBusId" asp-items="ViewBag.CategoryList">
+                            <option value="">Select a category</option>
+                        </select>
+
+                        <span class="errorMessage" asp-validation-for="CategoryBusId"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button type="submit" class="btn-save-changes">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</form>

@@ -155,6 +155,29 @@ public class VoucherVM
     public string Description { get; set; }
 }
 
+public class EditVoucherVM
+{
+    [StringLength(50)]
+    public string Name { get; set; }
+
+    public int PointNeeded { get; set; }
+
+    [Display(Name = "Value (RM)")]
+    public int CashDiscount { get; set; }
+    [Remote("CheckDateIsTodayOrGreaterThan", "Membership", ErrorMessage = "Start Date Should Not Be Past")]
+    public DateOnly StartDate { get; set; }
+
+    [Remote(action: "CheckRangeDate", controller: "Membership", AdditionalFields = nameof(StartDate), ErrorMessage = "End Date Should Be Greater Than Start Date.")]
+    public DateOnly EndDate { get; set; }
+
+    public string Status { get; set; }
+
+    [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
+    public int Qty { get; set; }
+
+    [StringLength(100)]
+    public string Description { get; set; }
+}
 
 public class VoucherRedeem
 {
@@ -165,6 +188,25 @@ public class RankVM
     [StringLength(50)]
     [Display(Name = "Rank Name")]
     [Remote("CheckRankName", "Membership", ErrorMessage = "Duplicated Rank Name.")]
+    public string Name { get; set; }
+
+    [StringLength(100)]
+    public string Description { get; set; }
+
+    [Display(Name = "Min Spend")]
+    [Range(0, int.MaxValue, ErrorMessage = "Min Spend must be a positive value.")]
+    public int MinSpend { get; set; }
+
+    [Range(0, 100, ErrorMessage = "Discounts Percentage must be between 0 and 100.")]
+    [Display(Name = "Discounts Percentage (%)")]
+    public int Discounts { get; set; }
+}
+
+public class EditRankVM
+{
+    public string? Id { get; set; }
+    [StringLength(50)]
+
     public string Name { get; set; }
 
     [StringLength(100)]
@@ -325,6 +367,42 @@ public class StaffDetailsVM
     public string? PhotoURL { get; set; }
     public IFormFile Photo { get; set; }
 }
+
+public class EditStaffVM
+{
+    public string? Id { get; set; }
+
+    [StringLength(50, MinimumLength = 2)]
+    [Display(Name = "First Name")]
+    public string FirstName { get; set; }
+
+    [StringLength(50, MinimumLength = 2)]
+    [Display(Name = "Last Name")]
+    public string LastName { get; set; }
+
+    public int Age { get; set; }
+
+    [StringLength(12)]
+    [Display(Name = "IC Number")]
+    public string? IcNo { get; set; }
+
+    public char Gender { get; set; }
+
+    [EmailAddress]
+    [StringLength(100)]
+    public string? Email { get; set; }
+
+    [StringLength(15)]
+    [Display(Name = "Phone Number")]
+    public string PhoneNo { get; set; }
+
+    public string? Status { get; set; }
+
+    [Url]
+    public string? PhotoURL { get; set; }
+
+    public IFormFile? Photo { get; set; }
+}
 public class MemberDetailsVM
 {
     public string? Id { get; set; }
@@ -371,11 +449,55 @@ public class MemberDetailsVM
     public IFormFile Photo { get; set; }
 }
 
+public class EditMemberVM
+{
+    public string? Id { get; set; }
+
+    [StringLength(50, MinimumLength = 2)]
+    [Display(Name = "First Name")]
+    public string FirstName { get; set; }
+
+    [StringLength(50, MinimumLength = 2)]
+    [Display(Name = "Last Name")]
+    public string LastName { get; set; }
+
+    public int Age { get; set; }
+
+    [StringLength(12)]
+    [Display(Name = "IC Number")]
+    public string? IcNo { get; set; }
+
+    public char Gender { get; set; }
+
+    [EmailAddress]
+    [StringLength(100)]
+    public string? Email { get; set; }
+
+    [StringLength(15)]
+    [Display(Name = "Phone Number")]
+    public string PhoneNo { get; set; }
+
+    public string? Status { get; set; }
+
+    [Url]
+    public string? PhotoURL { get; set; }
+
+    public IFormFile? Photo { get; set; }
+}
+
 public class AddCategoryBus
 {
     [Required(ErrorMessage = "Category name is required.")]
     [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters.")]
     public string Name { get; set; }
+
+
+    public class EditCategoryBusVM
+    {
+        [Required(ErrorMessage = "Category name is required.")]
+        [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters.")]
+        public string Name { get; set; }
+    }
 }
 
 
@@ -401,6 +523,32 @@ public class AddBusVM
     [Required(ErrorMessage = "Category Bus ID is required.")]
     [RegularExpression(@"^[A-Z0-9\-]{1,20}$", ErrorMessage = "Category Bus ID must be alphanumeric and up to 20 characters.")]
     [Display(Name="Category")]
+    public string CategoryBusId { get; set; }
+}
+
+public class EditBusVM
+{
+    public string? Id { get; set; }
+    public string Name { get; set; }
+
+    [Required(ErrorMessage = "Bus plate is required.")]
+    [RegularExpression(@"^[A-Z]{3}[0-9]{4}$", ErrorMessage = "Bus plate must start with three uppercase letters followed by four digits (e.g., VHA5309).")]
+
+    public string BusPlate { get; set; }
+
+    public string? Status { get; set; }
+
+    [Required(ErrorMessage = "Capacity is required.")]
+    [Range(10, 50, ErrorMessage = "Capacity must be between 10 and 50.")]
+    public int Capacity { get; set; }
+
+    [Url]
+    public string? PhotoURL { get; set; }
+    public IFormFile? Photo { get; set; }
+
+    [Required(ErrorMessage = "Category Bus ID is required.")]
+    [RegularExpression(@"^[A-Z0-9\-]{1,20}$", ErrorMessage = "Category Bus ID must be alphanumeric and up to 20 characters.")]
+    [Display(Name = "Category")]
     public string CategoryBusId { get; set; }
 }
 

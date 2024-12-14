@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList.Extensions;
+using static Demo.Models.AddCategoryBus;
 
 namespace Demo.Controllers
 {
@@ -242,6 +243,77 @@ namespace Demo.Controllers
             return View(vm);
         }
 
+        //[Authorize(Roles = "Staff,Admin")]
+        public IActionResult EditStaff(string id)
+        {
+            // Get staff/admin  record based on email (PK)
+            var m = db.Staffs.Find(id);
+            if (m == null) return RedirectToAction("EditStaff", "Maintenance");
+
+            var vm = new EditStaffVM
+            {
+                Id = m.Id,
+                FirstName = m.FirstName,
+                LastName = m.LastName,
+                Age = m.Age,
+                IcNo = m.IcNo,
+                Gender = m.Gender,
+                Email = m.Email,
+                PhoneNo = m.Phone,
+                Status = m.Status,
+                PhotoURL = m.PhotoURL,
+            };
+
+            return View(vm);
+        }
+        //[Authorize(Roles = "Staff,Admin")]
+
+        [HttpPost]
+        public IActionResult EditStaff(EditStaffVM vm, string id)
+        {
+            var m = db.Staffs.Find(id);
+            if (m == null) return RedirectToAction("EditStaff", "Maintenance");
+
+            if (vm.Photo != null)
+            {
+                var err = hp.ValidatePhoto(vm.Photo);
+                if (err != "") ModelState.AddModelError("Photo", err);
+            }
+
+            if (ModelState.IsValid)
+            {
+
+                m.FirstName = vm.FirstName;
+                m.LastName = vm.LastName;
+                m.Age = vm.Age;
+                m.Gender = vm.Gender;
+                m.Phone = vm.PhoneNo;
+
+                if (vm.Photo != null)
+                {
+                    hp.DeletePhoto(m.PhotoURL, "photo/users");
+                    m.PhotoURL = hp.SavePhoto(vm.Photo, "photo/users");
+                }
+
+                db.SaveChanges();
+
+                TempData["Info"] = "Profile updated.";
+                return RedirectToAction();
+            }
+            else
+            {
+                TempData["Info"] = "Profile Not updated.";
+                vm.Id = m.Id;
+                vm.Email = m.Email;
+                vm.Age = m.Age;
+                vm.IcNo = m.IcNo;
+                vm.Status = m.Status;
+                vm.PhotoURL = m.PhotoURL;
+
+            }
+            return View(vm);
+        }
+
         [Authorize(Roles = "Staff,Admin")]
         public IActionResult MemberList(string? name, string? sort, string? dir, int page = 1)
         {
@@ -453,6 +525,77 @@ namespace Demo.Controllers
             return View(vm);
         }
 
+        //[Authorize(Roles = "Staff,Admin")]
+        public IActionResult EditMember(string id)
+        {
+            // Get staff/admin  record based on email (PK)
+            var m = db.Staffs.Find(id);
+            if (m == null) return RedirectToAction("EditMember", "Maintenance");
+
+            var vm = new EditMemberVM
+            {
+                Id = m.Id,
+                FirstName = m.FirstName,
+                LastName = m.LastName,
+                Age = m.Age,
+                IcNo = m.IcNo,
+                Gender = m.Gender,
+                Email = m.Email,
+                PhoneNo = m.Phone,
+                Status = m.Status,
+                PhotoURL = m.PhotoURL,
+            };
+
+            return View(vm);
+        }
+        //[Authorize(Roles = "Staff,Admin")]
+
+        [HttpPost]
+        public IActionResult EditMember(EditMemberVM vm, string id)
+        {
+            var m = db.Staffs.Find(id);
+            if (m == null) return RedirectToAction("EditMember", "Maintenance");
+
+            if (vm.Photo != null)
+            {
+                var err = hp.ValidatePhoto(vm.Photo);
+                if (err != "") ModelState.AddModelError("Photo", err);
+            }
+
+            if (ModelState.IsValid)
+            {
+
+                m.FirstName = vm.FirstName;
+                m.LastName = vm.LastName;
+                m.Age = vm.Age;
+                m.Gender = vm.Gender;
+                m.Phone = vm.PhoneNo;
+
+                if (vm.Photo != null)
+                {
+                    hp.DeletePhoto(m.PhotoURL, "photo/users");
+                    m.PhotoURL = hp.SavePhoto(vm.Photo, "photo/users");
+                }
+
+                db.SaveChanges();
+
+                TempData["Info"] = "Profile updated.";
+                return RedirectToAction();
+            }
+            else
+            {
+                TempData["Info"] = "Profile Not updated.";
+                vm.Id = m.Id;
+                vm.Email = m.Email;
+                vm.Age = m.Age;
+                vm.IcNo = m.IcNo;
+                vm.Status = m.Status;
+                vm.PhotoURL = m.PhotoURL;
+
+            }
+            return View(vm);
+        }
+
         [Authorize(Roles = "Staff,Admin")]
         public IActionResult AddBus()
         {
@@ -572,6 +715,71 @@ namespace Demo.Controllers
             return View(m);
         }
 
+        //[Authorize(Roles = "Staff,Admin")]
+        public IActionResult EditBus(string id)
+        {
+            // Get staff/admin  record based on email (PK)
+            var m = db.Buses.Find(id);
+            ViewBag.CategoryList = new SelectList(db.CategoryBuses, "Id", "Name");
+            if (m == null) return RedirectToAction("EditBus", "Maintenance");
+
+            var vm = new EditBusVM
+            {
+                Name = m.Name,
+                BusPlate = m.BusPlate,
+                Capacity = m.Capacity,
+                CategoryBusId = m.CategoryBusId,
+                PhotoURL = m.PhotoURL,
+            };
+
+            return View(vm);
+        }
+        //[Authorize(Roles = "Staff,Admin")]
+
+        [HttpPost]
+        public IActionResult EditBus(EditBusVM vm, string id)
+        {
+            var m = db.Buses.Find(id);
+            if (m == null) return RedirectToAction("EditBus", "Maintenance");
+
+            if (vm.Photo != null)
+            {
+                var err = hp.ValidatePhoto(vm.Photo);
+                if (err != "") ModelState.AddModelError("Photo", err);
+            }
+
+            if (ModelState.IsValid)
+            {
+
+                m.Name = vm.Name;
+                m.BusPlate = vm.BusPlate;
+                m.Capacity = vm.Capacity;
+                m.CategoryBusId = vm.CategoryBusId;
+
+                if (vm.Photo != null)
+                {
+                    hp.DeletePhoto(m.PhotoURL, "photo/users");
+                    m.PhotoURL = hp.SavePhoto(vm.Photo, "photo/users");
+                }
+
+                db.SaveChanges();
+
+                TempData["Info"] = "Bus updated.";
+                return RedirectToAction();
+            }
+            else
+            {
+                TempData["Info"] = "Bus Not updated.";
+                vm.Name = m.Name;
+                vm.BusPlate = m.BusPlate;
+                vm.Capacity = m.Capacity;
+                vm.CategoryBusId = m.CategoryBusId;
+                vm.PhotoURL = m.PhotoURL;
+
+            }
+            return View(vm);
+        }
+
         [Authorize(Roles = "Staff,Admin")]
         public IActionResult AddCategoryBus()
         {
@@ -622,6 +830,130 @@ namespace Demo.Controllers
             // Reload categories for the view
             ViewBag.CategoryBuses = db.CategoryBuses;
             return View(vm);
+        }
+
+        //[Authorize(Roles = "Staff,Admin")]
+        public IActionResult EditCategoryBus(string id)
+        {
+            // Get staff/admin  record based on email (PK)
+            var m = db.CategoryBuses.Find(id);
+            if (m == null) return RedirectToAction("EditCategoryBus", "Maintenance");
+
+            var vm = new EditCategoryBusVM
+            {
+                Name = m.Name,
+            };
+
+            return View(vm);
+        }
+        //[Authorize(Roles = "Staff,Admin")]
+
+        [HttpPost]
+        public IActionResult EditCategoryBus(EditCategoryBusVM vm, string id)
+        {
+            var m = db.CategoryBuses.Find(id);
+            if (m == null) return RedirectToAction("EditCategoryBus", "Maintenance");
+
+
+            if (ModelState.IsValid)
+            {
+
+                m.Name = vm.Name;
+
+                db.SaveChanges();
+
+                TempData["Info"] = "Bus Category updated.";
+                return RedirectToAction();
+            }
+            else
+            {
+                TempData["Info"] = "Bus Category Not updated.";
+                vm.Name = m.Name;
+
+            }
+            return View(vm);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Staff,Admin")]
+        public IActionResult DeleteBus(string? id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["Error"] = "Invalid bus ID.";
+                return RedirectToAction("ShowBusList"); // Adjust as necessary for the bus list view
+            }
+
+            var bus = db.Buses.Find(id);
+
+            if (bus != null)
+            {
+                // Set the status to "Inactive" to disable the bus (instead of deleting)
+                bus.Status = "Inactive";
+                db.SaveChanges();
+
+                TempData["Info"] = "Bus disabled.";
+            }
+            else
+            {
+                TempData["Error"] = "Bus not found.";
+            }
+
+            return RedirectToAction("ShowBusList"); // Redirect to the bus list page
+        }
+
+
+
+        // POST: Maintenance/DeleteMany
+        [HttpPost]
+        [Authorize(Roles = "Staff,Admin")]
+        public IActionResult DeleteManyBus(string[] ids)
+        {
+            if (ids != null && ids.Length > 0)
+            {
+                // Fetch the buss to update based on the provided IDs
+                var busesToUpdate = db.Buses.Where(s => ids.Contains(s.Id)).ToList();
+
+                // Update the Status property to "Inactive"
+                foreach (var bus in busesToUpdate)
+                {
+                    bus.Status = "Inactive";
+                }
+
+                // Save the changes to the database
+                db.SaveChanges();
+
+                TempData["Info"] = $"{busesToUpdate.Count} bus(s) set to inactive.";
+            }
+
+            return RedirectToAction("ShowBusList"); // Redirect to the bus list page
+        }
+
+        [HttpPost]
+        public IActionResult EnableBus(string? id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["Error"] = "Invalid bus ID.";
+                return RedirectToAction("ShowBusList"); // Adjust as necessary for the bus list view
+            }
+
+            var bus = db.Buses.Find(id);
+
+            if (bus != null)
+            {
+                // Set the status to "Active" to enable the bus
+                bus.Status = "Active";
+                db.SaveChanges();
+
+                TempData["Info"] = "Bus enabled.";
+            }
+            else
+            {
+                TempData["Error"] = "Bus not found.";
+            }
+
+            return RedirectToAction("ShowBusList"); // Redirect to the bus list page
         }
 
         public bool CheckDepartAndDestination(string destination, string depart)

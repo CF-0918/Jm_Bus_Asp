@@ -14,11 +14,11 @@
     Page @Model.PageNumber of @Model.PageCount
 </p>
 
-<form method="post" action="/Maintenance/DeleteManyVoucher" id="deleteManyForm">
+<form method="post" action="/Membership/DeleteManyVoucher" id="deleteManyForm">
     <p>
         <button type="button" data-check="ids">Check All</button>
         <button type="button" data-uncheck="ids">Uncheck All</button>
-        <button type="submit">Delete Checked</button>
+        <button type="submit">Disable Checked</button>
     </p>
 
 <table class="table" id="target">
@@ -48,7 +48,7 @@
     @foreach (var s in Model)
     {
         <tr>
-            <td><input type="checkbox" value="@s.Id" /></td>
+            <td><input type="checkbox" name="ids" value="@s.Id" /></td>
             <td>@s.Id</td>
             <td>@s.Name</td>
             <td>@s.Description</td>
@@ -59,7 +59,19 @@
             <td>@s.StartDate</td>
             <td>@s.EndDate</td>
             <td>
-                <button data-get="/Home/Detail/@s.Id">Detail</button>
+                    <a href="@Url.Action("EditVoucher", "Membership", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
+                    @if (s.Status != "Draft")
+                    {
+                        <form method="post" action="/Membership/DeleteVoucher/@s.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Disable</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" action="/Membership/EnableVoucher/@s.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable this staff member?')">Enable</button>
+                        </form>
+                    }
             </td>
         </tr>
     }

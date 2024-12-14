@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Maintenance | Voucher List";
+    ViewBag.Title = "Membership | Voucher List";
 }
 
 <div class="container">
@@ -28,5 +28,19 @@
             clearTimeout(timer);
             timer = setTimeout(() => $(e.target.form).submit(), 500);
         });
+
+                            // Check All Button
+            document.querySelector('[data-check="ids"]').addEventListener('click', function() {
+                document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
+                    checkbox.checked = true;
+                });
+            });
+
+            // Uncheck All Button
+            document.querySelector('[data-uncheck="ids"]').addEventListener('click', function() {
+                document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
+                    checkbox.checked = false;
+                });
+            });
     </script>
 }

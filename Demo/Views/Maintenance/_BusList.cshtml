@@ -18,7 +18,7 @@
     <p>
         <button type="button" data-check="ids">Check All</button>
         <button type="button" data-uncheck="ids">Uncheck All</button>
-        <button type="submit">Delete Checked</button>
+        <button type="submit">Disable Checked</button>
     </p>
 
 <table class="table" id="target">
@@ -54,9 +54,24 @@
             <td>@s.Name</td>
             <td>@s.Status</td>
             <td>@s.Capacity</td>
-            <td>
-                <button data-get="/Home/Detail/@s.Id">Detail</button>
-            </td>
+                <td>
+                    <!-- Edit and Delete actions -->
+                    <a href="@Url.Action("BusDetails", "Maintenance", new { id = s.Id })" class="btn btn-info btn-sm">View Details</a>
+                    <a href="@Url.Action("EditBus", "Maintenance", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
+                    @if (s.Status != "Inactive")
+                    {
+                        <form method="post" action="/Maintenance/DeleteBus/@s.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Disable</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" action="/Maintenance/EnableBus/@s.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable this staff member?')">Enable</button>
+                        </form>
+                    }
+
+                </td>
         </tr>
     }
 </table>
