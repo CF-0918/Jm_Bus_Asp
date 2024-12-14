@@ -56,12 +56,19 @@
                 <td>@staff.FirstName @staff.LastName</td> <!-- Merged FirstName and LastName -->
                 <td>@staff.Email</td>
                 <td>@staff.Phone</td>
-                <td>@staff.Status</td>
+                    <td>
+                        <select class="status-dropdown" data-staff-id="@staff.Id">
+                            <option value="Active" selected="@(staff.Status == "Active")">Active</option>
+                            <option value="Inactive" selected="@(staff.Status == "Inactive")">Inactive</option>
+                        </select>
+                    </td>
+
+
                 <td>
                     <!-- Edit and Delete actions -->
                     <a href="@Url.Action("StaffDetails", "Maintenance", new { id = staff.Id })" class="btn btn-info btn-sm">View Details</a>
                     <a href="@Url.Action("EditStaff", "Maintenance", new { id = staff.Id })" class="btn btn-warning btn-sm">Edit</a>
-                        @if (staff.Status != "Inactive")
+@*                         @if (staff.Status != "Inactive")
                         {
                             <form method="post" action="/Maintenance/DeleteStaff/@staff.Id" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Disable</button>
@@ -72,7 +79,7 @@
                             <form method="post" action="/Maintenance/EnableStaff/@staff.Id" style="display:inline;">
                                 <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable this staff member?')">Enable</button>
                             </form>
-                        }
+                        } *@
 
                 </td>
             </tr>

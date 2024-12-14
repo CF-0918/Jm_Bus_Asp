@@ -47,18 +47,25 @@
     @foreach (var s in Model)
     {
         <tr>
-                            <td>
+                <td>
                     <input type="checkbox" name="ids" value="@s.Id" />
                 </td>
             <td>@s.Id</td>
             <td>@s.Name</td>
-            <td>@s.Status</td>
+            <td>@s.BusPlate</td>
+                <td>
+                    <select class="status-dropdown" data-bus-id="@s.Id">
+                        <option value="Active" selected="@(s.Status == "Active")">Active</option>
+                        <option value="Inactive" selected="@(s.Status == "Inactive")">Inactive</option>
+                    </select>
+                </td>
+
             <td>@s.Capacity</td>
                 <td>
                     <!-- Edit and Delete actions -->
-                    <a href="@Url.Action("BusDetails", "Maintenance", new { id = s.Id })" class="btn btn-info btn-sm">View Details</a>
+                    
                     <a href="@Url.Action("EditBus", "Maintenance", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
-                    @if (s.Status != "Inactive")
+@*                     @if (s.Status != "Inactive")
                     {
                         <form method="post" action="/Maintenance/DeleteBus/@s.Id" style="display:inline;">
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Disable</button>
@@ -69,7 +76,7 @@
                         <form method="post" action="/Maintenance/EnableBus/@s.Id" style="display:inline;">
                             <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable this staff member?')">Enable</button>
                         </form>
-                    }
+                    } *@
 
                 </td>
         </tr>

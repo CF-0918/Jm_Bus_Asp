@@ -217,6 +217,37 @@ public class MembershipController : Controller
         return View(vm);
     }
 
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult DeleteRank(string rankId)
+    {
+        // Check if the rank exists
+        var rank = db.Ranks.FirstOrDefault(r => r.Id == rankId);
+        if (rank == null)
+        {
+            TempData["Error"] = "Rank not found.";
+            return Json(new { success = false, message = "Rank not found." });
+        }
+
+        // Check if any member or staff is using this rank
+        bool isRankInUse = db.Members.Any(m => m.RankId == rankId);
+        if (isRankInUse)
+        {
+            TempData["Error"] = "This rank is currently in use by one or more users and cannot be deleted.";
+            return Json(new { success = false, message = "This rank is currently in use by one or more users." });
+        }
+
+        // If not in use, delete the rank
+        db.Ranks.Remove(rank);
+        db.SaveChanges();
+
+        TempData["Info"] = "Rank deleted successfully.";
+        return Json(new { success = true, message = "Rank deleted successfully." });
+    }
+
+
+
+
     //Get Request
     [Authorize(Roles = "Staff,Admin")]
     public IActionResult ShowRankList(string? name, string? sort, string? dir, int page = 1)
@@ -405,30 +436,23 @@ public class MembershipController : Controller
 
     [HttpPost]
     [Authorize(Roles = "Staff,Admin")]
-    public IActionResult DeleteVoucher(string? id)
+    public IActionResult UpdateVoucherStatus(string id, [FromBody] VoucherStatusUpdateVM model)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrEmpty(id) || model == null)
         {
-            TempData["Error"] = "Invalid voucher ID.";
-            return RedirectToAction("ShowVoucherList"); // Adjust as necessary for the bus list view
+            return BadRequest("Invalid request.");
         }
 
         var voucher = db.Vouchers.Find(id);
-
-        if (voucher != null)
+        if (voucher == null)
         {
-            // Set the status to "Inactive" to disable the bus (instead of deleting)
-            voucher.Status = "Draft";
-            db.SaveChanges();
-
-            TempData["Info"] = "Voucher disabled.";
-        }
-        else
-        {
-            TempData["Error"] = "Voucher not found.";
+            return NotFound("Voucher not found.");
         }
 
-        return RedirectToAction("ShowVoucherList"); // Redirect to the bus list page
+        voucher.Status = model.Status; // Update the status
+        db.SaveChanges();
+
+        return Ok(new { message = "Status updated successfully." });
     }
 
 

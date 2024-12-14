@@ -41,5 +41,28 @@
                     checkbox.checked = false;
                 });
             });
+
+                        function deleteRank(rankId) {
+                if (confirm('Are you sure you want to delete this rank?')) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteRank", "Membership")',
+                        type: 'POST',
+                        data: { rankId: rankId },  // Send the rankId to the server
+                        success: function (response) {
+                            if (response.success) {
+                                alert(response.message);  // Show success message
+                                // Remove the corresponding row from the table
+                                $('tr').has('input[value="' + rankId + '"]').remove();
+                            } else {
+                                alert(response.message);  // Show error message if the rank is in use
+                            }
+                        },
+                        error: function () {
+                            alert('There was an error processing your request.');
+                        }
+                    });
+                }
+            }
+
     </script>
 }

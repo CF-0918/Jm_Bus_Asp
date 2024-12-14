@@ -3,7 +3,7 @@
 @model IPagedList<Member>
 
 @{
-    string[] fields = {"", "Name", "Email", "Phone", "IcNo"};
+    string[] fields = {"", "Name", "Email", "Phone", "IcNo", "Status"};
 }
 
 @Html.Hidden("sort", "", new { form = "f" })
@@ -57,11 +57,18 @@
                 <td>@member.Email</td>
                 <td>@member.Phone</td>
                 <td>@member.IcNo</td>
+                    <td>
+                        <select class="status-dropdown" data-member-id="@member.Id">
+                            <option value="Active" selected="@(member.Status == "Active")">Active</option>
+                            <option value="Inactive" selected="@(member.Status == "Inactive")">Inactive</option>
+                        </select>
+                    </td>
+
                 <td>
                     <!-- Edit and Delete actions -->
                     <a href="@Url.Action("MemberDetails", "Maintenance", new { id = member.Id })" class="btn btn-info btn-sm">View Details</a>
                     <a href="@Url.Action("EditMember", "Maintenance", new { id = member.Id })" class="btn btn-warning btn-sm">Edit</a>
-                        @if (member.Status != "Inactive")
+@*                         @if (member.Status != "Inactive")
                         {
                             <form method="post" action="/Maintenance/DeleteMember/@member.Id" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Disable</button>
@@ -72,7 +79,7 @@
                             <form method="post" action="/Maintenance/EnableMember/@member.Id" style="display:inline;">
                                 <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable this staff member?')">Enable</button>
                             </form>
-                        }
+                        } *@
                 </td>
             </tr>
         }

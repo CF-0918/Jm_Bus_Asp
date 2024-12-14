@@ -55,12 +55,17 @@
             <td>@s.PointNeeded pts</td>
             <td>RM @s.CashDiscount</td>
             <td>@s.Qty</td>
-            <td>@s.Status</td>
+                <td>
+                    <select class="status-dropdown" data-voucher-id="@s.Id">
+                        <option value="Active" selected="@(s.Status == "Active")">Active</option>
+                        <option value="Draft" selected="@(s.Status == "Draft")">Draft</option>
+                    </select>
+                </td>
             <td>@s.StartDate</td>
             <td>@s.EndDate</td>
             <td>
                     <a href="@Url.Action("EditVoucher", "Membership", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
-                    @if (s.Status != "Draft")
+@*                     @if (s.Status != "Draft")
                     {
                         <form method="post" action="/Membership/DeleteVoucher/@s.Id" style="display:inline;">
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable this staff member?')">Disable</button>
@@ -71,7 +76,7 @@
                         <form method="post" action="/Membership/EnableVoucher/@s.Id" style="display:inline;">
                             <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable this staff member?')">Enable</button>
                         </form>
-                    }
+                    } *@
             </td>
         </tr>
     }

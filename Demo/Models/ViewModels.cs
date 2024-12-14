@@ -179,6 +179,11 @@ public class EditVoucherVM
     public string Description { get; set; }
 }
 
+public class VoucherStatusUpdateVM
+{
+    public string Status { get; set; }
+}
+
 public class VoucherRedeem
 {
     public string Id { get; set; }
@@ -403,6 +408,12 @@ public class EditStaffVM
 
     public IFormFile? Photo { get; set; }
 }
+
+// ViewModel for the status update
+public class UpdateStatusVM
+{
+    public string Status { get; set; }
+}
 public class MemberDetailsVM
 {
     public string? Id { get; set; }
@@ -485,19 +496,23 @@ public class EditMemberVM
     public IFormFile? Photo { get; set; }
 }
 
+public class MemberStatusUpdateModel
+{
+    public string Status { get; set; }
+}
+
 public class AddCategoryBus
 {
     [Required(ErrorMessage = "Category name is required.")]
     [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters.")]
     public string Name { get; set; }
+}
 
-
-    public class EditCategoryBusVM
-    {
-        [Required(ErrorMessage = "Category name is required.")]
-        [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters.")]
-        public string Name { get; set; }
-    }
+public class EditCategoryBusVM
+{
+    [Required(ErrorMessage = "Category name is required.")]
+    [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters.")]
+    public string Name { get; set; }
 }
 
 
@@ -550,6 +565,11 @@ public class EditBusVM
     [RegularExpression(@"^[A-Z0-9\-]{1,20}$", ErrorMessage = "Category Bus ID must be alphanumeric and up to 20 characters.")]
     [Display(Name = "Category")]
     public string CategoryBusId { get; set; }
+}
+
+public class BusStatusUpdateVM
+{
+    public string Status { get; set; }
 }
 
 public class RouteVM

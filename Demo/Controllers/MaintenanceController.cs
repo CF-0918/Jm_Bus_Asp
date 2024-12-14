@@ -32,7 +32,7 @@ namespace Demo.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult StaffList(string? name, string? sort, string? dir, int page = 1)
         {
             // (1) Searching ------------------------
@@ -85,37 +85,30 @@ namespace Demo.Controllers
 
         // Individual Deletion
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public IActionResult DeleteStaff(string? id)
+        [Authorize(Roles = "Staff,Admin")]
+        public IActionResult UpdateStaffStatus(string id, [FromBody] UpdateStatusVM model)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id) || model == null)
             {
-                TempData["Error"] = "Invalid staff ID.";
-                return RedirectToAction("StaffList");
+                return BadRequest("Invalid request.");
             }
 
             var staff = db.Staffs.Find(id);
-
-            if (staff != null)
+            if (staff == null)
             {
-                // Set the status to "Inactive" to disable the staff member
-                staff.Status = "Inactive";
-                db.SaveChanges();
-
-                TempData["Info"] = "Staff member disabled.";
-            }
-            else
-            {
-                TempData["Error"] = "Staff member not found.";
+                return NotFound("Staff member not found.");
             }
 
-            return RedirectToAction("StaffList");
+            staff.Status = model.Status; // Update the status
+            db.SaveChanges();
+
+            return Ok(new { message = "Status updated successfully." });
         }
 
 
         // POST: Maintenance/DeleteMany
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult DeleteMany(string[] ids)
         {
             if (ids != null && ids.Length > 0)
@@ -164,6 +157,7 @@ namespace Demo.Controllers
 
             return RedirectToAction("StaffList");
         }
+
 
         // GET: Account/UpdateProfile
         //[Authorize(Roles = "Member")]
@@ -364,35 +358,27 @@ namespace Demo.Controllers
 
             return View(paged); // Return the paged list to the view
         }
+
         [HttpPost]
         [Authorize(Roles = "Staff,Admin")]
-        public IActionResult DeleteMember(string? id)
+        public IActionResult UpdateMemberStatus(string id, [FromBody] UpdateStatusVM model)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id) || model == null)
             {
-                TempData["Error"] = "Invalid member ID.";
-                return RedirectToAction("MemberList"); // Adjust as necessary for the member list view
+                return BadRequest("Invalid request.");
             }
 
             var member = db.Members.Find(id);
-
-            if (member != null)
+            if (member == null)
             {
-                // Set the status to "Inactive" to disable the member (instead of deleting)
-                member.Status = "Inactive";
-                db.SaveChanges();
-
-                TempData["Info"] = "Member disabled.";
-            }
-            else
-            {
-                TempData["Error"] = "Member not found.";
+                return NotFound("Bus not found.");
             }
 
-            return RedirectToAction("MemberList"); // Redirect to the member list page
+            member.Status = model.Status; // Update the status
+            db.SaveChanges();
+
+            return Ok(new { message = "Status updated successfully." });
         }
-
-
 
         // POST: Maintenance/DeleteMany
         [HttpPost]
@@ -874,33 +860,29 @@ namespace Demo.Controllers
             return View(vm);
         }
 
+        // Individual Deletion
         [HttpPost]
         [Authorize(Roles = "Staff,Admin")]
-        public IActionResult DeleteBus(string? id)
+        public IActionResult UpdateBusStatus(string id, [FromBody] BusStatusUpdateVM model)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id) || model == null)
             {
-                TempData["Error"] = "Invalid bus ID.";
-                return RedirectToAction("ShowBusList"); // Adjust as necessary for the bus list view
+                return BadRequest("Invalid request.");
             }
 
             var bus = db.Buses.Find(id);
-
-            if (bus != null)
+            if (bus == null)
             {
-                // Set the status to "Inactive" to disable the bus (instead of deleting)
-                bus.Status = "Inactive";
-                db.SaveChanges();
-
-                TempData["Info"] = "Bus disabled.";
-            }
-            else
-            {
-                TempData["Error"] = "Bus not found.";
+                return NotFound("Bus not found.");
             }
 
-            return RedirectToAction("ShowBusList"); // Redirect to the bus list page
+            bus.Status = model.Status; // Update the status
+            db.SaveChanges();
+
+            return Ok(new { message = "Status updated successfully." });
         }
+
+
 
 
 

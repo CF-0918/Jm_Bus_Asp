@@ -123,5 +123,36 @@
                 checkbox.checked = false;
             });
         });
+
+                    document.addEventListener("DOMContentLoaded", function () {
+                const statusDropdowns = document.querySelectorAll(".status-dropdown");
+
+                statusDropdowns.forEach(dropdown => {
+                    dropdown.addEventListener("change", function () {
+                        const staffId = this.getAttribute("data-staff-id");
+                        const newStatus = this.value;
+
+                        if (confirm("Are you sure you want to change the status?")) {
+                            fetch(`/Maintenance/UpdateStaffStatus/${staffId}`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ status: newStatus })
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert("Status updated successfully.");
+                                    location.reload(); // Optional: Reload to reflect changes
+                                } else {
+                                    alert("Failed to update status.");
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
+                        } else {
+                            // Reset dropdown to the original value if canceled
+                            this.value = this.querySelector("option[selected]").value;
+                        }
+                    });
+                });
+            });
     </script>
 }
