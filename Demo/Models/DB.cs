@@ -204,14 +204,10 @@ public class Schedule
     public string Id { get; set; }
     public DateOnly DepartDate { get; set; }
     public TimeOnly DepartTime { get; set; }
-    public string TicketType {  get; set; }
-
-    public DateOnly ReturnDate { get; set; }
-    public TimeOnly ReturnTime { get; set; }
-
     public int Price {  get; set; }
     public int DiscountPrice { get; set; }
 
+    public string Status {  get; set; }
     public string Remark {  get; set; }
 
     // Foreign Key

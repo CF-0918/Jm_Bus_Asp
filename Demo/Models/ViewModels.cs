@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Sockets;
 
 namespace Demo.Models;
 
@@ -581,4 +582,46 @@ public class RouteVM
 
     public int EstimatedTimeHour { get; set; }
     public int EstimatedTimeMin { get; set; }
+}
+
+
+public class ScheduleVM
+{
+    [Display(Name ="Bus")]
+   public string BusId { get; set; }
+    [Display(Name = "Route")]
+    public string RouteId { get; set; }
+    [Display(Name = "Depart Date")]
+    public DateOnly DepartDate {  get; set; }
+    [Display(Name = "Depart Time")]
+    public TimeOnly DepartTime { get; set; }
+
+    public string Status { get; set; }
+    public int Price {  get; set; }
+    [Display(Name = "Discount Price")]
+    public int DiscountPrice { get; set; }
+    public string Remark { get; set; }
+    [Display(Name = "Send Email To Subscriber")]
+    public string? SubscribeEmail {  get; set; }
+}
+
+public class ScheduleDetailsVM
+{
+    public string BusId { get; set; }
+    public string BusName { get; set; }
+    public string BusCapacity { get; set; }
+    public string BusPlate { get; set; }
+    public string CategoryBusName { get; set; }
+    public string PhotoURL { get; set; }
+
+    public string ScheduleId { get; set; }
+    public DateOnly DepartDate { get; set; }
+    public TimeOnly DepartTime { get; set; }
+    public int Price { get; set; }
+    public int DiscountPrice { get; set; }
+
+    public string Depart { get; set; }
+    public string Destination { get; set; }
+    public int Hour { get; set; }
+    public int Min { get; set; }
 }

@@ -4,6 +4,7 @@ using Demo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Migrations
 {
     [DbContext(typeof(DB))]
-    partial class DBModelSnapshot : ModelSnapshot
+    [Migration("20241215033223_UpdateSchdule")]
+    partial class UpdateSchdule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -166,6 +169,11 @@ namespace Demo.Migrations
                     b.Property<int>("DiscountPrice")
                         .HasColumnType("int");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
@@ -177,10 +185,6 @@ namespace Demo.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BusId");
@@ -188,6 +192,10 @@ namespace Demo.Migrations
                     b.HasIndex("RouteLocationId");
 
                     b.ToTable("Schedules");
+
+                    b.HasDiscriminator().HasValue("Schedule");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Demo.Models.Seat", b =>
@@ -340,6 +348,26 @@ namespace Demo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Vouchers");
+                });
+
+            modelBuilder.Entity("Demo.Models.OneWaySchedule", b =>
+                {
+                    b.HasBaseType("Demo.Models.Schedule");
+
+                    b.HasDiscriminator().HasValue("OneWaySchedule");
+                });
+
+            modelBuilder.Entity("Demo.Models.TwoWaySchedule", b =>
+                {
+                    b.HasBaseType("Demo.Models.Schedule");
+
+                    b.Property<DateOnly?>("ReturnDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly?>("ReturnTime")
+                        .HasColumnType("time");
+
+                    b.HasDiscriminator().HasValue("TwoWaySchedule");
                 });
 
             modelBuilder.Entity("Demo.Models.Admin", b =>

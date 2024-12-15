@@ -1,106 +1,94 @@
-﻿@{
+﻿@model ScheduleVM
+@{
     ViewBag.Title = "Schedule | Add New Bus";
+    IEnumerable<Bus> buses = ViewBag.Buses;
+    IEnumerable<RouteLocation> routes = ViewBag.Routes;
 }
 
 <div class="schedule-container">
-        <h2><i class="fas fa-bus"></i> New Bus Schedule</h2>
+    <h2><i class="fas fa-bus"></i> New Bus Schedule</h2>
+    <small>**Take Note That If the Bus Return Time is scheduled on another day, the bus can reuse before the time</small>
 
-        <small>**Take Note That If the Bus Return Time is Schedule on the another day the bus can reuse before the time</small>
-        <form>
-            <div class="form-row">
-                <div class="form-group col-md-10">
-                    <label for="bus"><i class="fas fa-list-alt form-icon"></i> Select Bus</label>
-                    <select class="" id="bus">
-                        <option selected>Choose...</option>
-                        <option value="T250">T250</option>
-                        <option value="Meet">Meet</option>
-                        <option value="Tasks">Tasks</option>
-                    </select>
-                </div>
-            </div>
+    <div class="errorMessage my-2" asp-validation-summary="All"></div>
 
-            <div class="form-row">
-                <div class="form-group col-md-10">
-                    <label for="depart"><i class="fas fa-map-marker-alt form-icon"></i> Route</label>
-                    <select class="" id="depart">
-                        <option selected>Choose...</option>
-                        <option value="City A">KL - JB</option>
-                        <option value="City B">City B</option>
-                    </select>
-                </div>
-            </div>
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="date"><i class="fas fa-calendar-alt form-icon"></i> Depart date</label>
-                    <input type="date" class="form-control" id="date">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="time"><i class="fas fa-clock form-icon"></i> Time </label>
-                    <div class="input-group">
-                        <input type="time" class="form-control" id="start-time">
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="ticket-type"><i class="fas fa-ticket-alt form-icon"></i> Ticket Type</label>
-                <select class="" id="ticket-type">
-                    <option selected>One-Way</option>
-                    <option value="two-way">Two-Way</option>
+    <form  method="post">
+        <div class="form-row">
+            <div class="form-group col-md-10">
+                <label asp-for="BusId"><i class="fas fa-list-alt form-icon"></i> Select Bus</label>
+                <select asp-for="BusId" asp-items="@(new SelectList(buses, "Id", "Name"))">
+                    <option value="" selected>Choose...</option>
                 </select>
+                <span asp-validation-for="BusId" class="errorMessage"></span>
             </div>
+        </div>
 
-            <div class="form-row hidden" id="return-group">
-                <div class="form-group col-md-6">
-                    <label for="return-date"><i class="fas fa-calendar-alt form-icon"></i> Return Date</label>
-                    <input type="date" class="form-control" id="return-date">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="return-time"><i class="fas fa-clock form-icon"></i> Return Time</label>
-                    <input type="time" class="form-control" id="return-time">
-                </div>
+        <div class="form-row">
+            <div class="form-group col-md-10">
+                <label asp-for="RouteId"><i class="fas fa-map-marker-alt form-icon"></i> Route</label>
+                <select asp-for="RouteId">
+                    <option value="" selected>Choose...</option>
+                    @foreach(var route in routes){
+                        <option value="@route.Id">@route.Depart - @route.Destination</option>
+                    }
+                </select>
+                <span asp-validation-for="RouteId" class="errorMessage"></span>
             </div>
+        </div>
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="price"><i class="fas fa-dollar-sign form-icon"></i> Price</label>
-                    <input type="number" class="form-control" id="price" placeholder="Enter price">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="discount"><i class="fas fa-tag form-icon"></i> Discount Price</label>
-                    <input type="number" class="form-control" id="discount" placeholder="Enter discount">
-                </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="DepartDate"><i class="fas fa-calendar-alt form-icon"></i> Depart Date</label>
+                <input asp-for="DepartDate" type="date"  />
+                <span asp-validation-for="DepartDate" class="errorMessage"></span>
             </div>
-
-            <div class="form-group">
-                <label for="remark"><i class="fas fa-sticky-note form-icon"></i> Remark</label>
-                <textarea class="form-control" id="remark" rows="3" placeholder="Add Remark"></textarea>
+            <div class="form-group col-md-6">
+                <label asp-for="DepartTime"><i class="fas fa-clock form-icon"></i> Time</label>
+                <input asp-for="DepartTime" type="time" />
+                <span asp-validation-for="DepartTime" class="errorMessage"></span>
             </div>
-
-            <div class="actions d-flex justify-content-between align-items-center">
-                <div class="set-reminder">
-                    <input type="checkbox" id="reminder">
-                    <label for="reminder">Send Email to Subscribers</label>
-                </div>
-                <button type="button" id="save-btn" disabled><i class="fas fa-save"></i> Save</button>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="Status"><i class="fas fa-ticket-alt form-icon"></i>Status</label>
+                <select asp-for="Status">
+                    <option value="Active" selected>Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <span asp-validation-for="Status" class="errorMessage"></span>
             </div>
-        </form>
-    </div>
+        </div>
+       
 
-@section foot{
-    <script>
-                $(document).ready(function () {
-                    // Toggle return date and time fields
-                    $('#ticket-type').change(function () {
-                        if ($(this).val() === 'two-way') {
-                            $('#return-group').removeClass('hidden');
-                        } else {
-                            $('#return-group').addClass('hidden');
-                            $('#return-date, #return-time').val('');
-                        }
-                    });
-    </script>
 
-}
-   
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="Price"><i class="fas fa-dollar-sign form-icon"></i> Price</label>
+                <input asp-for="Price" type="number" class="form-control" placeholder="Enter price" />
+                <span asp-validation-for="Price" class="errorMessage"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="DiscountPrice"><i class="fas fa-tag form-icon"></i> Discount Price</label>
+                <input asp-for="DiscountPrice" type="number" class="form-control" value="0" placeholder="Enter discount" />
+                <p class="text-info">**IF Not Doing Any Discount Just Leave 0 As Usual</p>
+                <span asp-validation-for="DiscountPrice" class="errorMessage"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Remark"><i class="fas fa-sticky-note form-icon"></i> Remark</label>
+            <textarea asp-for="Remark" class="form-control" rows="3" placeholder="Add Remark"></textarea>
+            <span asp-validation-for="Remark" class="errorMessage"></span>
+        </div>
+
+        <div class="actions d-flex justify-content-between align-items-center">
+            <div class="set-reminder">
+                <input asp-for="SubscribeEmail" type="checkbox" />
+                <label asp-for="SubscribeEmail">Send Email to Subscribers</label>
+                <span asp-validation-for="SubscribeEmail" class="text-danger"></span>
+            </div>
+            <button type="submit" id="save-btn" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+        </div>
+    </form>
+</div>
+
