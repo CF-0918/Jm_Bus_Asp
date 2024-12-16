@@ -625,8 +625,152 @@ input[type="checkbox"] {
 
 /* ===================================================================  Start User Page     ============================================================================ */
 
-/*Login Page */
-body {
+/* NewsLetter Subscribe */
+.newsletter-container {
+    position: relative;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0px auto;
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    z-index: 999;
+}
+
+/* Header */
+.no-scroll {
+    overflow: hidden;
+    height: 100vh; /* Prevent scrolling on mobile devices */
+}
+
+.newsletter-header {
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.newsletter-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.newsletter-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+/* Main Content */
+.newsletter-main {
+    padding: 2rem;
+}
+
+.newsletter-benefits-list {
+    list-style-type: none;
+    margin-bottom: 2rem;
+}
+
+.newsletter-benefit-item {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+    .newsletter-benefit-item::before {
+        content: '✓';
+        color: #6e8efb;
+        position: absolute;
+        left: 0;
+    }
+
+/* Form */
+.newsletter-form {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+/* Newsletter Price Section */
+.newsletter-price {
+    background-color: #f9f9f9;
+    border: 2px dashed #ff6a00;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.newsletter-price p {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ff4500;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.price-amount {
+    font-size: 1rem;
+    color: #d32f2f;
+}
+
+.newsletter-submit-btn {
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: opacity 0.3s ease;
+}
+
+    .newsletter-submit-btn:hover {
+        opacity: 0.9;
+    }
+
+/* Footer */
+.newsletter-footer {
+    margin:0;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.newsletter-footer-text {
+    margin: 0;
+}
+/* Background Overlay */
+.newsletter-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    z-index: 998; /* Behind the modal but above all other content */
+    display: block; /* Hidden by default */
+}
+
+    /*Login Page */
+    body {
     padding: 0;
     margin: 0;
 }
@@ -3592,3 +3736,79 @@ input[type="range"]::-webkit-slider-thumb {
         margin-bottom: 20px;
         text-align: center;
     }
+
+    /* Payment Page */
+.checkout-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.payment-section-checkout, .review-section-checkout {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-checkout {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+    .btn-checkout:hover {
+        background-color: #0056b3;
+    }
+
+.card-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+    .card-label:hover {
+        background-color: #f0f0f0;
+    }
+
+    .card-label img {
+        width: 50px;
+        height: auto;
+    }
+
+    .card-label .option {
+        flex: 1;
+    }
+
+.card_container_payment {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Highlight checked state */
+.input-radio:checked .card-label {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+.input-radio:checked .option{
+    color:red;
+}
+
+@media (max-width: 768px) {
+    .card-label {
+        flex: 1 1 calc(50% - 10px);
+    }
+}
+
+@media (max-width: 576px) {
+    .card-label {
+        flex: 1 1 100%;
+    }
+}

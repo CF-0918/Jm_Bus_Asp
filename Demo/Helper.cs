@@ -116,6 +116,9 @@ public class Helper
 
     public void SignOut()
     {
+        // Clear all session data
+        ct.HttpContext!.Session.Clear();
+
         ct.HttpContext!.SignOutAsync();
     }
 

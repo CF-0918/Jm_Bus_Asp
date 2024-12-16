@@ -4,6 +4,7 @@ using Demo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Migrations
 {
     [DbContext(typeof(DB))]
-    partial class DBModelSnapshot : ModelSnapshot
+    [Migration("20241216021553_newsPaperConcept")]
+    partial class newsPaperConcept
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,69 +125,6 @@ namespace Demo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ranks");
-                });
-
-            modelBuilder.Entity("Demo.Models.Rent", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<TimeOnly>("ArrTime")
-                        .HasColumnType("time");
-
-                    b.Property<TimeOnly>("DepTime")
-                        .HasColumnType("time");
-
-                    b.Property<string>("Destination")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("End_Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MemberId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<int>("Numppl")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PerIC")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Purpose")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Req")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Start_Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MemberId");
-
-                    b.ToTable("Rent");
                 });
 
             modelBuilder.Entity("Demo.Models.RouteLocation", b =>
@@ -439,6 +379,9 @@ namespace Demo.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("ShouldShowNewsletterPopup")
+                        .HasColumnType("bit");
+
                     b.HasIndex("RankId");
 
                     b.HasDiscriminator().HasValue("Member");
@@ -479,17 +422,6 @@ namespace Demo.Migrations
                     b.Navigation("Member");
 
                     b.Navigation("Voucher");
-                });
-
-            modelBuilder.Entity("Demo.Models.Rent", b =>
-                {
-                    b.HasOne("Demo.Models.Member", "Member")
-                        .WithMany("Rents")
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("Demo.Models.Schedule", b =>
@@ -580,8 +512,6 @@ namespace Demo.Migrations
             modelBuilder.Entity("Demo.Models.Member", b =>
                 {
                     b.Navigation("MemberVoucher");
-
-                    b.Navigation("Rents");
                 });
 #pragma warning restore 612, 618
         }

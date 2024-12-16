@@ -79,6 +79,8 @@ public class Member : User
     [MaxLength(50)]
     public string Country { get; set; }
 
+    //New add subscription concept
+    public bool IsSubscribedToNewsletter { get; set; } // Tracks newsletter subscription
     //New add membership concept
     public int Points { get; set; }
 
@@ -90,6 +92,7 @@ public class Member : User
 
     // Navigation property to track the vouchers the member has redeemed
     public List<MemberVoucher> MemberVoucher { get; set; }
+    public List<Rent> Rents { get; set; }
 }
 
 public class Voucher
@@ -230,4 +233,33 @@ public class RouteLocation
 
     public List<Schedule> Schedules {  get; set; }
 
+}
+
+public class Rent
+{
+    [Key]
+    public string Id { get; set; }
+    public TimeOnly DepTime { get; set; }
+    public TimeOnly ArrTime { get; set; }
+    public DateTime Start_Date { get; set; }
+    public DateTime End_Date { get; set; }
+    public string Location { get; set; }
+    public string Destination { get; set; }
+
+    public string Purpose { get; set; }
+    public int Numppl { get; set; }
+    public string PerIC { get; set; }
+    public string Phone { get; set; }
+
+    [EmailAddress]
+    public string Email { get; set; }
+
+    public string Req { get; set; }
+    public string status { get; set; }
+
+    // Foreign Key
+    public string MemberId { get; set; }
+
+    // Navigation Property
+    public Member Member { get; set; }
 }

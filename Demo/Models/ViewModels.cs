@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Net.Sockets;
 
 namespace Demo.Models;
@@ -624,4 +625,25 @@ public class ScheduleDetailsVM
     public string Destination { get; set; }
     public int Hour { get; set; }
     public int Min { get; set; }
+}
+
+public class VoucherUserDetailsVM
+{
+    public string VoucherId {  get; set; }
+    public string VoucherName {  get; set; }
+    public int CashDiscount { get; set; }
+    public int Qty { get; set; }
+
+}
+public class PaymentVM
+{
+    public string CardType {  get; set; }
+    public string CardHolderName {  get; set; }
+    public string CardNumber { get; set; }
+    public string ExpirationDate {  get; set; }
+    public string Cvv {  get; set; }
+    public string TermsCheck {  get; set; }
+
+    public string VoucherId { get; set; }
+
 }

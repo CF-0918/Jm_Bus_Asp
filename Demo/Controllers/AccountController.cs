@@ -205,7 +205,9 @@ public class AccountController : Controller
                 EmailVerified = 0,
                 Points=0,
                 MinSpend=0,
-                RankId="R0001"
+                RankId="R0001",
+                //new idea on subcrive
+                IsSubscribedToNewsletter=false,
             };
             db.Members.Add(newMember);
             db.SaveChanges();

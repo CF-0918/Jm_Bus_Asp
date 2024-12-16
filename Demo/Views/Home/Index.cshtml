@@ -2,6 +2,12 @@
     ViewBag.Title = "Home | Index";
 }
 
+@if (User.IsInRole("Member") && ViewBag.IsSubscriber == true)
+{
+    <partial name="_NewsLetterSubscribe" />
+}
+
+
 
     <div class="home_section1">
         <div class="banner_title">
@@ -232,5 +238,43 @@
             </div>
         </div>
     </div>
+@section foot{
+    <script>
+           document.addEventListener('DOMContentLoaded', () => {
+            const newsletterContainer = document.querySelector('.newsletter-container');
+            const newsletterOverlay = document.querySelector('.newsletter-overlay');
+            const newsletterCloseBtn = document.querySelector('.newsletter-close-btn');
+            const body = document.body;
 
-  
+            // Display the newsletter modal if not dismissed
+            if (!localStorage.getItem('newsletterDismissed')) {
+                newsletterContainer.style.display = 'block';
+                newsletterOverlay.style.display = 'block';
+                body.classList.add('no-scroll'); // Disable scrolling
+            }
+
+            // Close button functionality
+            newsletterCloseBtn.addEventListener('click', () => {
+                newsletterContainer.style.display = 'none';
+                newsletterOverlay.style.display = 'none';
+                body.classList.remove('no-scroll'); // Enable scrolling
+                localStorage.setItem('newsletterDismissed', 'true'); // Avoid showing modal again
+
+                // Send AJAX request to update session
+                fetch('/Home/SetCloseNewsLetterSession', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (!response.ok) {
+                        console.error('Failed to update session.');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+
+    </script>
+}
