@@ -1,6 +1,8 @@
 global using Demo.Models;
 global using Demo;
+
 using Demo.Services;
+using Demo.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -19,6 +21,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RegisterService>();
 builder.Services.AddHostedService<BackgroundUpdaterService>();
 
+//Add Signal R
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -29,6 +33,9 @@ app.UseSession();
 
 // Register the BlockedUserMiddleware
 app.UseMiddleware<BlockedUserMiddleware>();
+
+//add signal
+app.MapHub<ChatHub>("/chatHub");
 
 // Culture = en-MY, ms-MY, zh-CN, ja-JP, ko-KR, etc.
 app.UseRequestLocalization("en-MY");

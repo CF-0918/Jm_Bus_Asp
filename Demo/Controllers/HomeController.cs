@@ -62,5 +62,9 @@ public class HomeController : Controller
     {
         return View();
     }
-
+    // New Chat action
+    public IActionResult Chat()
+    {
+        return View();
+    }
 }
