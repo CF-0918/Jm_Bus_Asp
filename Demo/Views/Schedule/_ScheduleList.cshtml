@@ -3,7 +3,7 @@
 @model IPagedList<Schedule>
 
 @{
-    string[] fields = ["", "Id", "DepartDate", "DepartTime","Status"];
+    string[] fields = ["", "Id", "DepartDate", "DepartTime", "Status", "Route"];
 }
 
 @Html.Hidden("sort", "", new { form = "f" })
@@ -14,7 +14,7 @@
     Page @Model.PageNumber of @Model.PageCount
 </p>
 
-<form method="post" action="/Maintenance/DeleteManyBus" id="deleteManyForm">
+<form method="post" action="/Schedule/DeleteManySchedules" id="deleteManyForm">
     <p>
         <button type="button" data-check="ids">Check All</button>
         <button type="button" data-uncheck="ids">Uncheck All</button>
@@ -70,7 +70,7 @@
                     <td>
                         <!-- Edit and Delete actions -->
 
-                        <a href="@Url.Action("EditBus", "Maintenance", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="@Url.Action("EditSchedule", "Schedule", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
                         @*                     @if (s.Status != "Inactive")
                     {
                         <form method="post" action="/Maintenance/DeleteBus/@s.Id" style="display:inline;">

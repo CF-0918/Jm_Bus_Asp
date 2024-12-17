@@ -583,6 +583,17 @@ public class RouteVM
     public int EstimatedTimeMin { get; set; }
 }
 
+public class EditRouteVM
+{
+    public string? Id { get; set; }
+    public string Depart { get; set; }
+
+    [Remote("CheckDepartAndDestination", "Maintenance", ErrorMessage = "Destination should not be the same as Depart")]
+    public string Destination { get; set; }
+
+    public int Hour { get; set; }
+    public int Min { get; set; }
+}
 
 public class ScheduleVM
 {
@@ -624,6 +635,38 @@ public class ScheduleDetailsVM
     public int Hour { get; set; }
     public int Min { get; set; }
 }
+
+public class EditScheduleVM
+{
+    public string? ScheduleId { get; set; }
+
+    [Display(Name = "Bus")]
+    public string? BusId { get; set; }
+
+    [Display(Name = "Route")]
+    public string? RouteId { get; set; }
+
+    [Display(Name = "Depart Date")]
+    public DateOnly DepartDate { get; set; }
+
+    [Display(Name = "Depart Time")]
+    public TimeOnly DepartTime { get; set; }
+
+    public string? Status { get; set; }
+    public int Price { get; set; }
+
+    [Display(Name = "Discount Price")]
+    public int DiscountPrice { get; set; }
+    public string Remark { get; set; }
+
+    [Display(Name = "Send Email To Subscriber")]
+    public string? SubscribeEmail { get; set; }
+
+    // Add these two properties to hold lists of buses and routes for the dropdowns
+    public List<Bus>? Buses { get; set; }
+    public List<RouteLocation>? Routes { get; set; }
+}
+
 
 public class VoucherUserDetailsVM
 {

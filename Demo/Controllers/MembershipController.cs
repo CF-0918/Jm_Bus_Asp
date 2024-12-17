@@ -476,7 +476,7 @@ public class MembershipController : Controller
             // Save the changes to the database
             db.SaveChanges();
 
-            TempData["Info"] = $"{voucherToUpdate.Count} voucher(s) set to inactive.";
+            TempData["Info"] = $"{voucherToUpdate.Count} voucher(s) set to draft.";
         }
 
         return RedirectToAction("ShowVoucherList"); // Redirect to the bus list page
