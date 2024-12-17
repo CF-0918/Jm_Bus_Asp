@@ -94,8 +94,12 @@ public class MembershipController : Controller
             ModelState.AddModelError("EndDate", "End date must be later than or equal to the start date.");
         }
 
+
         if (ModelState.IsValid)
         {
+            // Determine the status based on StartDate
+            string status = vm.StartDate <= DateOnly.FromDateTime(DateTime.Today) ? "Active" : "InActive";
+
             string newVoucherId = GetNextPrefixId("Vouchers");
             db.Vouchers.Add(new()
             {
@@ -106,7 +110,7 @@ public class MembershipController : Controller
                 CashDiscount = vm.CashDiscount,
                 StartDate=vm.StartDate,
                 EndDate=vm.EndDate,
-                Status=vm.Status,
+                Status=status,
                 Qty=vm.Qty,
             });
             db.SaveChanges();
@@ -352,11 +356,9 @@ public class MembershipController : Controller
     public IActionResult VoucherRedeem()
     {
         // Get valid vouchers where EndDate is greater than or equal to current date
-        var validVouchers = db.Vouchers.Where(v =>
-                    v.EndDate >= DateOnly.FromDateTime(DateTime.Now) &&
-                    v.Status != "Draft" &&
-                    v.Status != "Inactive"
-                ).ToList();
+        var validVouchers = db.Vouchers
+            .Where(v=>v.Status == "Active")
+            .ToList();
         ViewBag.Vouchers = validVouchers;
 
  
@@ -385,7 +387,6 @@ public class MembershipController : Controller
             Qty = m.Qty,
             StartDate = m.StartDate,
             EndDate = m.EndDate,
-            Status = m.Status,
         };
 
         return View(vm);
@@ -424,7 +425,6 @@ public class MembershipController : Controller
                 m.Qty = vm.Qty;
                 m.StartDate = vm.StartDate;
                 m.EndDate = vm.EndDate;
-                m.Status = vm.Status;
             };
             db.SaveChanges();
             TempData["Info"] = $"{vm.Name} Edited.";
@@ -626,5 +626,37 @@ public class MembershipController : Controller
         return View(vouchers);
     }
 
+    [HttpPost]
+    [Authorize(Roles ="Member")] // Ensure only authenticated users can subscribe
+    public IActionResult StoreSubscribeTable()
+    {
+        // Get the current user's MemberId (assuming User.Identity.Name stores it)
+        var memberId = User.Identity!.Name;
+
+        // Create a new subscription
+        bool userPaidBefore=db.Subscriptionses.Any(s => s.MemberId==memberId);
+        if (userPaidBefore)
+        {
+            // Provide feedback to the user (e.g., redirect to a confirmation page)
+            TempData["Info"] = "Your subscription has been recorded before ! Please Complete The Payment";
+            return RedirectToAction("PaidSubscribe", "Payment"); // Redirect to payment or another page
+        }
+
+        var subscription = new Subscriptions
+        {
+            MemberId = memberId,
+            Paid = false, // Default to unpaid
+            SubscribeDate = DateOnly.FromDateTime(DateTime.Now),
+            Price = 10 // Or dynamically set based on subscription type
+        };
+
+        // Save to database
+        db.Subscriptionses.Add(subscription);
+        db.SaveChanges();
+
+        // Provide feedback to the user (e.g., redirect to a confirmation page)
+        TempData["Info"] = "Your subscription has been successfully recorded!Complete The Payment";
+        return RedirectToAction("PaidSubscribe", "Payment"); // Redirect to payment or another page
+    }
 
 }

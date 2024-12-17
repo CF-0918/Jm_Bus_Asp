@@ -129,6 +129,8 @@ public class UpdateProfileVM
 
     public string? Status {  get; set; }
 
+    public bool? Subscribe { get; set; }
+
     public string? PhotoURL {  get; set; }
     public IFormFile? Photo { get; set; }
 }
@@ -147,8 +149,6 @@ public class VoucherVM
 
     [Remote(action: "CheckRangeDate", controller: "Membership", AdditionalFields = nameof(StartDate) ,ErrorMessage = "End Date Should Be Greater Than Start Date.")]
     public DateOnly EndDate { get; set; }
-
-    public string Status { get; set; }
 
     [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
     public int Qty { get; set; }
@@ -171,8 +171,6 @@ public class EditVoucherVM
 
     [Remote(action: "CheckRangeDate", controller: "Membership", AdditionalFields = nameof(StartDate), ErrorMessage = "End Date Should Be Greater Than Start Date.")]
     public DateOnly EndDate { get; set; }
-
-    public string Status { get; set; }
 
     [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
     public int Qty { get; set; }
@@ -490,7 +488,7 @@ public class EditMemberVM
     [Display(Name = "Phone Number")]
     public string PhoneNo { get; set; }
 
-    public string? Status { get; set; }
+    public string Status { get; set; }
 
     [Url]
     public string? PhotoURL { get; set; }
@@ -635,6 +633,11 @@ public class VoucherUserDetailsVM
     public int Qty { get; set; }
 
 }
+
+public class SubscribeNewsLetterVM
+{
+    public string SubscribeNewsLetter { get; set; }
+}
 public class PaymentVM
 {
     public string CardType {  get; set; }
@@ -642,8 +645,9 @@ public class PaymentVM
     public string CardNumber { get; set; }
     public string ExpirationDate {  get; set; }
     public string Cvv {  get; set; }
+    [Display(Name ="Terms Checking")]
     public string TermsCheck {  get; set; }
 
-    public string VoucherId { get; set; }
+    public string? VoucherId { get; set; }
 
 }

@@ -572,6 +572,8 @@ public class AccountController : Controller
             Country = m.Country,
             Status = m.Status,
             PhotoURL = m.PhotoURL,
+
+            Subscribe=m.IsSubscribedToNewsletter
         };
 
         // Get the number of vouchers the member has

@@ -1,9 +1,11 @@
 ﻿@model PaymentVM;
 @{
-    ViewBag.Title = "Payment | Index";
+    // ViewBag.Title = "Payment | Subscribe";
 }
 
-<form class="container checkout-container">
+<form class="container checkout-container" method="post">
+
+    <div class="errroMessage" asp-validation-summary="All"></div>
     <div class="row g-4">
         <!-- Payment Details Section -->
         <div class="col-md-6">
@@ -12,8 +14,8 @@
                 <div class="errorMessage" asp-validation-summary="All"></div>
 
                 <div>
-                    <!-- Card Type Selection -->   
-              <div class="mb-4 card_container_payment">
+                    <!-- Card Type Selection -->
+                    <div class="mb-4 card_container_payment">
                         <label class="card-label" asp-for="CardType">
                             <input type="radio" asp-for="CardType" class="input-radio" id="maybank" value="maybank">
                             <img src="/photo/images/maybank.jpg" alt="Maybank">
@@ -39,29 +41,30 @@
                         </label>
                         <span class="errorMessage" asp-validation-for="CardType"></span>
                     </div>
+
                     <!-- Cardholder Name -->
                     <div class="mb-3">
                         <label asp-for="CardHolderName" class="form-label">Cardholder Name</label>
-                        <input type="text" asp-for="CardHolderName" class="form-control"  placeholder="John Doe">
-                            <span class="errorMessage" asp-validation-for="CardHolderName"></span>
+                        <input type="text" asp-for="CardHolderName" class="form-control" placeholder="John Doe">
+                        <span class="errorMessage" asp-validation-for="CardHolderName"></span>
                     </div>
                     <!-- Card Number -->
                     <div class="mb-3">
                         <label asp-for="CardNumber" class="form-label">Card Number</label>
                         <input type="text" asp-for="CardNumber" class="form-control" placeholder="1234 5678 9012 3456">
-                            <span class="errorMessage" asp-validation-for="CardNumber"></span>
+                        <span class="errorMessage" asp-validation-for="CardNumber"></span>
                     </div>
                     <!-- Expiration and CVV -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label asp-for="ExpirationDate" class="form-label">Expiration Date</label>
                             <input type="text" asp-for="ExpirationDate" class="form-control" placeholder="MM/YY">
-                                <span class="errorMessage" asp-validation-for="ExpirationDate"></span>
+                            <span class="errorMessage" asp-validation-for="ExpirationDate"></span>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label asp-for="Cvv" class="form-label">CVV</label>
-                            <input type="text"  asp-for="Cvv" class="form-control" placeholder="123">
-                                <span class="errorMessage" asp-validation-for="Cvv"></span>
+                            <input type="text" asp-for="Cvv" class="form-control" placeholder="123">
+                            <span class="errorMessage" asp-validation-for="Cvv"></span>
                         </div>
                     </div>
                     <!-- Terms and Conditions -->
@@ -70,62 +73,48 @@
                         <label class="form-check-label" asp-for="TermsCheck">
                             I agree to the Terms and Conditions
                         </label>
-                            <span class="errorMessage" asp-validation-for="TermsCheck"></span>
+                        <span class="errorMessage" asp-validation-for="TermsCheck"></span>
                     </div>
                     <!-- Pay Now Button -->
                     <button type="submit" class="btn btn-checkout w-100">Pay Now</button>
                 </div>
             </div>
         </div>
-
+  
         <!-- Review Section -->
         <div class="col-md-6">
             <div class="review-section-checkout">
                 <h2 class="mb-4">Review Your Cart</h2>
-                <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>DuoComfort Sofa Premium</span>
-                        <span>$20.00</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>IronOne Desk</span>
-                        <span>$25.00</span>
-                    </li>
-                </ul>
-                <!-- Discount Dropdown -->
-                    <div class="mb-4">
-                        <label asp-for="VoucherId" class="form-label">Discount Code</label>
-                 <select asp-for="VoucherId" class="form-select">
-                    <option selected>Select a code</option>
 
-                        @foreach (var voucher in ViewBag.VouchersList)
-                            {
-                            <option style="text-transform:uppercase" value="@voucher.VoucherId">@voucher.VoucherName - Save RM @voucher.CashDiscount (@voucher.Qty qtys)</option>
-                        }
-<                  </select>
+                @if (ViewBag.SubscribeDetails != null)
+                {
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Price: @ViewBag.SubscribeDetails.Price</span>
+                            <span>Date Subscribe: @ViewBag.SubscribeDetails.SubscribeDate</span>
+                            <span>Status: @((ViewBag.SubscribeDetails.Paid == false) ? "Unpaid" : "Paid")</span>
+                        </li>
+                    </ul>
 
-                        <button class="btn btn-checkout mt-3 w-100">Apply Discount</button>
+                    <!-- Summary -->
+                    <div class="d-flex justify-content-between">
+                        <span>Subtotal</span>
+                        <span>RM @ViewBag.SubscribeDetails.Price</span>
                     </div>
-             
 
-                <!-- Summary -->
-                <div class="d-flex justify-content-between">
-                    <span>Subtotal</span>
-                    <span>$45.00</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Shipping</span>
-                    <span>$5.00</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Discount</span>
-                    <span>-$10.00</span>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between fw-bold">
-                    <span>Total</span>
-                    <span>$40.00</span>
-                </div>
+                    <hr>
+
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total</span>
+                        <span>RM @ViewBag.SubscribeDetails.Price</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning text-center">
+                        No subscription details available.
+                    </div>
+                }
             </div>
         </div>
     </div>

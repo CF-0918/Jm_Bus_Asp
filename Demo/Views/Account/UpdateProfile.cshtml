@@ -97,6 +97,17 @@
     </div>
 
     <div class="voucher_list_right">
+        @if (Model.Subscribe ?? false)
+        {
+            <div class="subscribed">
+                <span>
+                    <i class="fas fa-star" style="color: yellow;"></i> Subscribed
+                </span>
+            </div>
+        }
+
+
+
         <!-- Quick Buttons -->
         <div class="profile_quick_buttons">
             <div style="margin-right:10px;">

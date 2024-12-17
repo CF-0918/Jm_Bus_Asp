@@ -26,6 +26,7 @@ public class DB : DbContext
     public DbSet<Seat> Seats { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
     public DbSet<RouteLocation> RouteLocations { get; set; }
+    public DbSet<Subscriptions> Subscriptionses { get; set; }
 
 }
 
@@ -93,6 +94,7 @@ public class Member : User
     // Navigation property to track the vouchers the member has redeemed
     public List<MemberVoucher> MemberVoucher { get; set; }
     public List<Rent> Rents { get; set; }
+    public Subscriptions Subscriptions { get; set; }
 }
 
 public class Voucher
@@ -262,4 +264,18 @@ public class Rent
 
     // Navigation Property
     public Member Member { get; set; }
+}
+
+public class Subscriptions
+{
+    [Key]
+    public int Id { get; set; } // Added get and set accessors for Id
+
+    public bool Paid { get; set; }
+    public DateOnly SubscribeDate { get; set; }
+    public int Price { get; set; }
+
+    // Navigation Property
+    public string MemberId { get; set; }
+    public Member Member { get; set; } // Changed from List<Member> to Member for a one-to-one relationship
 }

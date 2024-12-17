@@ -68,6 +68,15 @@
                     <input asp-for="PhoneNo" data-digit>
                     <span class="errorMessage" asp-validation-for="PhoneNo"></span>
                 </div>
+
+                <div class="form-group">
+                    <label asp-for="Status"></label>
+                    <select asp-for="Status">
+                        <option value="Active">Active</option>
+                        <option value="Blocked">Blocked</option>
+                    </select>
+                    <span class="errorMessage" asp-validation-for="Gender"></span>
+                </div>
             </div>
             <div class="action-buttons">
                 <button type="submit" class="btn-save-changes">Save Changes</button>

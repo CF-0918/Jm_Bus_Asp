@@ -1,4 +1,6 @@
-﻿<div class="newsletter-overlay"></div>
+﻿@model SubscribeNewsLetterVM;
+
+<div class="newsletter-overlay"></div>
 <div class="newsletter-container">
     <header class="newsletter-header">
         <span class="newsletter-close-btn">&times;</span> <!-- Close Button -->
@@ -17,7 +19,7 @@
             </div>
         </section>
         <section class="newsletter-sign-up-form">
-            <form action="/Payment" id="newsletter-form" class="newsletter-form" novalidate>
+            <form action="/Membership/StoreSubscribeTable" method="post" id="newsletter-form" class="newsletter-form" novalidate>
                 <button type="submit" class="newsletter-submit-btn">Subscribe Now</button>
             </form>
         </section>

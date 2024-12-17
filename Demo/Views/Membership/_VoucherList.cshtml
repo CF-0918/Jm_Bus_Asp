@@ -55,11 +55,8 @@
             <td>@s.PointNeeded pts</td>
             <td>RM @s.CashDiscount</td>
             <td>@s.Qty</td>
-                <td>
-                    <select class="status-dropdown" data-voucher-id="@s.Id">
-                        <option value="Active" selected="@(s.Status == "Active")">Active</option>
-                        <option value="Draft" selected="@(s.Status == "Draft")">Draft</option>
-                    </select>
+                <td class="@s.Status">
+                    @s.Status
                 </td>
             <td>@s.StartDate</td>
             <td>@s.EndDate</td>

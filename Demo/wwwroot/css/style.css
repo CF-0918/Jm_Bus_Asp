@@ -8,6 +8,17 @@ body {
     overflow-x: hidden;
     /* Enables horizontal scroll if content overflows */
 }
+
+.Active{
+    color:green;
+}
+.Inactive,.InActive{
+    color:orange;
+}
+
+.Expired,.Suspended,.Deleted,.Blocked{
+    color:red;
+}
 /* Flash Message -------------------------------------------------------------- */
 
 .info {
@@ -627,16 +638,19 @@ input[type="checkbox"] {
 
 /* NewsLetter Subscribe */
 .newsletter-container {
-    position: relative;
+    position: fixed;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    margin: 0px auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Correct the transform for centering */
     width: 90%;
     max-width: 500px;
     padding: 20px;
     z-index: 999;
+    box-sizing: border-box; /* Ensure padding does not affect width/height */
 }
 
 /* Header */
@@ -2606,6 +2620,49 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.subscribed {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #ffdd57, #ffb347);
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-family: 'Lato', sans-serif;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: pulse 1.5s infinite;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .subscribed i {
+        margin-right: 8px;
+        color: #ffecb3; /* Light yellow for the star */
+        font-size: 1.4rem;
+    }
+
+    .subscribed:hover {
+        transform: scale(1.05);
+        cursor: pointer;
+    }
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 6px 15px rgba(255, 215, 0, 0.8);
+    }
+
+    100% {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+}
+
 
 /* Profile Quick Buttons */
 .profile_quick_buttons {

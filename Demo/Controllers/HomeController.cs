@@ -21,12 +21,25 @@ public class HomeController : Controller
     {
         if (User.IsInRole("Member"))
         {
-            // Check if the user is not subscribed and hasn't dismissed the modal
-            ViewBag.IsSubscriber = HttpContext.Session.GetString($"close_{User.Identity.Name}") != "true";
+            // Check if the user is subscribed
+            bool isSubscribed = db.Members.Any(m => m.Id == User.Identity.Name && m.IsSubscribedToNewsletter);
+
+            // Check if the user has dismissed the modal (stored in session)
+            string sessionKey = $"close_{User.Identity.Name}";
+            bool isModalDismissed = HttpContext.Session.GetString(sessionKey) == "true";
+
+            // Set ViewBag.IsSubscriber based on the subscription and modal state
+            ViewBag.IsSubscriber = !isSubscribed && !isModalDismissed;
+        }
+        else
+        {
+            // Non-members should not see the modal
+            ViewBag.IsSubscriber = false;
         }
 
         return View();
     }
+
 
     [HttpPost]
     [Authorize(Roles = "Member")]

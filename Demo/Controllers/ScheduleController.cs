@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 using X.PagedList.Extensions;
+using Demo.Models;
 
 namespace Demo.Controllers;
 
@@ -17,6 +19,73 @@ public class ScheduleController : Controller
         this.db = db;
         this.en = en;
         this.hp = hp;
+    }
+
+    private void SendScheduleSubscribeMail(string email, string firstName, string lastName, int price, int discountPrice, string depart,string destination)
+    {
+        var fullName = $"{firstName} {lastName}";
+        var mail = new MailMessage();
+        mail.To.Add(new MailAddress(email, fullName));
+
+        mail.Subject = "Wow,Latest Schedule Bus Here Can Buy !";
+
+        mail.IsBodyHtml = true;
+
+
+        var UrlSchedule = Url.Action("Index", "Schedule","", "https");
+
+        string discountSection = discountPrice > 0
+            ? $@"
+            <p style='font-size: 16px; line-height: 1.8; color: #555555; text-align: justify;'>
+                We’re excited to bring you an amazing deal on your next journey! Travel from <strong>{depart}</strong> to <strong>{destination}</strong> at a special price of just 
+                <span style='color: #d9534f; font-weight: bold;'>RM {discountPrice}</span> (original price: <span style='text-decoration: line-through;'>RM {price}</span>).
+            </p>
+            "
+            : $@"
+            <p style='font-size: 16px; line-height: 1.8; color: #555555; text-align: justify;'>
+                Check out the latest schedule for your trip from <strong>{depart}</strong> to <strong>{destination}</strong>. Plan your journey with ease and book your tickets today!
+                <span style='color: #d9534f; font-weight: bold;'>Original price: <span>RM {price}</span>).
+            </p>
+            ";
+
+
+        // Email Body
+        mail.Body = $@"
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;'>
+                <div style='text-align: center; margin-bottom: 20px;'>
+                    <img src='cid:logo' alt='JM_Bus Logo' style='width: 120px; height: auto;'>
+                </div>
+                <h1 style='color: #d9534f; text-align: center; font-size: 24px;'>Exciting Bus Schedules Just for You!</h1>
+                <p style='font-size: 16px; line-height: 1.8; color: #555555; text-align: justify;'>
+                    Hello <strong>{fullName}</strong>,
+                </p>
+                {discountSection}
+                <div style='text-align: center; margin: 30px 0;'>
+                    <a href='{UrlSchedule}' style='background-color: #5cb85c; color: white; text-decoration: none; padding: 12px 30px; border-radius: 5px; font-size: 16px;'>View Schedules</a>
+                </div>
+                <p style='font-size: 14px; line-height: 1.6; color: #777777; text-align: justify;'>
+                    We look forward to serving you on your next journey. If you have any questions, please feel free to contact our support team.
+                </p>
+                <hr style='border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;'>
+                <div style='font-size: 12px; color: #999999; text-align: center;'>
+                    <p>
+                        This email was sent to you as a subscribed member of JM_Bus. If you no longer wish to receive updates, you can unsubscribe at any time.
+                    </p>
+                    <p>
+                        &copy; 2024 JM_Bus. All rights reserved.
+                    </p>
+                </div>
+            </div>";
+
+
+
+
+        //  Attach logo
+        var logoPath = Path.Combine(en.WebRootPath, "photo/images", "logo_JMBus.png");
+        mail.Attachments.Add(new Attachment(logoPath) { ContentId = "logo" });
+
+        // Send the email
+        hp.SendEmail(mail);
     }
 
     public string GetNextPrefixId(string tableName)
@@ -160,7 +229,23 @@ public class ScheduleController : Controller
 
         if (ModelState.IsValid)
         {
-                string SchedulesId = GetNextPrefixId("Schedules");
+            if (vm.SubscribeEmail == "Send")
+            {
+                // Fetch subscribed members who are subscribed to the newsletter
+                var subscribePersons = db.Subscriptionses
+                                         .Include(s => s.Member)
+                                         .Where(s => s.Member.IsSubscribedToNewsletter == true)
+                                         .ToList();
+
+                var RouteLocations = db.RouteLocations.FirstOrDefault(rl => rl.Id == vm.RouteId);
+                // Loop through each subscribed person and send the subscription email
+                foreach (var subscribedPerson in subscribePersons)
+                {
+                    SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination);
+                }
+            }
+
+            string SchedulesId = GetNextPrefixId("Schedules");
                 db.Schedules.Add(new()
                 {
                     Id = SchedulesId,

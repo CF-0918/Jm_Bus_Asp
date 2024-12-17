@@ -511,11 +511,11 @@ public class MaintenanceController : Controller
         return View(vm);
     }
 
-    //[Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EditMember(string id)
     {
         // Get staff/admin  record based on email (PK)
-        var m = db.Staffs.Find(id);
+        var m = db.Members.Find(id);
         if (m == null) return RedirectToAction("EditMember", "Maintenance");
 
         var vm = new EditMemberVM
@@ -539,7 +539,7 @@ public class MaintenanceController : Controller
     [HttpPost]
     public IActionResult EditMember(EditMemberVM vm, string id)
     {
-        var m = db.Staffs.Find(id);
+        var m = db.Members.Find(id);
         if (m == null) return RedirectToAction("EditMember", "Maintenance");
 
         if (vm.Photo != null)
@@ -556,6 +556,7 @@ public class MaintenanceController : Controller
             m.Age = vm.Age;
             m.Gender = vm.Gender;
             m.Phone = vm.PhoneNo;
+            m.Status = vm.Status;
 
             if (vm.Photo != null)
             {
