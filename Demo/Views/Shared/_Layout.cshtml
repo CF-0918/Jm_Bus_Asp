@@ -29,6 +29,9 @@
     @if (User.Identity!.IsAuthenticated){
 
         <nav class="user_login_status_nav">
+            @if(User.IsInRole("Admin")){
+                <a href="/Maintenance/ITSupport"><i class="fas fa-headset support-icon"></i> IT Support</a>
+            }
             <a href="/Account/LogOut">Log Out</a>
         </nav>
     }else{

@@ -3869,3 +3869,26 @@ input[type="range"]::-webkit-slider-thumb {
         flex: 1 1 100%;
     }
 }
+
+/* IT Supoort */
+.support-ticket-container {
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.price-info {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #333;
+}
+.support-icon {
+    font-size: 30px;
+    color: #4CAF50;
+    margin-right: 10px;
+}

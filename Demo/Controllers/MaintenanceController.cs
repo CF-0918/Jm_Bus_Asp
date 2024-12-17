@@ -1051,5 +1051,24 @@ public class MaintenanceController : Controller
         return View(m);
     
     }
+    //Get
+    [Authorize(Roles ="Admin")]
+    public IActionResult ITSupport()
+    {
+        return View();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public IActionResult ITSupport(ITSupportVM vm)
+    {
+        if (ModelState.IsValid)
+        {
+            TempData["Info"] = $"Your Ticket Has Submitted.Priority Level : {vm.Priority}";
+            return RedirectToAction("Dashboard", "Maintenance");
+        }
+
+        return View(vm);
+    }
 
 }

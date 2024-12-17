@@ -651,3 +651,12 @@ public class PaymentVM
     public string? VoucherId { get; set; }
 
 }
+
+public class ITSupportVM
+{
+    public string Priority { get; set; }
+    [Display(Name ="Domain Name System (DNS)")]
+    public string DNS {  get; set; }
+    public string Description { get; set; }
+
+}
