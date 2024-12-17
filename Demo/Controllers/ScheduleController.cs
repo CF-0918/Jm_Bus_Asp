@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 using X.PagedList.Extensions;
 using Demo.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Demo.Controllers;
 
@@ -324,4 +325,165 @@ public class ScheduleController : Controller
         return View(m);
 
     }
+
+
+    public IActionResult EditSchedule(string id)
+    {
+        // Retrieve the schedule record based on the ID
+        ViewBag.Buses = db.Buses.Where(b => b.Status == "Active");
+        ViewBag.Routes = db.RouteLocations;
+        var m = db.Schedules.Find(id);
+        if (m == null)
+            return RedirectToAction("ShowScheduleList", "Schedule"); // Redirect if schedule not found
+
+        // Prepare the view model
+        var vm = new EditScheduleVM
+        {
+            ScheduleId = m.Id, // Include ScheduleId for identifying the record during the update
+            DepartDate = m.DepartDate,
+            DepartTime = m.DepartTime,
+            Status = m.Status,
+            Price = m.Price,
+            DiscountPrice = m.DiscountPrice,
+            Remark = m.Remark,
+            BusId = m.BusId,
+            RouteId = m.RouteLocationId,
+            // Add properties to store buses and routes
+        };
+
+        return View(vm);
+    }
+
+
+    [HttpPost]
+    public IActionResult EditSchedule(EditScheduleVM vm, string id)
+    {
+        if (vm.Price <= 0)
+        {
+            ModelState.AddModelError("Price", "Price Should Not Be 0 Or Less Than.");
+        }
+
+        if (vm.DiscountPrice < 0)
+        {
+            ModelState.AddModelError("Price", "Discount Price Should Not Be Negative.");
+        }
+        if (vm.DepartDate < DateOnly.FromDateTime(DateTime.Today))
+        {
+            ModelState.AddModelError("DepartDate", "Depart Date Should Not Be Past");
+        }
+        // Check if the bus is available at the selected time
+        string busAvailabilityMessage;
+        bool isBusAvailable = CheckBusAvailableSlot_After(vm.BusId, vm.DepartDate, vm.DepartTime, out busAvailabilityMessage);
+
+        if (!isBusAvailable)
+        {
+            // Add the error message returned by the CheckBusAvailableSlot method
+            ModelState.AddModelError("", busAvailabilityMessage + "Ops");
+        }
+
+        if (ModelState.IsValid)
+        {
+            if (vm.SubscribeEmail == "Send")
+            {
+                // Fetch subscribed members who are subscribed to the newsletter
+                var subscribePersons = db.Subscriptionses
+                                         .Include(s => s.Member)
+                                         .Where(s => s.Member.IsSubscribedToNewsletter == true)
+                                         .ToList();
+
+                var RouteLocations = db.RouteLocations.FirstOrDefault(rl => rl.Id == vm.RouteId);
+                // Loop through each subscribed person and send the subscription email
+                foreach (var subscribedPerson in subscribePersons)
+                {
+                    SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination);
+                }
+            }
+
+            // Modify the existing schedule record
+            var m = db.Schedules.Find(id);
+            if (m == null)
+            {
+                TempData["Error"] = "m not found.";
+                return RedirectToAction("ShowmList", "m");
+            }
+
+            // Update the m details
+            m.DepartDate = vm.DepartDate;
+            m.DepartTime = vm.DepartTime;
+            m.Status = vm.Status;
+            m.Price = vm.Price;
+            m.DiscountPrice = vm.DiscountPrice;
+            m.Remark = vm.Remark;
+            m.BusId = vm.BusId;
+            m.RouteLocationId = vm.RouteId;
+
+            db.SaveChanges();
+            TempData["Info"] = "Schedule has been updated successfully.";
+            return RedirectToAction("ShowScheduleList", "Schedule");
+
+        }
+        //if fail valdiate
+        ViewBag.Buses = db.Buses.Where(b => b.Status == "Active");
+        ViewBag.Routes = db.RouteLocations;
+        return View(vm);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult UpdateScheduleStatus(string id, [FromBody] UpdateStatusVM model)
+    {
+        if (string.IsNullOrEmpty(id) || model == null)
+        {
+            return BadRequest("Invalid request.");
+        }
+
+        // Fetch the schedule from the database
+        var schedule = db.Schedules.Find(id);
+        if (schedule == null)
+        {
+            return NotFound("Schedule not found.");
+        }
+
+        // Update the status of the schedule
+        schedule.Status = model.Status; // "Active" or "Inactive"
+        db.SaveChanges();
+
+        return Ok(new { message = "Schedule status updated successfully." });
+    }
+
+
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult DeleteManySchedules(string[] ids)
+    {
+        if (ids != null && ids.Length > 0)
+        {
+            // Fetch the schedules based on the provided IDs
+            var schedulesToUpdate = db.Schedules.Where(s => ids.Contains(s.Id)).ToList();
+
+            // Check if any of the schedules are associated with a route
+            foreach (var schedule in schedulesToUpdate)
+            {
+                if (schedule.RouteLocationId != null) // Schedule is associated with a route
+                {
+                    // If the schedule is associated with a route, set its status to "Inactive"
+                    schedule.Status = "Inactive";
+                }
+                else
+                {
+                    // If the schedule is not associated with any route, add an error
+                    ModelState.AddModelError("", $"Schedule with ID {schedule.Id} cannot be deactivated because it is not associated with a route.");
+                    return Json(new { success = false, message = "One or more schedules cannot be deactivated because they are not associated with a route." });
+                }
+            }
+
+            // Save the changes to the database
+            db.SaveChanges();
+
+            TempData["Info"] = $"{schedulesToUpdate.Count} schedule(s) set to inactive.";
+        }
+
+        return RedirectToAction("ShowScheduleList"); // Redirect to the schedule list page
+    }
+
 }

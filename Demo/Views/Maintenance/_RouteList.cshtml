@@ -14,12 +14,12 @@
     Page @Model.PageNumber of @Model.PageCount
 </p>
 
-<form method="post" action="/Maintenance/" id="deleteManyForm">
+@* <form method="post" action="/Maintenance/" id="deleteManyForm">
     <p>
         <button type="button" data-check="ids">Check All</button>
         <button type="button" data-uncheck="ids">Uncheck All</button>
         <button type="submit">Delete Checked</button>
-    </p>
+    </p> *@
 
     <table class="table" id="target">
         <tr>
@@ -56,12 +56,13 @@
                 <td>@s.Hour</td>
                 <td>@s.Min</td>
                 <td>
-                    <button data-get="/Home/Detail/@s.Id">Detail</button>
+                    <a href="@Url.Action("EditRoute", "Maintenance", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
+                <button class="btn btn-danger btn-sm" onclick="deleteRoute('@s.Id')">Delete</button>
                 </td>
             </tr>
         }
     </table>
-</form>
+@* </form> *@
 
 
 <div>

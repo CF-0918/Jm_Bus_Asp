@@ -1,0 +1,74 @@
+﻿@model EditRouteVM;
+@{
+    ViewBag.Title = "Maintenance | Edit Route";
+
+    // List of states in Malaysia
+    string[] states = new string[] {
+        "Selangor", "Melaka", "Penang", "Kuala Lumpur", "Johor", "Perak", "Pahang", "Terengganu", "Kedah",
+        "Perlis", "Negeri Sembilan", "Sabah", "Sarawak", "Labuan", "Putrajaya"
+    };
+}
+<div asp-validation-summary="All" class="validation-summary"></div>
+<div class="back-button-container">
+    <a href="@Url.Action("ShowRouteList", "Maintenance")" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Staff List
+    </a>
+</div>
+<div class="schedule-container">
+    <div class="errorMessage" asp-validation-summary="All"></div>
+
+    <h2><i class="fas fa-road"></i> Edit Route</h2>
+
+    <small class="text-danger">**Please note: The estimated hour is just an approximation. The bus can be reused before the scheduled return time, if it's set for another day, provided it hasn't yet been used for the return journey.</small>
+
+    <form method="post">
+        <!-- Row for Depart and Destination -->
+        <div class="form-row mt-3">
+            <div class="form-group col-md-6">
+                <label asp-for="Depart"><i class="fas fa-location-arrow form-icon"></i> Depart</label>
+                <select asp-for="Depart">
+                    <option selected>Choose...</option>
+                    @foreach (var state in states)
+                    {
+                        <option value="@state">@state</option>
+                    }
+                </select>
+                <span class="errorMessage" asp-validation-for="Depart"></span>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label asp-for="Destination"><i class="fas fa-location-arrow form-icon"></i> Depart</label>
+                <select asp-for="Destination">
+                    <option selected>Choose...</option>
+                    @foreach (var state in states)
+                    {
+                        <option value="@state">@state</option>
+                    }
+                </select>
+                <span class="errorMessage" asp-validation-for="Destination"></span>
+            </div>
+        </div>
+
+        <!-- Row for Estimated Time -->
+        <div class="form-group">
+            <label><i class="fas fa-clock form-icon"></i> Estimated Time</label>
+            <div class="d-flex">
+                <!-- Estimated Hour -->
+                <div class="form-group mr-2">
+                    <input type="number" class="form-control" asp-for="Hour" placeholder="Hour" min="0" max="12">
+                    <span class="errorMessage" asp-validation-for="Hour"></span>
+                </div>
+                <span>:</span>
+                <!-- Estimated Min -->
+                <div class="form-group ml-2">
+                    <input type="number" class="form-control" asp-for="Min" placeholder="Min" min="0" max="59">
+                    <span class="errorMessage" asp-validation-for="Min"></span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit</button>
+    </form>
+</div>

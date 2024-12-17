@@ -29,5 +29,27 @@
                 clearTimeout(timer);
                 timer = setTimeout(() => $(e.target.form).submit(), 500);
             });
+
+                                    function deleteRoute(routeId) {
+                if (confirm('Are you sure you want to delete this route?')) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteRoute", "Maintenance")',
+                        type: 'POST',
+                        data: { routeId: routeId },  // Send the routeId to the server
+                        success: function (response) {
+                            if (response.success) {
+                                alert(response.message);  // Show success message
+                                // Remove the corresponding row from the table
+                                $('tr').has('input[value="' + routeId + '"]').remove();
+                            } else {
+                                alert(response.message);  // Show error message if the rank is in use
+                            }
+                        },
+                        error: function () {
+                            alert('There was an error processing your request.');
+                        }
+                    });
+                }
+            }
         </script>
     }

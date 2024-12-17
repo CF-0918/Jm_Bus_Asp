@@ -292,7 +292,7 @@ public class MaintenanceController : Controller
             db.SaveChanges();
 
             TempData["Info"] = "Profile updated.";
-            return RedirectToAction();
+            return RedirectToAction("StaffList", "Maintenance");
         }
         else
         {
@@ -567,7 +567,7 @@ public class MaintenanceController : Controller
             db.SaveChanges();
 
             TempData["Info"] = "Profile updated.";
-            return RedirectToAction();
+            return RedirectToAction("MemberList", "Maintenance");
         }
         else
         {
@@ -752,7 +752,7 @@ public class MaintenanceController : Controller
             db.SaveChanges();
 
             TempData["Info"] = "Bus updated.";
-            return RedirectToAction();
+            return RedirectToAction("ShowBusList", "Maintenance");
         }
         else
         {
@@ -1001,6 +1001,92 @@ public class MaintenanceController : Controller
         }
         return View(vm);
     }
+
+    public IActionResult EditRoute(string id)
+    {
+
+        // Get staff/admin  record based on email (PK)
+        var m = db.RouteLocations.Find(id);
+        if (m == null) return RedirectToAction("EditRoute", "Membership");
+
+        var vm = new EditRouteVM
+        {
+            Destination = m.Destination,
+            Depart = m.Depart,
+            Hour = m.Hour,
+            Min = m.Min,
+        };
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult EditRoute(EditRouteVM vm, string id)
+    {
+        var m = db.RouteLocations.Find(id);
+        if (vm.Depart == vm.Destination)
+        {
+            ModelState.AddModelError("", "Depart and Destination Should Not Be The Same !");
+        }
+        if (vm.Hour <= 0 || vm.Hour > 12)
+        {
+            ModelState.AddModelError("EstimatedTimeHour", "Hour should not more than 12 h or less than 1");
+        }
+        if (vm.Min <= 0 || vm.Min > 60)
+        {
+            ModelState.AddModelError("EstimatedTimeHour", "Hour should not more than 60 m or less than 1");
+        }
+        var isRouteInUse = db.Schedules.Any(s => s.RouteLocationId == id);
+        if (isRouteInUse)
+        {
+            ModelState.AddModelError("", "This route cannot be edited because it is associated with existing schedules.");
+        }
+
+        if (ModelState.IsValid)
+        {
+            {
+                m.Destination = vm.Destination;
+                m.Depart = vm.Depart;
+                m.Hour = vm.Hour;
+                m.Min = vm.Min;
+            };
+            db.SaveChanges();
+            TempData["Info"] = "Route updated.";
+            return RedirectToAction("ShowRouteList", "Maintenance");
+        }
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult DeleteRoute(string routeId)
+    {
+        // Check if the rank exists
+        var route = db.RouteLocations.FirstOrDefault(r => r.Id == routeId);
+        if (route == null)
+        {
+            TempData["Error"] = "Route not found.";
+            return Json(new { success = false, message = "Route not found." });
+        }
+
+        // Check if any member or staff is using this rank
+        bool isRouteInUse = db.Schedules.Any(s => s.RouteLocationId == routeId);
+        if (isRouteInUse)
+        {
+            ModelState.AddModelError("", "This route cannot be deleted because it is associated with existing schedules.");
+            return Json(new { success = false, message = "This route is currently in use by one or more schedules." });
+        }
+
+        // If not in use, delete the rank
+        db.RouteLocations.Remove(route);
+        db.SaveChanges();
+
+        TempData["Info"] = "Route deleted successfully.";
+        return Json(new { success = true, message = "Route deleted successfully." });
+    }
+
 
     public IActionResult ShowRouteList(string? name, string? sort, string? dir, int page = 1)
     {
