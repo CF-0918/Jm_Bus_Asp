@@ -33,13 +33,20 @@ public class MaintenanceController : Controller
     }
 
     //[Authorize(Roles = "Admin")]
-    public IActionResult StaffList(string? name, string? sort, string? dir, int page = 1)
+    public IActionResult StaffList(string? name, string? sort, string? dir, string? status, int page = 1)
     {
         // (1) Searching ------------------------
         ViewBag.Name = name = name?.Trim() ?? "";
 
         // Filter staff based on the search term
         var searched = db.Staffs.Where(s => string.IsNullOrEmpty(name) || s.FirstName.Contains(name) || s.LastName.Contains(name));
+
+        ViewBag.Status = status = status?.Trim() ?? "All";
+
+        if (status != "All")
+        {
+            searched = searched.Where(s => s.Status == status);
+        }
 
         // (2) Sorting --------------------------
         ViewBag.Sort = sort;
@@ -309,7 +316,7 @@ public class MaintenanceController : Controller
     }
 
     [Authorize(Roles = "Staff,Admin")]
-    public IActionResult MemberList(string? name, string? sort, string? dir, int page = 1)
+    public IActionResult MemberList(string? name, string? sort, string? status, string? dir, int page = 1)
     {
         // (1) Searching ------------------------
         ViewBag.Name = name = name?.Trim() ?? "";
@@ -320,6 +327,13 @@ public class MaintenanceController : Controller
         // (2) Sorting --------------------------
         ViewBag.Sort = sort;
         ViewBag.Dir = dir;
+
+        ViewBag.Status = status = status?.Trim() ?? "All";
+
+        if (status != "All")
+        {
+            searched = searched.Where(s => s.Status == status);
+        }
 
         // Define sorting logic
         Func<Member, object> fn = sort switch
@@ -655,12 +669,19 @@ public class MaintenanceController : Controller
     }
 
     //Get Request [Show Bus List]
-    public IActionResult ShowBusList(string? name, string? sort, string? dir, int page = 1)
+    public IActionResult ShowBusList(string? name, string? sort, string? status, string? dir, int page = 1)
     {
         // (1) Searching ------------------------
         ViewBag.Name = name = name?.Trim() ?? "";
 
         var searched = db.Buses.Where(s => s.Name.Contains(name));
+
+        ViewBag.Status = status = status?.Trim() ?? "All";
+
+        if (status != "All")
+        {
+            searched = searched.Where(s => s.Status == status);
+        }
 
         // (2) Sorting --------------------------
         ViewBag.Sort = sort;
