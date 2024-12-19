@@ -65,14 +65,16 @@ body {
 .discount-price {
     color: #e74c3c; /* Red color for discount */
     font-weight: bold; /* Make the discount stand out */
-    font-size: 1.2em; /* Slightly larger font size */
+    font-size: 1em; /* Slightly larger font size */
     margin-left: 10px; /* Space it out from the original price */
-    text-decoration: line-through; /* Strike-through the original price */
     padding: 0.2em 0.5em; /* Add some padding for better visibility */
     background-color: #f8d7da; /* Light red background to highlight the discount */
     border-radius: 5px; /* Slight rounding of the background */
 }
 
+.bus_seat_table tr:has(input:checked) td {
+    background: #ddd; /* Lighter gray */
+}
 .table th a.asc::after {
     content: ' ▴';
 }
@@ -2058,6 +2060,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .aisle {
+    z-index:2;
     background-color: #333;
 }
 
@@ -2125,7 +2128,17 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
     margin-top: 30px;
 }
-
+.reset_button {
+    margin-top: 30px;
+    background-color: #ccc;
+    color: #333;
+    border-radius: 15px;
+    border: 1px solid #999;
+    padding: 10px 20px;
+    font-size: 0.8em;
+    font-weight: 700;
+    cursor: pointer;
+}
 .photo_gallery {
     text-align: center;
     padding: 60px 20px;

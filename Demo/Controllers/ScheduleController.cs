@@ -5,6 +5,7 @@ using System.Net.Mail;
 using X.PagedList.Extensions;
 using Demo.Models;
 using Microsoft.AspNetCore.Authorization;
+using Demo.Migrations;
 
 namespace Demo.Controllers;
 
@@ -484,6 +485,157 @@ public class ScheduleController : Controller
         }
 
         return RedirectToAction("ShowScheduleList"); // Redirect to the schedule list page
+    }
+
+    [Authorize(Roles ="Member")]
+    public IActionResult SelectSeats(string id)
+    {
+ 
+        // Retrieve the schedule data by its ID (OW0001)
+        var schedule = db.Schedules
+            .Include(s => s.Bus)  // Include related Bus
+            .ThenInclude(b => b.CategoryBus)  // Include related CategoryBus for the Bus
+            .Include(s => s.RouteLocation)  // Include related RouteLocation
+            .FirstOrDefault(s => s.Id == id);  // Fetch by ScheduleId
+
+        if (schedule == null)
+        {
+            TempData["Info"] = "Schedule not found.";
+            return RedirectToAction("Index");
+        }
+
+        // Check if Bus and RouteLocation are null
+        if (schedule.Bus == null || schedule.RouteLocation == null)
+        {
+            TempData["Info"] = "Bus or RouteLocation data is missing.";
+            return RedirectToAction("Index");
+        }
+
+        // Retrieve booking seats based on the selected schedule
+        var bookingSeats = db.Bookings
+            .Where(b => b.ScheduleId == id)
+            .SelectMany(b => b.BookingSeats)
+            .ToList();
+
+        // Create a dictionary for the booked seats
+        var disctornaryBookedSeats = bookingSeats.ToDictionary(seat => seat.SeatNo, seat => "Booked");
+
+        // Check if schedule.Bus and schedule.Bus.Seats are not null before selecting seats
+        var seatList = db.Schedules
+       .Where(s => s.Id == id)  // Ensure you're filtering by the specific 'id'
+       .SelectMany(s => s.Bus.Seats.Select(seat => seat.SeatNo))  // Flatten the seats collection
+       .ToList();
+
+
+        if (seatList.Count <= 0||seatList==null)
+        {
+            TempData["Info"] = "Seat List Is empty cant find";
+        }
+        // Convert the schedule data into ScheduleSelectSeatsVM
+        var viewModel = new ScheduleSelectSeatsVM
+        {
+            ScheduleId = schedule.Id,
+            BusName = schedule.Bus.Name ?? "Unknown Bus",  // Default value if Bus.Name is null
+            CategoryName = schedule.Bus.CategoryBus?.Name ?? "Unknown Category",  // Null check for CategoryBus
+            Price = schedule.Price,
+            Discount = schedule.DiscountPrice,
+            DepartTime = schedule.DepartTime,
+            Depart = schedule.RouteLocation.Depart ?? "Unknown Depart Location",  // Default if Depart is null
+            Destination = schedule.RouteLocation.Destination ?? "Unknown Destination",  // Default if Destination is null
+            Hour = schedule.RouteLocation.Hour,
+            Minute = schedule.RouteLocation.Min,
+            SeatId = seatList,
+            BookedSeats = disctornaryBookedSeats  // Pass the booked seats here
+        };
+
+        // Return the view with the populated viewModel
+        return View(viewModel);
+    }
+
+    [Authorize(Roles = "Member")]
+    [HttpPost]
+    public IActionResult SelectSeats(string id,string[] seat)
+    {
+        //check scheudle Id
+
+        //verify seat
+        if (seat.Length <= 0)
+        {
+            TempData["Info"] = $"Schedule : {id},Please Select A Seat Before Proceed ! ";
+            ModelState.AddModelError("", "Seat Error");//use for block purpose only none use for here
+        }
+
+        //if all validaiton pass
+        if (ModelState.IsValid)
+        {
+            //call db
+
+
+            //if correct redirect to payment page
+            return RedirectToAction("Index");
+        }
+
+        //if user exceed error return the  original data back to let them see
+
+            // Retrieve the schedule data by its ID (OW0001)
+            var schedule = db.Schedules
+                .Include(s => s.Bus)  // Include related Bus
+                .ThenInclude(b => b.CategoryBus)  // Include related CategoryBus for the Bus
+                .Include(s => s.RouteLocation)  // Include related RouteLocation
+                .FirstOrDefault(s => s.Id == id);  // Fetch by ScheduleId
+
+            if (schedule == null)
+            {
+                TempData["Info"] = "Schedule not found.";
+                return RedirectToAction("Index");
+            }
+
+            // Check if Bus and RouteLocation are null
+            if (schedule.Bus == null || schedule.RouteLocation == null)
+            {
+                TempData["Info"] = "Bus or RouteLocation data is missing.";
+                return RedirectToAction("Index");
+            }
+
+            // Retrieve booking seats based on the selected schedule
+            var bookingSeats = db.Bookings
+                .Where(b => b.ScheduleId == id)
+                .SelectMany(b => b.BookingSeats)
+                .ToList();
+
+            // Create a dictionary for the booked seats
+            var disctornaryBookedSeats = bookingSeats.ToDictionary(seat => seat.SeatNo, seat => "Booked");
+
+            // Check if schedule.Bus and schedule.Bus.Seats are not null before selecting seats
+            var seatList = db.Schedules
+           .Where(s => s.Id == id)  // Ensure you're filtering by the specific 'id'
+           .SelectMany(s => s.Bus.Seats.Select(seat => seat.SeatNo))  // Flatten the seats collection
+           .ToList();
+
+
+            if (seatList.Count <= 0 || seatList == null)
+            {
+                TempData["Info"] = "Seat List Is empty cant find";
+            }
+            // Convert the schedule data into ScheduleSelectSeatsVM
+            var viewModel = new ScheduleSelectSeatsVM
+            {
+                ScheduleId = schedule.Id,
+                BusName = schedule.Bus.Name ?? "Unknown Bus",  // Default value if Bus.Name is null
+                CategoryName = schedule.Bus.CategoryBus?.Name ?? "Unknown Category",  // Null check for CategoryBus
+                Price = schedule.Price,
+                Discount = schedule.DiscountPrice,
+                DepartTime = schedule.DepartTime,
+                Depart = schedule.RouteLocation.Depart ?? "Unknown Depart Location",  // Default if Depart is null
+                Destination = schedule.RouteLocation.Destination ?? "Unknown Destination",  // Default if Destination is null
+                Hour = schedule.RouteLocation.Hour,
+                Minute = schedule.RouteLocation.Min,
+                SeatId = seatList,
+                BookedSeats = disctornaryBookedSeats  // Pass the booked seats here
+            };
+
+            // Return the view with the populated viewModel
+            return View(viewModel);
     }
 
 }

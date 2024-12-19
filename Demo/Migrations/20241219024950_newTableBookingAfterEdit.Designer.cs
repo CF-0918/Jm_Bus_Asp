@@ -4,6 +4,7 @@ using Demo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Migrations
 {
     [DbContext(typeof(DB))]
-    partial class DBModelSnapshot : ModelSnapshot
+    [Migration("20241219024950_newTableBookingAfterEdit")]
+    partial class newTableBookingAfterEdit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,7 +32,7 @@ namespace Demo.Migrations
 
                     b.Property<string>("MemberId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ScheduleId")
                         .IsRequired()
@@ -42,8 +45,6 @@ namespace Demo.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MemberId");
 
                     b.HasIndex("ScheduleId");
 
@@ -62,7 +63,7 @@ namespace Demo.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SeatNo")
+                    b.Property<string>("Seat_Id")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -295,6 +296,9 @@ namespace Demo.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ScheduleId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -304,6 +308,8 @@ namespace Demo.Migrations
                     b.HasIndex("BusId");
 
                     b.HasIndex("RouteLocationId");
+
+                    b.HasIndex("ScheduleId");
 
                     b.ToTable("Schedules");
                 });
@@ -537,19 +543,11 @@ namespace Demo.Migrations
 
             modelBuilder.Entity("Demo.Models.Booking", b =>
                 {
-                    b.HasOne("Demo.Models.Member", "Member")
-                        .WithMany()
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Demo.Models.Schedule", "Schedule")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("ScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Member");
 
                     b.Navigation("Schedule");
                 });
@@ -619,6 +617,10 @@ namespace Demo.Migrations
                         .HasForeignKey("RouteLocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Demo.Models.Schedule", null)
+                        .WithMany("Schedules")
+                        .HasForeignKey("ScheduleId");
 
                     b.Navigation("Bus");
 
@@ -698,7 +700,7 @@ namespace Demo.Migrations
 
             modelBuilder.Entity("Demo.Models.Schedule", b =>
                 {
-                    b.Navigation("Bookings");
+                    b.Navigation("Schedules");
                 });
 
             modelBuilder.Entity("Demo.Models.User", b =>

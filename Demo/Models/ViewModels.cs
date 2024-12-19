@@ -703,3 +703,21 @@ public class ITSupportVM
     public string Description { get; set; }
 
 }
+
+public class ScheduleSelectSeatsVM
+{
+    public string ScheduleId { get; set; }
+    public string BusName { get; set; }
+    public string CategoryName { get; set; }
+    public decimal Price { get; set; }
+    public decimal? Discount { get; set; }
+    public TimeOnly DepartTime { get; set; }
+    public string Depart { get; set; }
+    public string Destination { get; set; }
+    public int Hour { get; set; }
+    public int Minute { get; set; }
+    public List<string> SeatId { get; set; }
+    public Dictionary<string, string>? BookedSeats { get; set; }
+
+}
+

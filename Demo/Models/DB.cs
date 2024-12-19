@@ -28,6 +28,9 @@ public class DB : DbContext
     public DbSet<RouteLocation> RouteLocations { get; set; }
     public DbSet<Subscriptions> Subscriptionses { get; set; }
 
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<BookingSeat> BookingSeats { get; set; }
+
 }
 
 // Entity Classes -------------------------------------------------------------
@@ -192,7 +195,7 @@ public class CategoryBus
 public class Seat
 {
     [Key]
-    public int Id { get; set; }//auto increment
+    public int Id { get; set; } // Auto-increment primary key
 
     // Foreign Key
     public string BusId { get; set; }
@@ -202,6 +205,7 @@ public class Seat
     // Navigation Property
     public Bus Bus { get; set; } // Each seat belongs to one bus
 }
+
 
 public class Schedule
 {
@@ -222,6 +226,8 @@ public class Schedule
     // Navigation Property
     public Bus Bus { get; set; } 
     public RouteLocation RouteLocation { get; set; }
+
+    public List<Booking> Bookings { get; set; }   
 }
 
 public class RouteLocation
@@ -278,4 +284,40 @@ public class Subscriptions
     // Navigation Property
     public string MemberId { get; set; }
     public Member Member { get; set; } // Changed from List<Member> to Member for a one-to-one relationship
+}
+
+public class Booking
+{
+    [Key]
+    public string Id { get; set; }
+
+    public decimal Subtotal { get; set; }
+    public decimal Total { get; set; }
+
+    // Foreign Key
+    public string ScheduleId { get; set; }
+    public string MemberId { get; set; }
+
+    // Navigation Properties
+    public Schedule Schedule { get; set; }
+    public Member Member { get; set; }
+
+    // One-to-Many Relationship
+    public List<BookingSeat> BookingSeats { get; set; } // Corrected to List
+}
+
+
+public class BookingSeat
+{
+    [Key]
+    public int Id { get; set; }
+
+    public string SeatNo { get; set; }
+    public string Status { get; set; } // Booked / Cancelled
+
+    // Foreign Key
+    public string BookingId { get; set; }
+
+    // Navigation Property
+    public Booking Booking { get; set; } // Corrected to a single Booking
 }

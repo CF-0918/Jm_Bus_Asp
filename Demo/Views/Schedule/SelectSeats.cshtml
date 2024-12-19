@@ -1,0 +1,174 @@
+﻿@model ScheduleSelectSeatsVM
+@{
+    
+}
+
+<!-- Error will be bound here Yijun Please Take Note->
+<div class="errorMessage" asp-validation-summary="All"></div>
+
+
+<section style="width: 100%; margin: auto; background-color: #e0e0e0; padding: 20px 0px;">
+    <div style="width: 80%; margin: auto; border: 1px solid #ccc; border-radius: 8px; padding: 20px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
+        <!-- Header Section -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
+            <div>
+                <h3 style="margin: 0; font-size: 20px; color: #333;">@Model.BusName</h3>
+                <p style="margin: 0; font-size: 14px; color: #666;">@Model.Depart → @Model.Destination</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0; font-size: 14px; color: #666;">@Model.CategoryName</p>
+                @if (Model.Discount > 0)
+                {
+                    <p style="margin: 0; font-size: 18px; font-weight: bold; color: #333;">
+                        Price: <span style="text-decoration: line-through; color: #999;">RM @Model.Price</span>
+                        <span style="color: red;"> RM @Model.Discount</span>
+                    </p>
+                }
+                else
+                {
+                    <p style="margin: 0; font-size: 18px; font-weight: bold; color: #333;">
+                        Price: RM @Model.Price
+                    </p>
+                }
+
+            </div>
+        </div>
+
+        <!-- Details Section -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="margin: 0; font-size: 16px; color: #333;"><strong>Depart Time:</strong> @Model.DepartTime (@Model.Hour h @Model.Minute m)</p>
+                @{
+                    int availableSeats = Model.SeatId.Count - Model.BookedSeats.Count;
+                    string availableSeatsColor = availableSeats > 0 ? "#28a745" : "#dc3545"; // Green if > 0, Red if 0
+                }
+                <p style="margin: 0; font-size: 16px; font-weight: bold; color: #333;">
+                    Available Seats:
+                    <span style="color: @availableSeatsColor; font-size: 18px;">(@availableSeats)</span>
+                    / <span style="color: #007bff; font-size: 18px;">@Model.SeatId.Count</span>
+                </p>
+
+
+            </div>
+        </div>
+    </div>
+
+    <form  method="post" class="seat_container" style="margin-top: 20px; text-align: center;">
+        <div>
+            <h2>Seat Allocation</h2>
+            <div class="real_bus_seat_allocate_selection_container" style="margin: 20px auto; display: inline-block;">
+                <div class="driver text-center mb-3">
+                    <img src="/photo/images/seat-front.png" alt="Driver Area" class="driver-icon" style="width:100%;">
+                </div>
+
+                <table class="table table-borderless seat-table bus_seat_table" style="margin: auto;">
+                    @if (Model.SeatId != null && Model.SeatId.Any())
+                    {
+                        int seatCounter = 0;
+                        var bookedSeats = Model.BookedSeats; // Dictionary of booked seats
+
+                        // Calculate the number of rows dynamically
+                        int totalRows = (int)Math.Ceiling((double)Model.SeatId.Count / 4);
+
+                        for (int i = 0; i < totalRows; i++) // Loop through rows
+                        {
+                            <tr>
+                                @for (int j = 0; j < 5; j++) // 5 columns per row (2 seats, aisle, 2 seats)
+                                {
+                                    if (j == 2) // Add aisle in the middle
+                                    {
+                                        <td class="aisle" style="width: 20px;"></td>
+                                    }
+                                    else
+                                    {
+                                        if (seatCounter < Model.SeatId.Count)
+                                        {
+                                            string seatNo = Model.SeatId[seatCounter];
+                                            bool isBooked = bookedSeats.ContainsKey(seatNo);
+
+                                            <td class="seat" style="padding: 10px;">
+                                                <label class="seat-label">
+                                                    <input type="checkbox" class="seat-checkbox" name="seat[]" value="@seatNo" @(isBooked ? "disabled" : "")>
+                                                    <img src="/photo/images/@(isBooked ? "grey-v.png" : "white-seat.png")" alt="Seat" class="seat-image">
+                                                    <span class="seatNo">@seatNo</span>
+                                                </label>
+                                            </td>
+                                            seatCounter++;
+                                        }
+                                        else
+                                        {
+                                            <td></td> <!-- Empty cell for remaining spaces -->
+                                        }
+                                    }
+                                }
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <p>No seats available for selection.</p>
+                    }
+
+
+                </table>
+
+                <ul class="room_features" style="font-weight: 600;">
+                    <li style="font-size: 1.2em;"><i class="fas fa-road"></i>Seats : </li>
+                    <li style="font-size: 1.2em;"></i> Price : RM </li>
+                </ul>
+            </div>
+        </div>
+
+        <div>
+            <div class="seat_desc">
+                <div class="seat_available_desc">
+                    <img src="/photo/images/white-seat.png" alt="Available">
+                    <span>available</span>
+                </div>
+                <div class="seat_selected_desc">
+                    <img src="/photo/images/white-seat.png" alt="Available">
+                    <span>Selecting</span>
+                </div>
+                <div class="seat_taken_desc">
+                    <img src="/photo/images/grey-v.png" alt="Available">
+                    <span>Taken&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </div>
+
+            </div>
+
+            <input type="hidden" name="ScheduleId" value="@Model.ScheduleId"/>
+            <input type="submit" value="Proceed To Check Out" class="add_to_cart" />
+            <input type="reset" value="Clear" class="reset_button" />
+
+        </div>
+
+
+    </form>
+</section>
+
+<section class="photo_gallery">
+    <h2 class="gallery_title">
+        <i class="fas fa-image" aria-hidden="true"></i> Photo Gallery
+    </h2>
+
+    <p class="gallery_description">
+        <i class="fas fa-bus-alt" aria-hidden="true" style="color: #007bff;"></i>
+        Discover the <strong>scenic views</strong> and <strong>comfortable seating</strong> inside our bus.
+        Click the arrows <i class="fas fa-arrows-alt-h" aria-hidden="true" style="color: #ffc107;"></i> to explore the experience.
+    </p>
+
+    <div class="slider_container">
+        <button class="slider_arrow slider_arrow--left" aria-label="Previous">
+            &lt;
+        </button>
+        <div class="slider_track">
+            <div class="slider_item"><img src="house.jpg" alt="Photo 1"></div>
+            <div class="slider_item"><img src="250pic.jpg" alt="Photo 2"></div>
+            <div class="slider_item"><img src="grey-v.png" alt="Photo 3"></div>
+            <div class="slider_item"><img src="login-side-img.jpg" alt="Photo 4"></div>
+        </div>
+        <button class="slider_arrow slider_arrow--right" aria-label="Next">
+            &gt;
+        </button>
+    </div>
+</section>
