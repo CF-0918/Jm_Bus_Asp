@@ -12,6 +12,15 @@
                  new { type = "search", autofocus = "", data_trim = "", data_upper = "" })
 
     </div>
+        <div class="filter-group">
+            <!-- Status dropdown filter -->
+            <select name="status" class="filter_status" id="status">
+                <option value="All" selected="@(ViewBag.Status == "All")">All</option>
+                <option value="Active" selected="@(ViewBag.Status == "Active")">Active</option>
+                <option value="Inactive" selected="@(ViewBag.Status == "Inactive")">Inactive</option>
+                <option value="Expired" selected="@(ViewBag.Status == "Expired")">Expired</option>
+            </select>
+        </div>
     <button class="btn btn-primary">Search</button>
     <img src="/images/loader.gif" id="loader" style="display: none">
 </form>
@@ -73,6 +82,15 @@
                     });
                 });
             });
+
+                    document.addEventListener("DOMContentLoaded", function () {
+                    const statusDropdown = document.getElementById("status");
+
+                    statusDropdown.addEventListener("change", function () {
+                        // Trigger the form submission when the dropdown value changes
+                        this.form.submit();
+                    });
+                });
 
     </script>
 }

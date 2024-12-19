@@ -132,14 +132,21 @@ public class MembershipController : Controller
     [Authorize(Roles = "Staff,Admin")]
     public IActionResult Rank(RankVM vm)
     {
+        var maxMinSpend = db.Ranks.Max(r => (decimal?)r.MinSpend) ?? 0; // Default to 0 if no ranks exist
+
         if (ModelState.IsValid("Name") &&db.Ranks.Any(r => r.Name == vm.Name))
         {
             ModelState.AddModelError("Name", "Duplicated Rank Name.");
         }
 
+        // Check MinSpend rules
         if (vm.MinSpend < 0)
         {
             ModelState.AddModelError("MinSpend", "Min Spend must be a positive value.");
+        }
+        else if (vm.MinSpend <= maxMinSpend)
+        {
+            ModelState.AddModelError("MinSpend", $"Min Spend must be greater than the current maximum Min Spend of {maxMinSpend}.");
         }
         if (vm.Discounts < 0 || vm.Discounts > 100)
         {
@@ -195,10 +202,19 @@ public class MembershipController : Controller
 
         // Other validation and logic...
 
-
-        if (vm.MinSpend < 0)
+        // Only validate MinSpend if it is being changed
+        if (vm.MinSpend != m.MinSpend)
         {
-            ModelState.AddModelError("MinSpend", "Min Spend must be a positive value.");
+            var maxMinSpend = db.Ranks.Where(r => r.Id != id).Max(r => r.MinSpend);
+            if (vm.MinSpend <= maxMinSpend)
+            {
+                ModelState.AddModelError("MinSpend", $"Min Spend must be greater than the current maximum Min Spend of {maxMinSpend}.");
+            }
+
+            if (vm.MinSpend < 0)
+            {
+                ModelState.AddModelError("MinSpend", "Min Spend must be a positive value.");
+            }
         }
         if (vm.Discounts < 0 || vm.Discounts > 100)
         {
@@ -215,7 +231,7 @@ public class MembershipController : Controller
             };
             db.SaveChanges();
             TempData["Info"] = $"{vm.Name} Edited.";
-            return RedirectToAction();
+            return RedirectToAction("ShowRankList", "Membership");
         }
 
         return View(vm);
@@ -303,12 +319,19 @@ public class MembershipController : Controller
     }
 
     [Authorize(Roles = "Staff,Admin")]
-    public IActionResult ShowVoucherList(string? name, string? sort, string? dir, int page = 1)
+    public IActionResult ShowVoucherList(string? name, string? sort, string? status, string? dir, int page = 1)
     {
         // (1) Searching ------------------------
         ViewBag.Name = name = name?.Trim() ?? "";
 
         var searched = db.Vouchers.Where(s => s.Name.Contains(name));
+
+        ViewBag.Status = status = status?.Trim() ?? "All";
+
+        if (status != "All")
+        {
+            searched = searched.Where(s => s.Status == status);
+        }
 
         // (2) Sorting --------------------------
         ViewBag.Sort = sort;
@@ -428,7 +451,7 @@ public class MembershipController : Controller
             };
             db.SaveChanges();
             TempData["Info"] = $"{vm.Name} Edited.";
-            return RedirectToAction();
+            return RedirectToAction("ShowVoucherList", "Membership");
         }
 
         return View(vm);
@@ -470,7 +493,7 @@ public class MembershipController : Controller
             // Update the Status property to "Inactive"
             foreach (var voucher in voucherToUpdate)
             {
-                voucher.Status = "Draft";
+                voucher.Status = "Inactive";
             }
 
             // Save the changes to the database
