@@ -552,8 +552,6 @@ public class AccountController : Controller
     [Authorize(Roles = "Member")]
     public IActionResult UpdateProfile()
     {
-        // Get member record based on email (PK)
-        // Get member record based on email (PK)
         var m = db.Members.Include(member => member.Rank).FirstOrDefault(member => member.Id == User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
