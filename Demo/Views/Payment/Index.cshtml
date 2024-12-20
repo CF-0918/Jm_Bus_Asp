@@ -3,17 +3,18 @@
     ViewBag.Title = "Payment | Index";
 }
 
-<form class="container checkout-container">
+<form class="container checkout-container" method="post">
     <div class="row g-4">
         <!-- Payment Details Section -->
         <div class="col-md-6">
             <div class="payment-section-checkout">
                 <h2 class="mb-4"><i class="fas fa-bus"></i> Payment Details</h2>
+
                 <div class="errorMessage" asp-validation-summary="All"></div>
 
                 <div>
                     <!-- Card Type Selection -->   
-              <div class="mb-4 card_container_payment">
+                    <div class="mb-4 card_container_payment">
                         <label class="card-label" asp-for="CardType">
                             <input type="radio" asp-for="CardType" class="input-radio" id="maybank" value="maybank">
                             <img src="/photo/images/maybank.jpg" alt="Maybank">
@@ -43,37 +44,37 @@
                     <div class="mb-3">
                         <label asp-for="CardHolderName" class="form-label">Cardholder Name</label>
                         <input type="text" asp-for="CardHolderName" class="form-control"  placeholder="John Doe">
-                            <span class="errorMessage" asp-validation-for="CardHolderName"></span>
+                        <span class="errorMessage" asp-validation-for="CardHolderName"></span>
                     </div>
                     <!-- Card Number -->
                     <div class="mb-3">
                         <label asp-for="CardNumber" class="form-label">Card Number</label>
                         <input type="text" asp-for="CardNumber" class="form-control" placeholder="1234 5678 9012 3456">
-                            <span class="errorMessage" asp-validation-for="CardNumber"></span>
+                        <span class="errorMessage" asp-validation-for="CardNumber"></span>
                     </div>
                     <!-- Expiration and CVV -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label asp-for="ExpirationDate" class="form-label">Expiration Date</label>
                             <input type="text" asp-for="ExpirationDate" class="form-control" placeholder="MM/YY">
-                                <span class="errorMessage" asp-validation-for="ExpirationDate"></span>
+                            <span class="errorMessage" asp-validation-for="ExpirationDate"></span>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label asp-for="Cvv" class="form-label">CVV</label>
                             <input type="text"  asp-for="Cvv" class="form-control" placeholder="123">
-                                <span class="errorMessage" asp-validation-for="Cvv"></span>
+                            <span class="errorMessage" asp-validation-for="Cvv"></span>
                         </div>
                     </div>
                     <!-- Terms and Conditions -->
                     <div class="form-check mb-4">
-                        <input class="form-check-input" type="checkbox" asp-for="TermsCheck">
+                        <input class="form-check-input" type="checkbox" asp-for="TermsCheck" value="checked">
                         <label class="form-check-label" asp-for="TermsCheck">
                             I agree to the Terms and Conditions
                         </label>
-                            <span class="errorMessage" asp-validation-for="TermsCheck"></span>
+                        <span class="errorMessage" asp-validation-for="TermsCheck"></span>
                     </div>
                     <!-- Pay Now Button -->
-                    <button type="submit" class="btn btn-checkout w-100">Pay Now</button>
+                    <button type="submit" class="btn-checkout w-100">Pay Now</button>
                 </div>
             </div>
         </div>
@@ -81,79 +82,73 @@
         <!-- Review Section -->
         <div class="col-md-6">
             <div class="review-section-checkout">
-                <h2 class="mb-4">Review Your Cart</h2>
                 @{
                     var booking = ViewBag.BookingDetails;
                 }
 
                 @if (booking != null)
                 {
-                    <h1>Booking Details</h1>
-                    <p><strong>Booking ID:</strong> @booking.BookingId</p>
-                    <p><strong>Schedule ID:</strong> @booking.ScheduleId</p>
-                    <p><strong>Subtotal:</strong> @booking.Subtotal</p>
-                    <p><strong>Total:</strong> @booking.Total</p>
-                    <p><strong>Member ID:</strong> @booking.MemberId</p>
+                    <div class="booking-details">
+                        <h3><i class="fas fa-receipt"></i> Booking Details</h3>
+                        <p><strong><i class="fas fa-id-card"></i> Booking ID:</strong> @booking.BookingId</p>
+                        <p><strong><i class="fas fa-calendar-alt"></i> Schedule ID:</strong> @booking.ScheduleId</p>
+                        @if (ViewBag.RouteSchedules != null && ViewBag.RouteSchedules.RouteLocation != null)
+                        {
+                            <p><strong><i class="fas fa-map-marked-alt"></i> From:</strong> @ViewBag.RouteSchedules.RouteLocation.Depart -> @ViewBag.RouteSchedules.RouteLocation.Destination</p>
+                        }
+                        else
+                        {
+                            <p><strong><i class="fas fa-map-marked-alt"></i> From:</strong> Route details are not available.</p>
+                        }
+                        <p><strong><i class="fas fa-calendar-day"></i> Depart Date:</strong> @ViewBag.RouteSchedules.DepartDate</p>
+                        <p><strong><i class="fas fa-tag"></i> Price (per ticket):</strong> RM @booking.Price</p>
+                        <p><strong><i class="fas fa-users"></i> Total Seat:</strong> @booking.Qty (Qtys)</p>
+                        <hr />
+                        <p><strong><i class="fas fa-money-bill-wave"></i> Subtotal:</strong> RM @booking.Subtotal</p>
+                        <p><strong><i class="fas fa-percentage"></i> Tax (10%):</strong> RM @((booking.Subtotal * 10) / 100)</p>
+                        <p><strong><i class="fas fa-calculator"></i> Total:</strong> RM @booking.Total</p>
+                    </div>
 
-                    <h2>Seats</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Seat No</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var seat in booking.Seats)
-                            {
-                                <tr>
-                                    <td>@seat.SeatNo</td>
-                                    <td>@seat.Status</td>
-                                </tr>
+                    <div class="seats-booked">
+                        <h4><i class="fas fa-chair"></i> Seats Booked:</h4>
+                        <p>
+                            <i class="fas fa-chair"></i>
+                            <b>Seat No:</b>
+                            @{
+                                var seatNumbers = new List<string>();
+                                foreach (var seat in booking.Seats)
+                                {
+                                    seatNumbers.Add(seat.SeatNo);
+                                }
+                                var seatList = string.Join(", ", seatNumbers);
+                                @seatList
                             }
-                        </tbody>
-                    </table>
+                        </p>
+                    </div>
                 }
                 else
                 {
-                    <p>No booking details available.</p>
+                    <p class="no-booking">No booking details available.</p>
                 }
 
-                <!-- Discount Dropdown -->
-                    <div class="mb-4">
-                        <label asp-for="VoucherId" class="form-label">Discount Code</label>
-                 <select asp-for="VoucherId" class="form-select">
-                    <option selected>Select a code</option>
+                <input type="hidden" asp-for="BookingId" />
 
+                <div class="voucher-section">
+                    <label asp-for="VoucherId" class="form-label">
+                        <i class="fas fa-gift"></i> Discount Code
+                    </label>
+                    <select asp-for="VoucherId" class="form-select">
+                        <option value="0" selected>Select a code</option> <!-- Default value should be 0 or null -->
                         @foreach (var voucher in ViewBag.VouchersList)
-                            {
-                            <option style="text-transform:uppercase" value="@voucher.VoucherId">@voucher.VoucherName - Save RM @voucher.CashDiscount (@voucher.Qty qtys)</option>
+                        {
+                            <option style="text-transform:uppercase" value="@voucher.VoucherId">
+                                @voucher.VoucherName - Save RM @voucher.CashDiscount (@voucher.Qty qtys)
+                            </option>
                         }
-<                  </select>
-
-                        <button class="btn btn-checkout mt-3 w-100">Apply Discount</button>
-                    </div>
-             
-
-                <!-- Summary -->
-                <div class="d-flex justify-content-between">
-                    <span>Subtotal</span>
-                    <span>$45.00</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Shipping</span>
-                    <span>$5.00</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Discount</span>
-                    <span>-$10.00</span>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between fw-bold">
-                    <span>Total</span>
-                    <span>$40.00</span>
+                    </select>
                 </div>
             </div>
+
         </div>
     </div>
 </form>

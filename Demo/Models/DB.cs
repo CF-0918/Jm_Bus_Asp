@@ -118,7 +118,9 @@ public class Voucher
 
     public string Status { get; set; }
     // Navigation property to track which members have redeemed this voucher
-    public List<MemberVoucher> MemberVoucher { get; set; }
+    public List<Booking>? Bookings { get; set; }
+    public List<MemberVoucher>? MemberVoucher { get; set; }
+
 }
 
 // This class represents the join table between Member and Voucher
@@ -290,17 +292,22 @@ public class Booking
 {
     [Key]
     public string Id { get; set; }
-
+    public int Price {  get; set; }
+    public int Qty {  get; set; }
+    public string Status {  get; set; }
+    public DateTime BookingDateTime { get; set; }
     public decimal Subtotal { get; set; }
     public decimal Total { get; set; }
 
     // Foreign Key
+    public string? VoucherId { get; set; }
     public string ScheduleId { get; set; }
     public string MemberId { get; set; }
 
     // Navigation Properties
     public Schedule Schedule { get; set; }
     public Member Member { get; set; }
+    public Voucher? Voucher { get; set; } // Nullable navigation property
 
     // One-to-Many Relationship
     public List<BookingSeat> BookingSeats { get; set; } // Corrected to List

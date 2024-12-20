@@ -10,7 +10,7 @@
 <section style="width: 100%; margin: auto; background-color: #e0e0e0; padding: 20px 0px;">
     <div style="width: 80%; margin: auto; border: 1px solid #ccc; border-radius: 8px; padding: 20px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
         <!-- Header Section -->
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-around; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
             <div>
                 <h3 style="margin: 0; font-size: 20px; color: #333;">@Model.BusName</h3>
                 <p style="margin: 0; font-size: 14px; color: #666;">@Model.Depart → @Model.Destination</p>
@@ -35,7 +35,7 @@
         </div>
 
         <!-- Details Section -->
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-around; align-items: center;">
             <div>
                 <p style="margin: 0; font-size: 16px; color: #333;"><strong>Depart Time:</strong> @Model.DepartTime (@Model.Hour h @Model.Minute m)</p>
                 @{

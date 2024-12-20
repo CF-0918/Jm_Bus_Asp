@@ -12,7 +12,10 @@
         {
             foreach (var v in Model)
             {
-                <div class="voucher">
+                // Check if Amount is less than or equal to 0 to apply grey color
+                var voucherClass = v.Amount <= 0 ? "voucher grey" : "voucher";
+
+                <div class="@voucherClass">
                     <div class="voucher_header" style="background-color: #0071c5; color: white;">
                         @v.VoucherName
                     </div>

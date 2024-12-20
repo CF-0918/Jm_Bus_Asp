@@ -3650,6 +3650,21 @@ input[type="range"]::-webkit-slider-thumb {
         transform: translateY(-5px);
     }
 
+    /* Adding a grey color for vouchers with no available amount */
+    .voucher.grey {
+        background-color: #d3d3d3; /* Light grey background */
+        color: #a9a9a9; /* Light grey text color */
+    }
+
+        .voucher.grey .voucher_header {
+            background-color: #808080; /* Darker grey for the header */
+        }
+
+        .voucher.grey .voucher_status {
+            color: #6c757d; /* Grey color for status */
+        }
+
+
 .voucher_header {
     padding: 15px;
     color: #fff;
@@ -3821,9 +3836,90 @@ input[type="range"]::-webkit-slider-thumb {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.review-section-checkout {
+    font-family: 'Lato', sans-serif;
+    color: #333;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.booking-details h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #007bff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.booking-details p {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+    .booking-details p strong {
+        color: #495057;
+    }
+
+.seats-booked h4 {
+    font-size: 1.3em;
+    margin-top: 20px;
+    color: #28a745;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.seats-booked ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+    .seats-booked ul li {
+        margin: 5px 0;
+        line-height: 1.5;
+        color: #555;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+.voucher-section {
+    margin-top: 20px;
+}
+
+    .voucher-section label {
+        font-weight: bold;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .voucher-section select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        color: #495057;
+        background: #fff;
+        margin-top: 5px;
+        font-size: 1em;
+    }
+
+hr {
+    border: 1px solid #dee2e6;
+    margin: 20px 0;
+}
+
 .btn-checkout {
-    background-color: #007bff;
+    padding:8px 12px;
+    background-color:black;
     color: white;
+    border-radius:10px;
     border: none;
 }
 

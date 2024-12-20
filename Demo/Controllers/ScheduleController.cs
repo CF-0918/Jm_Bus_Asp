@@ -499,7 +499,7 @@ public class ScheduleController : Controller
             .Include(s => s.Bus)  // Include related Bus
             .ThenInclude(b => b.CategoryBus)  // Include related CategoryBus for the Bus
             .Include(s => s.RouteLocation)  // Include related RouteLocation
-            .FirstOrDefault(s => s.Id == id);  // Fetch by ScheduleId
+            .FirstOrDefault(s => s.Id == id &&s.Status=="Active");  // Fetch by ScheduleId
 
         if (schedule == null)
         {
@@ -514,14 +514,15 @@ public class ScheduleController : Controller
             return RedirectToAction("Index");
         }
 
-        // Retrieve booking seats based on the selected schedule
+        // Retrieve booking seats that are booked based on the selected schedule
         var bookingSeats = db.Bookings
             .Where(b => b.ScheduleId == id)
             .SelectMany(b => b.BookingSeats)
+            .Where(bs => bs.Status == "Booked"||bs.Status=="Pending") // Filter 
             .ToList();
 
         // Create a dictionary for the booked seats
-        var disctornaryBookedSeats = bookingSeats.ToDictionary(seat => seat.SeatNo, seat => "Booked");
+        var dictionaryBookedSeats = bookingSeats.ToDictionary(seat => seat.SeatNo, seat => "Booked");
 
         // Check if schedule.Bus and schedule.Bus.Seats are not null before selecting seats
         var seatList = db.Schedules
@@ -534,6 +535,7 @@ public class ScheduleController : Controller
         {
             TempData["Info"] = "Seat List Is empty cant find";
         }
+ 
         // Convert the schedule data into ScheduleSelectSeatsVM
         var viewModel = new ScheduleSelectSeatsVM
         {
@@ -548,7 +550,7 @@ public class ScheduleController : Controller
             Hour = schedule.RouteLocation.Hour,
             Minute = schedule.RouteLocation.Min,
             SeatId = seatList,
-            BookedSeats = disctornaryBookedSeats  // Pass the booked seats here
+            BookedSeats = dictionaryBookedSeats  // Pass the booked seats here
         };
 
         // Return the view with the populated viewModel
@@ -576,21 +578,53 @@ public class ScheduleController : Controller
 
         if (ModelState.IsValid)
         {
+            var pendingPaymentSchedulesRecord = db.Bookings.FirstOrDefault(b => b.ScheduleId == id && b.MemberId == User.Identity.Name && b.Status == "Pending");
+
+            if (pendingPaymentSchedulesRecord != null)
+            {
+                //TempData["Info"] = "You have a record of this booking in system,Please Complete Booking !";
+                //// Redirect to Payment Index with bookingId
+                //return RedirectToAction("Index", "Payment", new { bookingId = pendingPaymentSchedulesRecord.Id });
+              
+
+                //if checked user has a previous code and didnt check out still pending then cancelled the booking help him add another new one
+                pendingPaymentSchedulesRecord.Status = "Cancelled";
+                db.BookingSeats
+                .Where(bs => bs.BookingId == pendingPaymentSchedulesRecord.Id)
+                .ExecuteUpdate(bs => bs.SetProperty(b => b.Status, "Cancelled"));
+                db.SaveChanges();
+            }
+
             var schedules = db.Schedules.Find(id);
+            int schedulePrice = 0;
+
             if (schedules != null)
             {
+                if (schedules.DiscountPrice != 0)
+                {
+                    schedulePrice = schedules.DiscountPrice;
+                }
+                else
+                {
+                    schedulePrice = schedules.Price;
+                }
                 // Generate a new booking ID
                 string bookingId = GetNextPrefixId("Bookings");
 
                 // Calculate the subtotal and total
-                decimal subtotal = schedules.Price * seat.Length;
+                decimal subtotal = schedulePrice * seat.Length;
                 decimal total = (subtotal * 10 / 100) + subtotal;
 
                 // Create a new Booking entity
                 var newBooking = new Booking
                 {
                     Id = bookingId,
-                    Subtotal = subtotal,
+                    Price= schedulePrice,
+                    Qty=seat.Length,
+                    Status="Pending",
+                    VoucherId=null,
+                    BookingDateTime = DateTime.Now,
+                     Subtotal = subtotal,
                     Total = total,
                     ScheduleId = id,
                     MemberId = User.Identity.Name,
@@ -681,6 +715,12 @@ public class ScheduleController : Controller
 
             // Return the view with the populated viewModel
             return View(viewModel);
+    }
+
+    [Authorize(Roles ="Member")]
+    public IActionResult MemberBookingList()
+    {
+        return View();
     }
 
 }

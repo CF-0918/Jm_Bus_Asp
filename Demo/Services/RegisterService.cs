@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json.Nodes;
+using Microsoft.EntityFrameworkCore;
 namespace Demo.Services;
 
 public class RegisterService
@@ -60,22 +61,35 @@ public class RegisterService
         db.SaveChanges();
     }
 
-    public void PreventInvalidAccessPage()
+    public void CheckPendingBookingsDurationAndUpdate()
     {
-        // Get the user ID from claims
-        var userId = ct.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value;
+        var pendingBookings = db.Bookings
+            .Where(b => b.Status == "Pending") // Select only pending bookings
+            .ToList();
 
-        // If the user ID exists, check their status in the database
-        if (!string.IsNullOrEmpty(userId))
+        foreach (var booking in pendingBookings)
         {
-            var user = db.Users.FirstOrDefault(u => u.Id == userId);
-            if (user != null && user.Status == "Blocked") // Assuming 'Status' tracks if the user is banned
+            // Calculate the time difference between booking creation and now
+            if (booking.BookingDateTime.AddMinutes(5) <= DateTime.Now)
             {
-                // Log out the user if blocked
-                ct.HttpContext.SignOutAsync();
-                ct.HttpContext.Response.Redirect("/Account/Login"); // Redirect to login page
+                // Update the booking status to "Cancelled"
+                booking.Status = "Cancelled";
+
+                // Find all BookingSeats associated with this booking and update their statuses
+                var bookingSeats = db.BookingSeats
+                    .Where(bs => bs.BookingId == booking.Id)
+                    .ToList();
+
+                foreach (var seat in bookingSeats)
+                {
+                    seat.Status = "Cancelled";
+                }
             }
         }
+
+        // Save changes to the database
+        db.SaveChanges();
     }
+
 
 }
