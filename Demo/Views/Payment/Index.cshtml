@@ -82,16 +82,43 @@
         <div class="col-md-6">
             <div class="review-section-checkout">
                 <h2 class="mb-4">Review Your Cart</h2>
-                <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>DuoComfort Sofa Premium</span>
-                        <span>$20.00</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>IronOne Desk</span>
-                        <span>$25.00</span>
-                    </li>
-                </ul>
+                @{
+                    var booking = ViewBag.BookingDetails;
+                }
+
+                @if (booking != null)
+                {
+                    <h1>Booking Details</h1>
+                    <p><strong>Booking ID:</strong> @booking.BookingId</p>
+                    <p><strong>Schedule ID:</strong> @booking.ScheduleId</p>
+                    <p><strong>Subtotal:</strong> @booking.Subtotal</p>
+                    <p><strong>Total:</strong> @booking.Total</p>
+                    <p><strong>Member ID:</strong> @booking.MemberId</p>
+
+                    <h2>Seats</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Seat No</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var seat in booking.Seats)
+                            {
+                                <tr>
+                                    <td>@seat.SeatNo</td>
+                                    <td>@seat.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>No booking details available.</p>
+                }
+
                 <!-- Discount Dropdown -->
                     <div class="mb-4">
                         <label asp-for="VoucherId" class="form-label">Discount Code</label>

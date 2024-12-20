@@ -97,6 +97,9 @@ public class ScheduleController : Controller
         if (tableName == "Schedules")
         {
             currentMaxId = db.Schedules.Max(m => m.Id) ?? "OW0000"; // Default if table is empty
+        }else if (tableName == "Bookings")
+        {
+            currentMaxId = db.Bookings.Max(m => m.Id) ?? "BK0000"; // Default if table is empty
         }
         // Add more table cases as required
         else
@@ -557,7 +560,11 @@ public class ScheduleController : Controller
     public IActionResult SelectSeats(string id,string[] seat)
     {
         //check scheudle Id
-
+        if (id == null)
+        {
+            TempData["Info"] = $"No Id Founded ! ";
+            return RedirectToAction("Index");
+        }
         //verify seat
         if (seat.Length <= 0)
         {
@@ -565,14 +572,51 @@ public class ScheduleController : Controller
             ModelState.AddModelError("", "Seat Error");//use for block purpose only none use for here
         }
 
-        //if all validaiton pass
+        
+
         if (ModelState.IsValid)
         {
-            //call db
+            var schedules = db.Schedules.Find(id);
+            if (schedules != null)
+            {
+                // Generate a new booking ID
+                string bookingId = GetNextPrefixId("Bookings");
 
+                // Calculate the subtotal and total
+                decimal subtotal = schedules.Price * seat.Length;
+                decimal total = (subtotal * 10 / 100) + subtotal;
 
-            //if correct redirect to payment page
-            return RedirectToAction("Index");
+                // Create a new Booking entity
+                var newBooking = new Booking
+                {
+                    Id = bookingId,
+                    Subtotal = subtotal,
+                    Total = total,
+                    ScheduleId = id,
+                    MemberId = User.Identity.Name,
+                    BookingSeats = new List<BookingSeat>() // Initialize the child collection
+                };
+
+                // Populate the BookingSeats collection
+                foreach (var seatNo in seat)
+                {
+                    newBooking.BookingSeats.Add(new BookingSeat
+                    {
+                        SeatNo = seatNo,
+                        Status = "Pending"
+                    });
+                }
+
+                // Add the new booking to the database
+                db.Bookings.Add(newBooking);
+
+                // Save changes to the database
+                db.SaveChanges();
+                TempData["Info"] = $"Shchedule : {id} , Total Seat : {seat.Length} has been inserted to DB,Status:Pending";
+
+                // Redirect to Payment Index with bookingId
+                return RedirectToAction("Index", "Payment", new { bookingId = bookingId });
+            }
         }
 
         //if user exceed error return the  original data back to let them see
@@ -601,10 +645,11 @@ public class ScheduleController : Controller
             var bookingSeats = db.Bookings
                 .Where(b => b.ScheduleId == id)
                 .SelectMany(b => b.BookingSeats)
+                 .Where(bs => bs.Status == "Booked" || bs.Status == "Pending") // Filter by Status
                 .ToList();
 
             // Create a dictionary for the booked seats
-            var disctornaryBookedSeats = bookingSeats.ToDictionary(seat => seat.SeatNo, seat => "Booked");
+            var disctornaryBookedSeats = bookingSeats.ToDictionary(seat => seat.SeatNo, seat => seat.Status);
 
             // Check if schedule.Bus and schedule.Bus.Seats are not null before selecting seats
             var seatList = db.Schedules

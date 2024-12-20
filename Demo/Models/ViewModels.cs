@@ -683,6 +683,7 @@ public class SubscribeNewsLetterVM
 }
 public class PaymentVM
 {
+    public string BookingId { get; set; }
     public string CardType {  get; set; }
     public string CardHolderName {  get; set; }
     public string CardNumber { get; set; }

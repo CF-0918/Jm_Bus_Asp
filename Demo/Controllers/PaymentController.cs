@@ -19,8 +19,39 @@ public class PaymentController : Controller
         this.hp = hp;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(string bookingId)
     {
+        // Now is fetch Booking Type
+        // Fetch booking and related booking seats
+        var bookingDetails = db.Bookings
+            .Where(b => b.Id == bookingId)
+            .Select(b => new
+            {
+                BookingId = b.Id,
+                ScheduleId = b.ScheduleId,
+                Subtotal = b.Subtotal,
+                Total = b.Total,
+                MemberId = b.MemberId,
+                Seats = b.BookingSeats
+                    .Where(bs => bs.Status == "Pending") 
+                    .Select(bs => new
+                    {
+                        SeatNo = bs.SeatNo,
+                        Status = bs.Status
+                    }).ToList()
+            })
+            .FirstOrDefault();
+
+        if (bookingDetails == null)
+        {
+            TempData["Info"] = "Booking Details is null here!";
+            return RedirectToAction("Index", "Schedule");
+        }
+
+
+        ViewBag.BookingDetails = bookingDetails;
+        //Below is used for voucher Fetching
+
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
 
         // Get the vouchers list
@@ -38,11 +69,6 @@ public class PaymentController : Controller
 
             // Store the voucherIds in TempData
             TempData["Info"] = voucherIds;
-        }
-        else
-        {
-            // Store the voucherIds in TempData
-            TempData["Info"] = "Nothing in the voucher list ";
         }
 
         // Map to ViewModel
@@ -63,7 +89,6 @@ public class PaymentController : Controller
     [HttpPost]
     public IActionResult Index(PaymentVM vm)
     {
-
             var currentDate = DateOnly.FromDateTime(DateTime.Now);
 
             // Get the vouchers list
