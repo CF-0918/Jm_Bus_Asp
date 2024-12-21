@@ -70,7 +70,7 @@ public class RegisterService
         foreach (var booking in pendingBookings)
         {
             // Calculate the time difference between booking creation and now
-            if (booking.BookingDateTime.AddMinutes(5) <= DateTime.Now)
+            if (booking.BookingDateTime.AddMinutes(2) <= DateTime.Now)
             {
                 // Update the booking status to "Cancelled"
                 booking.Status = "Cancelled";
@@ -88,6 +88,31 @@ public class RegisterService
         }
 
         // Save changes to the database
+        db.SaveChanges();
+    }
+
+    public void RealTimeUpdateMemberRank()
+    {
+        var memberList = db.Members.ToList();
+        var rankList = db.Ranks.OrderByDescending(r => r.MinSpend).ToList(); // Sort ranks by MinSpend descending
+
+        foreach (var member in memberList)
+        {
+            foreach (var rank in rankList)
+            {
+                // Check if the member meets the minimum spend requirement for the rank
+                if (member.MinSpend >= rank.MinSpend)
+                {
+                    // Only update if the new rank is higher than the current rank
+                    if (member.RankId == null || rank.MinSpend > rankList.First(r => r.Id == member.RankId).MinSpend)
+                    {
+                        member.RankId = rank.Id; // Assign the highest eligible rank
+                    }
+                    break; // Stop checking lower ranks since ranks are sorted by MinSpend
+                }
+            }
+        }
+
         db.SaveChanges();
     }
 

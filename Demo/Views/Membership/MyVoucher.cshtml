@@ -12,11 +12,12 @@
         {
             foreach (var v in Model)
             {
-                // Check if Amount is less than or equal to 0 to apply grey color
-                var voucherClass = v.Amount <= 0 ? "voucher grey" : "voucher";
+                // Check if Amount is less than or equal to 0 or Status is "Expired" to apply grey color
+                var voucherClass = (v.Amount <= 0 || v.Status == "Expired") ? "voucher grey" : "voucher";
+
 
                 <div class="@voucherClass">
-                    <div class="voucher_header" style="background-color: #0071c5; color: white;">
+                    <div class=" voucher_header" style="background-color: black; color: white;">
                         @v.VoucherName
                     </div>
                     <div class="voucher_body">
@@ -36,9 +37,23 @@
                             <b>Points Needed:</b> @v.PointNeeded pts
                         </p>
                         <p class="voucher_status">
-                            <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
-                            <b>Status:</b> <span class="status_active">@v.Status</span>
+                            @if (v.Status == "Inactive")
+                            {
+                                <i class="fas fa-clock" style="color: orange; margin-right: 5px;"></i>
+                                <b>Status:</b> <span class="status_pending">Inactive</span>
+                            }
+                            else if (v.Status == "Expired")
+                            {
+                                <i class="fas fa-times-circle" style="color: red; margin-right: 5px;"></i>
+                                <b>Status:</b> <span class="status_expired">Expired</span>
+                            }
+                            else if (v.Status == "Active")
+                            {
+                                <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
+                                <b>Status:</b> <span class="status_active">Active</span>
+                            }
                         </p>
+
                         <p class="voucher_qty">
                             <i class="fas fa-box" style="color: #007bff; margin-right: 5px;"></i>
                             <b>Qty:</b> <span>@v.Amount</span>

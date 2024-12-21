@@ -84,7 +84,9 @@
             <div class="review-section-checkout">
                 @{
                     var booking = ViewBag.BookingDetails;
+                    var userRanks = ViewBag.UserRanks;
                 }
+
 
                 @if (booking != null)
                 {
@@ -106,7 +108,35 @@
                         <hr />
                         <p><strong><i class="fas fa-money-bill-wave"></i> Subtotal:</strong> RM @booking.Subtotal</p>
                         <p><strong><i class="fas fa-percentage"></i> Tax (10%):</strong> RM @((booking.Subtotal * 10) / 100)</p>
-                        <p><strong><i class="fas fa-calculator"></i> Total:</strong> RM @booking.Total</p>
+                        @if (userRanks != null && userRanks.Discounts > 0)
+                        {
+                         
+                            decimal total = (booking.Subtotal * 10 / 100) + booking.Subtotal;
+                            decimal discountAmount = (total * userRanks.Discounts) / 100;
+
+                            if (discountAmount!=0){
+                                <p><strong><i class="fas fa-calculator"></i> Total:</strong> RM <span>@total</span></p>
+                                <hr />
+                                <p>
+                                    <strong>
+                                        <i class="fas fa-percentage"></i> Discounts (@userRanks.Name) (-@userRanks.Discounts%):
+                                    </strong>
+                                    RM @discountAmount
+                                </p>
+                            }
+                 
+                        }
+                        <p style="font-size:19px; font-weight: bold; color: #28a745; background-color: #f8f9fa; padding: 10px; border-radius: 5px; border: 2px solid #28a745; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <strong>
+                                <i class="fas fa-money-bill-wave"></i> Overall Total:
+                            </strong>
+                            RM <span id="bookingTotal" style="font-size: 19px; color: #155724; font-weight: bold;">@booking.Total</span>
+                        </p>
+
+
+
+
+         
                     </div>
 
                     <div class="seats-booked">
@@ -137,11 +167,12 @@
                     <label asp-for="VoucherId" class="form-label">
                         <i class="fas fa-gift"></i> Discount Code
                     </label>
-                    <select asp-for="VoucherId" class="form-select">
+                    <select asp-for="VoucherId" id="VoucherIdSelect" class="form-select">
                         <option value="0" selected>Select a code</option> <!-- Default value should be 0 or null -->
                         @foreach (var voucher in ViewBag.VouchersList)
                         {
-                            <option style="text-transform:uppercase" value="@voucher.VoucherId">
+                            <option style="text-transform:uppercase" data-cashdiscount="@voucher.CashDiscount" value="@voucher.VoucherId">
+                                
                                 @voucher.VoucherName - Save RM @voucher.CashDiscount (@voucher.Qty qtys)
                             </option>
                         }
@@ -152,3 +183,40 @@
         </div>
     </div>
 </form>
+
+@section foot {
+    <script>
+
+         $(document).ready(function () {
+            // Store the initial booking total
+            var originalTotal = parseFloat($("#bookingTotal").text().replace(/[^0-9.-]/g, ""));
+
+            $("#VoucherIdSelect").change(function () {
+                var voucherValue = $(this).val(); // Get selected voucher value
+                var bookingTotal = parseFloat($("#bookingTotal").text().replace(/[^0-9.-]/g, "")); // Get current total as number
+
+                if (voucherValue !== "0") {
+                    // Get the discount value from the selected option's data attribute
+                    var discount = parseFloat($(this).find("option:selected").data("cashdiscount") || 0);
+
+                    // Calculate and update total
+                    var newTotal = bookingTotal - discount;
+                    $("#bookingTotal").text(newTotal.toFixed(2)) // Update total display
+                        .css({
+                            "color": "green",
+                            "font-size": "1.5rem",
+                            "font-weight": "bold"
+                        });
+                } else {
+                    // Reset to the original total if no valid voucher is selected
+                    $("#bookingTotal").text(originalTotal.toFixed(2));
+                       
+                }
+            });
+        });
+
+
+
+        
+    </script>
+}

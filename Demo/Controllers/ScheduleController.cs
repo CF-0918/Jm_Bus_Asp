@@ -23,7 +23,7 @@ public class ScheduleController : Controller
         this.hp = hp;
     }
 
-    private void SendScheduleSubscribeMail(string email, string firstName, string lastName, int price, int discountPrice, string depart,string destination)
+    private void SendScheduleSubscribeMail(string email, string firstName, string lastName, int price, int discountPrice, string depart,string destination,string scheduleId)
     {
         var fullName = $"{firstName} {lastName}";
         var mail = new MailMessage();
@@ -34,7 +34,7 @@ public class ScheduleController : Controller
         mail.IsBodyHtml = true;
 
 
-        var UrlSchedule = Url.Action("Index", "Schedule","", "https");
+        var UrlSchedule = Url.Action("SelectSeats", "Schedule", new { id = scheduleId }, "https");
 
         string discountSection = discountPrice > 0
             ? $@"
@@ -234,6 +234,8 @@ public class ScheduleController : Controller
 
         if (ModelState.IsValid)
         {
+            string SchedulesId = GetNextPrefixId("Schedules");
+
             if (vm.SubscribeEmail == "Send")
             {
                 // Fetch subscribed members who are subscribed to the newsletter
@@ -246,11 +248,10 @@ public class ScheduleController : Controller
                 // Loop through each subscribed person and send the subscription email
                 foreach (var subscribedPerson in subscribePersons)
                 {
-                    SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination);
+                    SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination, SchedulesId);
                 }
             }
 
-            string SchedulesId = GetNextPrefixId("Schedules");
                 db.Schedules.Add(new()
                 {
                     Id = SchedulesId,
@@ -399,7 +400,7 @@ public class ScheduleController : Controller
                 // Loop through each subscribed person and send the subscription email
                 foreach (var subscribedPerson in subscribePersons)
                 {
-                    SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination);
+                    SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination,vm.ScheduleId);
                 }
             }
 
@@ -493,9 +494,17 @@ public class ScheduleController : Controller
     [Authorize(Roles ="Member")]
     public IActionResult SelectSeats(string id)
     {
- 
-        // Retrieve the schedule data by its ID (OW0001)
-        var schedule = db.Schedules
+
+        //additonal notification to let user know
+        var pendingPaymentSchedulesRecord = db.Bookings.FirstOrDefault(b => b.ScheduleId == id && b.MemberId == User.Identity.Name && b.Status == "Pending");
+
+        if (pendingPaymentSchedulesRecord != null)
+        {
+            ViewBag.PendingBookingId= pendingPaymentSchedulesRecord.Id;
+        }
+
+            // Retrieve the schedule data by its ID (OW0001)
+            var schedule = db.Schedules
             .Include(s => s.Bus)  // Include related Bus
             .ThenInclude(b => b.CategoryBus)  // Include related CategoryBus for the Bus
             .Include(s => s.RouteLocation)  // Include related RouteLocation
@@ -574,11 +583,9 @@ public class ScheduleController : Controller
             ModelState.AddModelError("", "Seat Error");//use for block purpose only none use for here
         }
 
-        
-
+        var pendingPaymentSchedulesRecord = db.Bookings.FirstOrDefault(b => b.ScheduleId == id && b.MemberId == User.Identity.Name && b.Status == "Pending");
         if (ModelState.IsValid)
         {
-            var pendingPaymentSchedulesRecord = db.Bookings.FirstOrDefault(b => b.ScheduleId == id && b.MemberId == User.Identity.Name && b.Status == "Pending");
 
             if (pendingPaymentSchedulesRecord != null)
             {
@@ -613,7 +620,23 @@ public class ScheduleController : Controller
 
                 // Calculate the subtotal and total
                 decimal subtotal = schedulePrice * seat.Length;
+
                 decimal total = (subtotal * 10 / 100) + subtotal;
+                
+                var member = db.Members.FirstOrDefault(m => m.Id == User.Identity.Name);
+                var rankMember = db.Ranks.FirstOrDefault(r => r.Id == member.RankId);
+
+                if (rankMember.Discounts > 0)
+                {
+                    var discountAmount = (total * rankMember.Discounts) / 100;
+                    total = total - discountAmount;
+
+                    Console.WriteLine($"Discount Applied: {discountAmount}");
+                    Console.WriteLine($"Total After Discount: {total}");
+                }
+
+
+
 
                 // Create a new Booking entity
                 var newBooking = new Booking
@@ -655,8 +678,13 @@ public class ScheduleController : Controller
 
         //if user exceed error return the  original data back to let them see
 
-            // Retrieve the schedule data by its ID (OW0001)
-            var schedule = db.Schedules
+        if (pendingPaymentSchedulesRecord != null)
+        {
+            ViewBag.PendingBookingId = pendingPaymentSchedulesRecord.Id;
+        }
+
+        // Retrieve the schedule data by its ID (OW0001)
+        var schedule = db.Schedules
                 .Include(s => s.Bus)  // Include related Bus
                 .ThenInclude(b => b.CategoryBus)  // Include related CategoryBus for the Bus
                 .Include(s => s.RouteLocation)  // Include related RouteLocation

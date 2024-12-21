@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp.Memory;
+using System.Reflection.Metadata;
+using System.Security.Principal;
 
 namespace Demo.Controllers;
 
@@ -62,6 +64,11 @@ public class PaymentController : Controller
             return RedirectToAction("Index", "Schedule");
         }
 
+        var ranks = db.Members
+                   .Include(m => m.Rank) // Include Rank relationship
+                   .FirstOrDefault(m => m.Id == User.Identity.Name);
+
+        ViewBag.UserRanks = ranks?.Rank; // Pass only the Rank information
         ViewBag.RouteSchedules = routeSchedules;
 
         ViewBag.BookingDetails = bookingDetails;
@@ -73,18 +80,8 @@ public class PaymentController : Controller
         var vouchersList = db.MemberVouchers
             .Where(mv => mv.MemberId == User.Identity!.Name &&mv.Amount>0)
             .Include(mv => mv.Voucher)
-           .Where(mv => mv.Voucher.Status == "Active" && mv.Voucher.CashDiscount < bookingDetails.Total) // Compare voucher discount with booking total
+           .Where(mv => mv.Voucher.Status == "Active" && mv.Voucher.CashDiscount <=bookingDetails.Total) // Compare voucher discount with booking total
             .ToList();
-
-        // Check if vouchersList contains any items and loop through them
-        if (vouchersList.Any())
-        {
-            // Loop through the vouchers and extract the VoucherId
-            var voucherIds = string.Join(", ", vouchersList.Select(mv => mv.VoucherId.ToString()));
-
-            // Store the voucherIds in TempData
-            TempData["Info"] = voucherIds;
-        }
 
         // Map to ViewModel
         var voucherUserDetailsList = vouchersList.Select(mv => new VoucherUserDetailsVM
@@ -100,7 +97,7 @@ public class PaymentController : Controller
         return View();
     }
 
-   [Authorize]
+   [Authorize(Roles ="Member")]
     [HttpPost]
     public IActionResult Index(PaymentVM vm)
     {
@@ -120,6 +117,7 @@ public class PaymentController : Controller
             {
                 // Update booking status
                 bookingDetailsDB.Status = "Booked";
+                decimal total = bookingDetailsDB.Total;
 
                 // Find the member and update the points and minSpend property
                 var member = db.Members.Find(User.Identity.Name);
@@ -134,13 +132,7 @@ public class PaymentController : Controller
                     if (vouchersDB != null)
                     {
                         // Calculate the discounted total
-                        decimal totalSpend = bookingDetailsDB.Total - vouchersDB.CashDiscount;
-
-                        // Ensure the total spend doesn't go negative
-                        if (totalSpend < 0)
-                        {
-                            totalSpend = 0;
-                        }
+                        decimal totalSpend =total - vouchersDB.CashDiscount;
 
                         // Round the total spend to the nearest integer for points calculation
                         int roundedTotalSpendPoints = (int)Math.Round(totalSpend, MidpointRounding.AwayFromZero);
@@ -148,7 +140,8 @@ public class PaymentController : Controller
                         // Update member's minimum spend and points
                         member.MinSpend += totalSpend;
                         member.Points += roundedTotalSpendPoints;
-                        TempData["Info"] = $"The POoints after {roundedTotalSpendPoints} , {totalSpend}  has been completed.";
+                        TempData["Info"] = $"The Points after {roundedTotalSpendPoints} , {totalSpend}  has been completed.";
+
                         // Update the voucher quantity in MemberVouchers
                         var memberVoucher = db.MemberVouchers.FirstOrDefault(mv => mv.VoucherId == vm.VoucherId);
                         if (memberVoucher != null)
@@ -225,6 +218,9 @@ public class PaymentController : Controller
             return RedirectToAction("Index", "Schedule");
         }
 
+        var ranks = db.Members.Include(s => s.Rank).FirstOrDefault(m => m.Id == User.Identity.Name);
+
+        ViewBag.UserRanks = ranks;
         ViewBag.RouteSchedules = routeSchedules;
 
         ViewBag.BookingDetails = bookingDetails;

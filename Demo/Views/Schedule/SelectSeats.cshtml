@@ -1,6 +1,6 @@
 ﻿@model ScheduleSelectSeatsVM
 @{
-    
+    ViewBag.Title = "Schedule | Select Seats";
 }
 
 <!-- Error will be bound here Yijun Please Take Note->
@@ -8,8 +8,26 @@
 
 
 <section style="width: 100%; margin: auto; background-color: #e0e0e0; padding: 20px 0px;">
+
     <div style="width: 80%; margin: auto; border: 1px solid #ccc; border-radius: 8px; padding: 20px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
         <!-- Header Section -->
+        @if (ViewBag.PendingBookingId != null)
+        {
+    <div class="pending-order-notification" style="padding: 15px; background-color: #fff3cd; border-left: 5px solid #ffc107; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <h4 style="color: #856404; font-weight: bold; margin-bottom: 10px;">
+            <i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i> Pending Booking Notification
+        </h4>
+        <p style="color: #856404; font-size: 16px; margin-bottom: 10px;">
+            There is a pending booking for this schedule. Do you want to continue?
+        </p>
+        <a href="/Payment?bookingId=@ViewBag.PendingBookingId" style="display: inline-block; padding: 10px 15px; background-color: #ffc107; color: #856404; text-decoration: none; font-weight: bold; border-radius: 3px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            Click Here to Review Booking
+        </a>
+        <p style="margin-top: 15px; color: #856404; font-size: 14px;">
+            <strong>Note:</strong> If you wish to disregard the previous booking, you may continue selecting seats and proceed with the checkout process. The previous booking will be automatically canceled, and a new booking will be generated upon successful checkout.
+        </p>
+    </div>
+        }
         <div style="display: flex; justify-content: space-around; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
             <div>
                 <h3 style="margin: 0; font-size: 20px; color: #333;">@Model.BusName</h3>
