@@ -291,18 +291,7 @@ $(document).ready(function () {
         fileInput.click();
     });
 
- 
-// Get the value from the hidden input
-const ticketId = $('#ticketId').val();
-const ticketComfimationURL="http://192.168.0.176:5500/Rent_Bus.html?ticketId="+ticketId;
-console.log("Ticket ID:", ticketId); // Debug: Check if ticketId is fetched correctly
 
-// Generate QR code
-$('#qrcode').qrcode({
-    text: ticketComfimationURL, // Use the variable value
-    width: 128,
-    height: 128
-});
 
 
 });

@@ -6,6 +6,7 @@ using X.PagedList.Extensions;
 using Demo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Demo.Migrations;
+using System.Numerics;
 
 namespace Demo.Controllers;
 
@@ -78,9 +79,6 @@ public class ScheduleController : Controller
                     </p>
                 </div>
             </div>";
-
-
-
 
         //  Attach logo
         var logoPath = Path.Combine(en.WebRootPath, "photo/images", "logo_JMBus.png");
@@ -745,10 +743,80 @@ public class ScheduleController : Controller
             return View(viewModel);
     }
 
-    [Authorize(Roles ="Member")]
-    public IActionResult MemberBookingList()
+    [Authorize(Roles = "Member")]
+    public IActionResult MyBookingList(string? id, string? sort, string? dir, int page = 1)
     {
+        // (1) Searching ------------------------
+        ViewBag.Name = id = id?.Trim() ?? "";
+
+        // Filter bookings by ID and join with Schedule and RouteLocations
+        var searched = db.Bookings
+            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name &&b.Status!="Cancelled")
+            .Join(db.Schedules,
+                booking => booking.ScheduleId,
+                schedule => schedule.Id,
+                (booking, schedule) => new { booking, schedule })
+            .Join(db.RouteLocations,
+                combined => combined.schedule.RouteLocationId,
+                route => route.Id,
+                (combined, route) => new {
+                    combined.booking,
+                    combined.schedule,
+                    route
+                });
+
+        // (2) Sorting --------------------------
+        ViewBag.Sort = sort;
+        ViewBag.Dir = dir;
+
+        Func<dynamic, object> fn = sort switch
+        {
+            "Id" => item => item.booking.Id,
+            "Status" => item => item.booking.Status,
+            "Qty" => item => item.booking.Qty,
+            "BookingDateTime" => item => item.booking.BookingDateTime,
+            "Total" => item => item.booking.Total,
+            "RouteLocation" => item => item.route.Depart,
+            "DepartDate" => item => item.schedule.DepartDate,
+            "DepartTime" => item => item.schedule.DepartTime,
+            _ => item => item.booking.Id,
+        };
+
+        var sorted = dir == "desc" ? searched.OrderByDescending(fn) : searched.OrderBy(fn);
+
+        // (3) Paging ---------------------------
+        if (page < 1)
+        {
+            return RedirectToAction(null, new { id, sort, dir, page = 1 });
+        }
+
+        var pagedResult = sorted.ToPagedList(page, 10);
+
+        if (page > pagedResult.PageCount && pagedResult.PageCount > 0)
+        {
+            return RedirectToAction(null, new { id, sort, dir, page = pagedResult.PageCount });
+        }
+
+        // Return partial view for AJAX requests
+        if (Request.IsAjax())
+        {
+            return PartialView("_MyBookingScheduleList", pagedResult);
+        }
+
+        // Return full view
+        return View(pagedResult);
+    }
+
+    //Get Request - in here we just want to show result then no need opne another HttpPost
+    public IActionResult TicketDetails(string id)
+    {
+        //run db
+
+        //fetch result store in view bag  pass to view
+
+
         return View();
     }
+
 
 }

@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "Schedule | My Booking List";
+}
+
+
+
+@Html.Hidden("sort", "", new { form = "f" })
+@Html.Hidden("dir", "", new { form = "f" })
+
+
+<div class="container">
+    <!-- AJAX form for search -->
+    <form data-ajax="true"
+          data-ajax-update="#target"
+          data-ajax-loading="#loader"
+          id="f">
+        <div class="form-group">
+            <input type="search" name="name" autofocus value="@ViewBag.Name" placeholder="Search by name" class="form-control" id="name" />
+        </div>
+        <div class="filter-group">
+           
+        </div>
+        <button class="btn btn-primary">Search</button>
+        <img src="/photo/images/loader.gif" id="loader" style="display: none" />
+    </form>
+
+    <div id="target">
+        <partial name="_MyBookingScheduleList">
+    </div>
+
+
+
+    @section foot {
+
+        <script>
+            let timer = null;
+
+            // Focus at the end of the input field after page load
+            document.addEventListener('DOMContentLoaded', function () {
+                var input = document.getElementById('name');
+                if (input) {
+                    input.setSelectionRange(input.value.length, input.value.length); // Set cursor at the end
+                    input.focus(); // Focus on the input field
+                }
+            });
+
+            // Handle input event for the search field
+            $('#name').on('input', function (e) {
+                clearTimeout(timer); // Clear the previous timeout
+                timer = setTimeout(function () {
+                    // Submit the form after 500ms delay
+                    $(e.target.form).submit();
+                }, 500);
+            });
+
+                    // Check All Button
+            document.querySelector('[data-check="ids"]').addEventListener('click', function() {
+                document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
+                    checkbox.checked = true;
+                });
+            });
+
+            // Uncheck All Button
+            document.querySelector('[data-uncheck="ids"]').addEventListener('click', function() {
+                document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
+                    checkbox.checked = false;
+                });
+            });
+
+                        document.addEventListener("DOMContentLoaded", function () {
+                        const statusDropdown = document.getElementById("status");
+
+                        statusDropdown.addEventListener("change", function () {
+                            // Trigger the form submission when the dropdown value changes
+                            this.form.submit();
+                        });
+                    });
+
+        </script>
+    }

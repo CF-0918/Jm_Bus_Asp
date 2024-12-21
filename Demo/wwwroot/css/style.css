@@ -9,14 +9,14 @@ body {
     /* Enables horizontal scroll if content overflows */
 }
 
-.Active{
+.Active,.Booked{
     color:green;
 }
-.Inactive,.InActive{
+.Inactive,.InActive,.Pending{
     color:orange;
 }
 
-.Expired,.Suspended,.Deleted,.Blocked{
+.Expired,.Suspended,.Deleted,.Blocked,.Cancelled{
     color:red;
 }
 /* Flash Message -------------------------------------------------------------- */

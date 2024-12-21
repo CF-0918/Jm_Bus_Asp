@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "My Booking Ticket";
+}
+
+<section class="ticket-section">
+
+    <a href="#" class="list_of_all_tickets">
+        <i class="fas fa-ticket"></i>
+        ALL
+    </a>
+    <!-- Header -->
+    <div class="ticket-header">
+        <div class="ticket-header-left">
+            <img src="/photo/images/logo_JMBus.png" alt="JMBus Logo" class="ticket-logo">
+            <h1 class="ticket-title">Booking ID :  @ViewBag.BookingId</h1>
+        </div>
+        <input type="hidden" id="ticketId" name="ticketId" value="@ViewBag.BookingId">
+        <div class="ticket-header-right">
+            <div id="qrcode" class="ticket-qrcode"></div>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="ticket-body">
+        <h4 class="ticket-info-title">Ticket Information</h4>
+        <p class="ticket-info-item"><strong>Bus:</strong> T250</p>
+        <p class="ticket-info-item"><strong>Route : KL <i class="fas fa-exchange"></i> Melaka</strong></p>
+        <p class="ticket-info-item"><strong>Depart Date & Time:</strong> 20/12/2022 9:00 AM</p>
+        <p class="ticket-info-item"><strong>Back Date & Time:</strong> 25/12/2022 9:00 AM</p>
+        <p class="ticket-info-item">
+            <span class="ticket-type two-way"><i class="fas fa-ticket-alt"></i> Two-way Ticket</span>
+        </p>
+        <p class="ticket-info-item"><strong>Payment Status:</strong> <span class="payment-status paid">Paid</span></p>
+        <h3 class="seat-info"><strong>Seat Numbers:</strong> A01, A02, A03</h3>
+    </div>
+
+    <!-- Footer -->
+    <table class="ticket-footer">
+        <thead>
+            <tr>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>RM 60</td>
+                <td>3</td>
+                <td>RM 180</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Subtotal</strong></td>
+                <td><strong>RM 180</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <span class="remark">* Remark: Payment is made in Invoice 001</span>
+</section>
+
+@section foot {
+    <!-- Include the jQuery QRCode library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Get the value from the hidden input
+            const ticketId = $('#ticketId').val();
+            const ticketConfirmationURL = "" + ticketId;
+            console.log("Ticket ID:", ticketId); // Debug: Check if ticketId is fetched correctly
+
+            // Generate QR code
+            $('#qrcode').qrcode({
+                text: ticketConfirmationURL, // Use the dynamic URL
+                width: 128, // QR code width
+                height: 128 // QR code height
+            });
+        });
+    </script>
+}

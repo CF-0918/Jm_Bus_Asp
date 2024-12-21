@@ -171,7 +171,7 @@ public class PaymentController : Controller
                 db.SaveChanges();
 
                 TempData["Info"] = $"The booking {vm.BookingId} has been completed.";
-                return RedirectToAction("MemberBookingList", "Schedule");
+                return RedirectToAction("MyBookingList", "Schedule");
             }
             else
             {
