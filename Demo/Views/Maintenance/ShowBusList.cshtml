@@ -29,70 +29,97 @@
     <partial name="_BusList">
 </div>
 
-@section foot {
-    <script>
-        let timer = null;
+    @section foot {
+        <script>
+            let timer = null;
 
-        $('#name').on('input', e => {
-            clearTimeout(timer);
-            timer = setTimeout(() => $(e.target.form).submit(), 500);
-        });
+            // Input event for searching by name
+            $('#name').on('input', e => {
+                clearTimeout(timer);
+                timer = setTimeout(() => $(e.target.form).submit(), 500);
+            });
 
-                            // Check All Button
-            document.querySelector('[data-check="ids"]').addEventListener('click', function() {
-                document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
-                    checkbox.checked = true;
+            // Check All Button - Event Delegation
+            document.addEventListener("DOMContentLoaded", function () {
+                document.body.addEventListener("click", function (event) {
+                    if (event.target && event.target.getAttribute("data-check") === "ids") {
+                        // Select all checkboxes with name 'ids'
+                        document.querySelectorAll('input[name="ids"]').forEach(function (checkbox) {
+                            checkbox.checked = true;
+                        });
+                    }
+                });
+
+                // Uncheck All Button - Event Delegation
+                document.body.addEventListener("click", function (event) {
+                    if (event.target && event.target.getAttribute("data-uncheck") === "ids") {
+                        // Uncheck all checkboxes with name 'ids'
+                        document.querySelectorAll('input[name="ids"]').forEach(function (checkbox) {
+                            checkbox.checked = false;
+                        });
+                    }
                 });
             });
 
-            // Uncheck All Button
-            document.querySelector('[data-uncheck="ids"]').addEventListener('click', function() {
-                document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
-                    checkbox.checked = false;
+            // Handle Status Change for Buses
+            function attachStatusChangeListener() {
+                const statusDropdowns = document.querySelectorAll(".status-dropdown");
+
+                statusDropdowns.forEach(dropdown => {
+                    dropdown.removeEventListener("change", handleStatusChange); // Remove previous event listener
+                    dropdown.addEventListener("change", handleStatusChange);
                 });
+            }
+
+            // Handle the status change logic
+            function handleStatusChange(event) {
+                const busId = this.getAttribute("data-bus-id");
+                const newStatus = this.value;
+
+                if (confirm("Are you sure you want to change the bus status?")) {
+                    fetch(`/Maintenance/UpdateBusStatus/${busId}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ status: newStatus })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Bus status updated successfully.");
+                            location.reload(); // Reload to reflect changes (optional)
+                        } else {
+                            alert("Failed to update bus status.");
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+                } else {
+                    // Reset dropdown to the original value if the user cancels
+                    this.value = this.querySelector("option[selected]").value;
+                }
+            }
+
+            // Reattach status change listener after AJAX content update
+            $(document).ajaxComplete(function () {
+                attachStatusChangeListener();
             });
 
-     
-                document.addEventListener("DOMContentLoaded", function () {
-                    const statusDropdowns = document.querySelectorAll(".status-dropdown");
+            // Attach the status change listener initially when the page loads
+            document.addEventListener("DOMContentLoaded", function () {
+                attachStatusChangeListener();
+            });
 
-                    statusDropdowns.forEach(dropdown => {
-                        dropdown.addEventListener("change", function () {
-                            const busId = this.getAttribute("data-bus-id");
-                            const newStatus = this.value;
+            // Ensure the form is submitted when the status dropdown is changed
+            document.addEventListener("DOMContentLoaded", function () {
+                const statusDropdown = document.getElementById("status");
 
-                            if (confirm("Are you sure you want to change the bus status?")) {
-                                fetch(`/Maintenance/UpdateBusStatus/${busId}`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ status: newStatus })
-                                })
-                                .then(response => {
-                                    if (response.ok) {
-                                        alert("Bus status updated successfully.");
-                                        location.reload(); // Reload to reflect changes (optional)
-                                    } else {
-                                        alert("Failed to update bus status.");
-                                    }
-                                })
-                                .catch(error => console.error("Error:", error));
-                            } else {
-                                // Reset dropdown to the original value if the user cancels
-                                this.value = this.querySelector("option[selected]").value;
-                            }
-                        });
+                if (statusDropdown) {
+                    statusDropdown.addEventListener("change", function () {
+                        // Trigger the form submission when the dropdown value changes
+                        this.form.submit();
                     });
-                });
-
-                        document.addEventListener("DOMContentLoaded", function () {
-                        const statusDropdown = document.getElementById("status");
-
-                        statusDropdown.addEventListener("change", function () {
-                            // Trigger the form submission when the dropdown value changes
-                            this.form.submit();
-                        });
-                    });
+                }
+            });
+        </script>
+    }
 
 
-    </script>
-}
+

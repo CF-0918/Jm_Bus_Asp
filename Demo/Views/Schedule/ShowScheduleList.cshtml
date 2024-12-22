@@ -2,7 +2,6 @@
     ViewBag.Title = "Maintenance | Schedule List";
 }
 
-
 <div class="container">
     <form data-ajax="true"
           data-ajax-update="#target"
@@ -11,6 +10,15 @@
         <div class="form-group">
                     <label for="search">Depart Date : </label>
             <input type="date" name="name" id="name" autofocus />
+        </div>
+
+        <div class="filter-group">
+            <!-- Status dropdown filter -->
+            <select name="status" class="filter_status" id="status">
+                <option value="All" selected="@(ViewBag.Status == "All")">All</option>
+                <option value="Active" selected="@(ViewBag.Status == "Active")">Active</option>
+                <option value="Inactive" selected="@(ViewBag.Status == "Inactive")">Inactive</option>
+            </select>
         </div>
         <button class="btn btn-primary">Search</button>
         <img src="/images/loader.gif" id="loader" style="display: none">
@@ -24,59 +32,92 @@
         <script>
             let timer = null;
 
-            $('#name').on('input', e => {
-                clearTimeout(timer);
-                timer = setTimeout(() => $(e.target.form).submit(), 500);
+            // Focus at the end of the input field after page load
+            document.addEventListener('DOMContentLoaded', function () {
+                var input = document.getElementById('name');
+                if (input) {
+                    input.setSelectionRange(input.value.length, input.value.length); // Set cursor at the end
+                    input.focus(); // Focus on the input field
+                }
             });
 
-                                // Check All Button
-                document.querySelector('[data-check="ids"]').addEventListener('click', function() {
-                    document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
-                        checkbox.checked = true;
-                    });
+            // Handle input event for the search field
+            $('#name').on('input', function (e) {
+                clearTimeout(timer); // Clear the previous timeout
+                timer = setTimeout(function () {
+                    // Submit the form after 500ms delay
+                    $(e.target.form).submit();
+                }, 500);
+            });
+
+            // Check All Button (using event delegation)
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.addEventListener('click', function (event) {
+                    if (event.target && event.target.getAttribute('data-check') === 'ids') {
+                        // Select all checkboxes with name 'ids'
+                        document.querySelectorAll('input[name="ids"]').forEach(function (checkbox) {
+                            checkbox.checked = true;
+                        });
+                    }
                 });
 
-                // Uncheck All Button
-                document.querySelector('[data-uncheck="ids"]').addEventListener('click', function() {
-                    document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
-                        checkbox.checked = false;
-                    });
+                // Uncheck All Button (using event delegation)
+                document.body.addEventListener('click', function (event) {
+                    if (event.target && event.target.getAttribute('data-uncheck') === 'ids') {
+                        // Uncheck all checkboxes with name 'ids'
+                        document.querySelectorAll('input[name="ids"]').forEach(function (checkbox) {
+                            checkbox.checked = false;
+                        });
+                    }
                 });
+            });
 
+            // Using event delegation to handle status dropdown change for Schedule
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.addEventListener('change', function (event) {
+                    if (event.target && event.target.classList.contains('status-dropdown')) {
+                        const scheduleId = event.target.getAttribute('data-bus-id'); // Schedule-specific ID
+                        const newStatus = event.target.value;
 
-            document.addEventListener("DOMContentLoaded", function () {
-                const statusDropdowns = document.querySelectorAll(".status-dropdown");
-
-                statusDropdowns.forEach(dropdown => {
-                    dropdown.addEventListener("change", function () {
-                        const scheduleId = this.getAttribute("data-bus-id");  // Get schedule ID (not bus ID)
-                        const newStatus = this.value;
-
-                        // Confirm if the user really wants to update the status
-                        if (confirm("Are you sure you want to change the schedule status?")) {
-                            fetch(`/Schedule/UpdateScheduleStatus/${scheduleId}`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ status: newStatus })
+                        if (confirm('Are you sure you want to change the schedule status?')) {
+                            fetch(`/Schedule/UpdateScheduleStatus/${scheduleId}`, { // Pass scheduleId in URL
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: newStatus }) // Send status only
                             })
                             .then(response => {
                                 if (response.ok) {
-                                    alert("Schedule status updated successfully.");
-                                    location.reload(); // Reload the page to reflect the changes (optional)
+                                    alert('Schedule status updated successfully.');
+                                    location.reload(); // Reload to reflect changes (optional)
                                 } else {
-                                    alert("Failed to update schedule status.");
+                                    alert('Failed to update schedule status.');
                                 }
                             })
-                            .catch(error => console.error("Error:", error));
+                            .catch(error => console.error('Error:', error));
                         } else {
-                            // Reset the dropdown to its original value if the user cancels the action
-                            this.value = this.querySelector("option[selected]").value;
+                            // Reset dropdown to the original value if the user cancels
+                            event.target.value = event.target.querySelector('option[selected]').value;
                         }
-                    });
+                    }
                 });
             });
 
+            // Ensure that the form is submitted when the status dropdown is changed
+            document.addEventListener("DOMContentLoaded", function () {
+                const statusDropdown = document.getElementById("status");
 
+                statusDropdown.addEventListener("change", function () {
+                    // Trigger the form submission when the dropdown value changes
+                    this.form.submit();
+                });
+            });
 
+            // Reattach event listeners after the page content is updated via AJAX
+            $(document).ajaxComplete(function() {
+                // Re-attach listeners after the content has been updated
+                attachEventListeners();
+            });
         </script>
+
+
     }

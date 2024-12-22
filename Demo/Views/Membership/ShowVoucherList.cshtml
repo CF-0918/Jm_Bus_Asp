@@ -29,39 +29,41 @@
     <partial name="_VoucherList">
 </div>
 
-@section foot {
-    <script>
-        let timer = null;
+    @section foot {
+        <script>
+            // Delay the search input submission to avoid excessive requests
+            let timer = null;
 
-        $('#name').on('input', e => {
-            clearTimeout(timer);
-            timer = setTimeout(() => $(e.target.form).submit(), 500);
-        });
-
-                            // Check All Button
-            document.querySelector('[data-check="ids"]').addEventListener('click', function() {
-                document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
-                    checkbox.checked = true;
-                });
+            $('#name').on('input', e => {
+                clearTimeout(timer);
+                timer = setTimeout(() => $(e.target.form).submit(), 500);
             });
 
-            // Uncheck All Button
-            document.querySelector('[data-uncheck="ids"]').addEventListener('click', function() {
-                document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
-                    checkbox.checked = false;
+            // Attach event listeners after the content is dynamically updated via AJAX
+            function attachEventListeners() {
+                // Check All Button
+                document.querySelector('[data-check="ids"]')?.addEventListener('click', function() {
+                    document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
+                        checkbox.checked = true;
+                    });
                 });
-            });
 
-                        document.addEventListener("DOMContentLoaded", function () {
+                // Uncheck All Button
+                document.querySelector('[data-uncheck="ids"]')?.addEventListener('click', function() {
+                    document.querySelectorAll('input[name="ids"]').forEach(function(checkbox) {
+                        checkbox.checked = false;
+                    });
+                });
+
+                // Status Dropdowns - change event listener for each voucher's status change
                 const statusDropdowns = document.querySelectorAll(".status-dropdown");
-
                 statusDropdowns.forEach(dropdown => {
                     dropdown.addEventListener("change", function () {
-                        const voucherId = this.getAttribute("data-voucher-id");  // Change to voucher-id
+                        const voucherId = this.getAttribute("data-voucher-id");
                         const newStatus = this.value;
 
-                        if (confirm("Are you sure you want to change the voucher status?")) {  // Updated message
-                            fetch(`/Membership/UpdateVoucherStatus/${voucherId}`, {  // Controller URL for voucher
+                        if (confirm("Are you sure you want to change the voucher status?")) {
+                            fetch(`/Membership/UpdateVoucherStatus/${voucherId}`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ status: newStatus })
@@ -69,7 +71,7 @@
                             .then(response => {
                                 if (response.ok) {
                                     alert("Voucher status updated successfully.");
-                                    location.reload(); // Reload to reflect changes (optional)
+                                    location.reload(); // Optional: Reload to reflect changes
                                 } else {
                                     alert("Failed to update voucher status.");
                                 }
@@ -81,16 +83,25 @@
                         }
                     });
                 });
-            });
 
-                    document.addEventListener("DOMContentLoaded", function () {
-                    const statusDropdown = document.getElementById("status");
-
+                // Filter Status Dropdown - trigger form submission
+                const statusDropdown = document.getElementById("status");
+                if (statusDropdown) {
                     statusDropdown.addEventListener("change", function () {
-                        // Trigger the form submission when the dropdown value changes
                         this.form.submit();
                     });
-                });
+                }
+            }
 
-    </script>
-}
+            // Attach event listeners after the page is loaded or when AJAX content is replaced
+            document.addEventListener('DOMContentLoaded', function () {
+                attachEventListeners();
+            });
+
+            // Re-attach event listeners after the page content is updated by AJAX
+            $(document).ajaxComplete(function() {
+                attachEventListeners();  // Re-attach event listeners after the AJAX update
+            });
+        </script>
+    }
+

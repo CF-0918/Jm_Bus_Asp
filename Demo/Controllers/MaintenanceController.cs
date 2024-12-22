@@ -41,16 +41,16 @@ public class MaintenanceController : Controller
         // Filter staff based on the search term
         var searched = db.Staffs.Where(s => string.IsNullOrEmpty(name) || s.FirstName.Contains(name) || s.LastName.Contains(name));
 
+        // (2) Sorting --------------------------
+        ViewBag.Sort = sort;
+        ViewBag.Dir = dir;
+
         ViewBag.Status = status = status?.Trim() ?? "All";
 
         if (status != "All")
         {
             searched = searched.Where(s => s.Status == status);
         }
-
-        // (2) Sorting --------------------------
-        ViewBag.Sort = sort;
-        ViewBag.Dir = dir;
 
         // Define sorting logic
         Func<Staff, object> fn = sort switch

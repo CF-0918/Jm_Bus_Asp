@@ -273,7 +273,7 @@ public class ScheduleController : Controller
         return View(vm);
     }
 
-    public IActionResult ShowScheduleList(DateOnly? name, string? sort, string? dir, int page = 1)
+    public IActionResult ShowScheduleList(DateOnly? name, string? status, string? sort, string? dir, int page = 1)
     {
 
         // (1) Searching ------------------------
@@ -283,7 +283,8 @@ public class ScheduleController : Controller
         // Filter schedules based on DepartDate if name has a value
         // Include the RouteLocation when fetching the schedules
         var searched = db.Schedules
-            .Where(s => !name.HasValue || s.DepartDate == name.Value)
+            .Where(s => (!name.HasValue || s.DepartDate == name.Value) &&
+                        (string.IsNullOrEmpty(status) || status == "All" || s.Status == status))
             .Include(s => s.RouteLocation); // Ensure RouteLocation is included
 
 
@@ -291,6 +292,8 @@ public class ScheduleController : Controller
         // (2) Sorting --------------------------
         ViewBag.Sort = sort;
         ViewBag.Dir = dir;
+
+        ViewBag.Status = status ?? "All";
 
         Func<Schedule, object> fn = sort switch
         {
