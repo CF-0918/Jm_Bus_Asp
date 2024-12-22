@@ -807,6 +807,152 @@ public class ScheduleController : Controller
         return View(pagedResult);
     }
 
+
+    public IActionResult EditMyTicketSeats(string id)
+    {
+        var bookingSchedule = db.Bookings
+            .Include(b => b.Schedule)
+                .ThenInclude(s => s.RouteLocation)
+            .Include(b => b.Schedule)
+                .ThenInclude(s => s.Bus)
+            .FirstOrDefault(b => b.Id == id && b.Status == "Booked" && b.MemberId == User.Identity.Name);
+
+        if (bookingSchedule == null)
+        {
+            TempData["Info"] = "Bookings Not Found";
+            return RedirectToAction("Index");
+        }
+
+        var bookingSeats = db.BookingSeats
+            .Where(bs => bs.BookingId == id && bs.Status != "Pending")
+            .ToList();
+
+        ViewBag.BookingSchedule = bookingSchedule; // Correctly assigns booking schedule
+        ViewBag.BookingSeats = bookingSeats; // Correctly assigns list of booking seats
+
+        return View();
+    }
+
+
+    [HttpPost]
+    public IActionResult EditMyTicketSeats(string SeatNo, string BookingId)
+    {
+        // Fetch the booking details
+        var bookingSchedule = db.Bookings
+            .Include(b => b.Schedule)
+            .FirstOrDefault(b => b.Id == BookingId && b.Status == "Booked" && b.MemberId == User.Identity.Name);
+
+        if (bookingSchedule == null)
+        {
+            TempData["Info"] = "Unable to find the booking.";
+            return RedirectToAction("EditMyTicketSeats");
+        }
+
+        // Find the booked seat
+        var bookedSeat = db.BookingSeats
+            .FirstOrDefault(bs => bs.BookingId == BookingId && bs.Status == "Booked" && bs.SeatNo == SeatNo);
+
+        if (bookedSeat == null)
+        {
+            TempData["Info"] = "Seat not found or already cancelled.";
+            return RedirectToAction("EditMyTicketSeats", new { id = BookingId });
+        }
+
+        // Fetch member details
+        var member = db.Members.Find(User.Identity.Name);
+        if (member == null)
+        {
+            TempData["Info"] = "Unable to find member details.";
+            return RedirectToAction("EditMyTicketSeats");
+        }
+
+        var memberRank = db.Ranks.FirstOrDefault(r => r.Id == member.RankId);
+        if (memberRank == null)
+        {
+            TempData["Info"] = "Unable to find member rank details.";
+            return RedirectToAction("EditMyTicketSeats");
+        }
+
+        // Calculate ticket price with discount
+        decimal ticketPrice = bookingSchedule.Price;
+        if (memberRank.Discounts > 0)
+        {
+            ticketPrice =ticketPrice- (bookingSchedule.Price * memberRank.Discounts / 100);
+        }
+
+        // Mark the seat as cancelled
+        bookedSeat.Status = "Cancelled";
+        bookingSchedule.Qty -= 1;
+        db.SaveChanges(); // Save changes after marking the seat
+
+        // Check if all seats in the booking are cancelled
+        var remainingSeats = db.BookingSeats
+            .Where(bs => bs.BookingId == BookingId && bs.Status != "Cancelled")
+            .ToList();
+
+        // Recalculate the total price
+        decimal updatedTotal = bookingSchedule.Total - ticketPrice;
+
+
+        if (!remainingSeats.Any())
+        {
+            // If all seats are cancelled, update the booking status
+            bookingSchedule.Status = "Cancelled";
+            bookingSchedule.Total = updatedTotal;
+            db.SaveChanges(); // Save changes after updating the status
+            TempData["Info"] = "All seats have been cancelled. Your booking is now cancelled.";
+            return RedirectToAction("MyBookingList");
+        }
+
+
+        if (updatedTotal < 0)
+        {
+            // Handle negative total
+            bookingSchedule.Total = 0; // Reset total to zero
+
+            if (bookingSchedule.VoucherId != null)
+            {
+                // Return the voucher to the user
+                var voucher = db.MemberVouchers.FirstOrDefault(v => v.VoucherId == bookingSchedule.VoucherId && v.MemberId == User.Identity.Name);
+                if (voucher != null)
+                {
+                    voucher.Amount += 1; // Return the voucher
+                }
+
+                bookingSchedule.VoucherId = null; // Remove the voucher from the booking
+            }
+
+            // Recalculate the original total without the voucher
+            decimal originalSubtotal = bookingSchedule.Subtotal;
+            decimal newTotal = originalSubtotal + (originalSubtotal * 0.10M); // Add 10% tax
+            bookingSchedule.Total = newTotal; // Update the total
+
+            // Adjust member points and spending
+            member.Points += (int)Math.Round(newTotal, MidpointRounding.AwayFromZero);
+            member.MinSpend += newTotal;
+
+            // Update the booking status to "Pending"
+            bookingSchedule.Status = "Pending";
+        }
+        else
+        {
+            // Update the total price after deduction
+            bookingSchedule.Total = updatedTotal;
+
+            // Adjust member points and spending
+            member.Points -= (int)Math.Round(ticketPrice, MidpointRounding.AwayFromZero);
+            member.MinSpend -= ticketPrice;
+        }
+
+        // Save changes to the database
+        db.SaveChanges();
+
+        TempData["Info"] = $"{SeatNo} has been cancelled.";
+        return RedirectToAction("EditMyTicketSeats", new { id = BookingId });
+    }
+
+
+
     //Get Request - in here we just want to show result then no need opne another HttpPost
     public IActionResult TicketDetails(string id)
     {
