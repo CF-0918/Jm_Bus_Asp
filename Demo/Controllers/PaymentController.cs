@@ -134,16 +134,18 @@ public class PaymentController : Controller
                         // Calculate the discounted total
                         decimal totalSpend =total - vouchersDB.CashDiscount;
 
+                        TempData["Info"] = $"Total Spend = {totalSpend}, cashDiscount : {vouchersDB.CashDiscount} ";
                         // Round the total spend to the nearest integer for points calculation
                         int roundedTotalSpendPoints = (int)Math.Round(totalSpend, MidpointRounding.AwayFromZero);
 
                         // Update member's minimum spend and points
                         member.MinSpend += totalSpend;
                         member.Points += roundedTotalSpendPoints;
-                        TempData["Info"] = $"The Points after {roundedTotalSpendPoints} , {totalSpend}  has been completed.";
+                        bookingDetailsDB.Total = totalSpend;
+                       //TempData["Info"] = $"The Points after {roundedTotalSpendPoints} , {totalSpend}  has been completed.";
 
                         // Update the voucher quantity in MemberVouchers
-                        var memberVoucher = db.MemberVouchers.FirstOrDefault(mv => mv.VoucherId == vm.VoucherId);
+                       var memberVoucher = db.MemberVouchers.FirstOrDefault(mv => mv.VoucherId == vm.VoucherId);
                         if (memberVoucher != null)
                         {
                             memberVoucher.Amount -= 1;
@@ -165,7 +167,7 @@ public class PaymentController : Controller
 
                     // Perform bulk update of BookingSeats status
                     db.BookingSeats
-                    .Where(bs => bs.BookingId == vm.BookingId) 
+                    .Where(bs => bs.BookingId == vm.BookingId &&bs.Status=="Pending") 
                     .ExecuteUpdate(bs => bs.SetProperty(b => b.Status, "Booked")); 
 
                 db.SaveChanges();

@@ -880,8 +880,16 @@ public class ScheduleController : Controller
         decimal ticketPrice = bookingSchedule.Price;
         if (memberRank.Discounts > 0)
         {
-            ticketPrice =ticketPrice- (bookingSchedule.Price * memberRank.Discounts / 100);
+            decimal afterTaxTicketPrice = ticketPrice + (bookingSchedule.Price * 0.1m); // Use 0.1m for 10% tax
+            ticketPrice = afterTaxTicketPrice - ((afterTaxTicketPrice * memberRank.Discounts) / 100); // Discounts applied
+            TempData["Info"] = $"+Yes member ticket Price : {ticketPrice}";
         }
+        else
+        {
+            ticketPrice = ticketPrice + (bookingSchedule.Price * 0.1m); // Use 0.1m for 10% tax
+            TempData["Info"] = $"No member ticket Price : {ticketPrice}";
+        }
+
 
         // Mark the seat as cancelled
         bookedSeat.Status = "Cancelled";
@@ -901,6 +909,9 @@ public class ScheduleController : Controller
         {
             // If all seats are cancelled, update the booking status
             bookingSchedule.Status = "Cancelled";
+            // Adjust member points and spending
+            member.Points -= (int)Math.Round(ticketPrice, MidpointRounding.AwayFromZero);
+            member.MinSpend -= ticketPrice;
             bookingSchedule.Total = updatedTotal;
             db.SaveChanges(); // Save changes after updating the status
             TempData["Info"] = "All seats have been cancelled. Your booking is now cancelled.";
@@ -910,6 +921,9 @@ public class ScheduleController : Controller
 
         if (updatedTotal < 0)
         {
+            member.Points -= (int)Math.Round(bookingSchedule.Total, MidpointRounding.AwayFromZero);
+            member.MinSpend -= bookingSchedule.Total;
+
             // Handle negative total
             bookingSchedule.Total = 0; // Reset total to zero
 
@@ -925,17 +939,46 @@ public class ScheduleController : Controller
                 bookingSchedule.VoucherId = null; // Remove the voucher from the booking
             }
 
-            // Recalculate the original total without the voucher
-            decimal originalSubtotal = bookingSchedule.Subtotal;
-            decimal newTotal = originalSubtotal + (originalSubtotal * 0.10M); // Add 10% tax
+            
+            decimal newSubtotal = bookingSchedule.Subtotal-bookingSchedule.Price;
+            decimal newTotal = newSubtotal + (newSubtotal * 0.10M); // Add 10% tax
+
+      
+            if (memberRank.Discounts > 0)
+            {
+                newTotal = newTotal - ((newTotal * memberRank.Discounts) / 100);
+            }
+
+            bookingSchedule.Subtotal = newSubtotal;
             bookingSchedule.Total = newTotal; // Update the total
 
-            // Adjust member points and spending
-            member.Points += (int)Math.Round(newTotal, MidpointRounding.AwayFromZero);
-            member.MinSpend += newTotal;
+            if (bookingSchedule.Qty == 0)
+            {
+                bookingSchedule.Status = "Cancelled";
+                // Adjust member points and spending
+                member.Points -= (int)Math.Round(bookingSchedule.Total, MidpointRounding.AwayFromZero);
+                member.MinSpend -= bookingSchedule.Total;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
 
+            
             // Update the booking status to "Pending"
             bookingSchedule.Status = "Pending";
+           
+
+            var otherSeats = db.BookingSeats
+                .Where(bs => bs.SeatNo != SeatNo && bs.Status == "Booked" && bs.BookingId == BookingId);
+
+            foreach (var seat in otherSeats)
+            {
+                seat.Status = "Pending";
+            }
+
+            db.SaveChanges();
+            TempData["Info"] = "Complete The Payment, since the total amount is less than the voucher value.Previous Amount Has Been Refund";
+            return RedirectToAction("Index", "Payment", new { bookingId = BookingId });
+
         }
         else
         {
