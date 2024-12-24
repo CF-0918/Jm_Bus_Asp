@@ -222,7 +222,7 @@ public class PaymentController : Controller
 
         var ranks = db.Members.Include(s => s.Rank).FirstOrDefault(m => m.Id == User.Identity.Name);
 
-        ViewBag.UserRanks = ranks;
+        ViewBag.UserRanks = ranks?.Rank; // Pass only the Rank information
         ViewBag.RouteSchedules = routeSchedules;
 
         ViewBag.BookingDetails = bookingDetails;
@@ -244,7 +244,7 @@ public class PaymentController : Controller
             var voucherIds = string.Join(", ", vouchersList.Select(mv => mv.VoucherId.ToString()));
 
             // Store the voucherIds in TempData
-            TempData["Info"] = voucherIds;
+            TempData["Info"] = $"Vouceher have :{voucherIds}";
         }
 
         // Map to ViewModel

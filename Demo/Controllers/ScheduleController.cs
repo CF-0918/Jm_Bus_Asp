@@ -156,15 +156,33 @@ public class ScheduleController : Controller
     }
 
 
-    public IActionResult Index()
+    public IActionResult Index(HomeView vm)
     {
+
         // Retrieve the schedule data and related entities (RouteLocation, Bus, and CategoryBus of Bus)
-        var schedules = db.Schedules
+        var schedulesQuery = db.Schedules
             .Where(s => s.Status == "Active")
             .Include(s => s.RouteLocation)
             .Include(s => s.Bus)
-            .Include(s => s.Bus.CategoryBus)  // Make sure CategoryBus is included
-            .ToList();
+            .Include(s => s.Bus.CategoryBus); // Ensure CategoryBus is included
+
+        //// Apply filtering only if `vm` is provided and has valid data
+        //if (vm != null)
+        //{
+        //    if (vm.StartDate != null)
+        //    {
+        //        schedulesQuery = schedulesQuery.Where(s => s.DepartDate == vm.StartDate);
+        //    }
+
+        //    if (!string.IsNullOrEmpty(vm.Depart) && !string.IsNullOrEmpty(vm.Destination))
+        //    {
+        //        schedulesQuery = schedulesQuery.Where(s =>
+        //            s.RouteLocation.Depart == vm.Depart &&
+        //            s.RouteLocation.Destination == vm.Destination);
+        //    }
+        //}
+
+        var schedules = schedulesQuery.ToList();
 
         // Convert the schedules data into ScheduleDetailsVM
         var scheduleDetails = schedules.Select(s => new ScheduleDetailsVM

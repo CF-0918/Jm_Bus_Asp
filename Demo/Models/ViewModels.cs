@@ -135,6 +135,14 @@ public class UpdateProfileVM
     public IFormFile? Photo { get; set; }
 }
 
+
+public class HomeView
+{
+    public DateOnly StartDate { get; set; }
+    public string Depart { get; set; }
+    public string Destination { get; set; }
+}
+
 public class VoucherVM
 {
     [StringLength(50)]
