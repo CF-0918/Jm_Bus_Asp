@@ -722,3 +722,36 @@ public class ScheduleSelectSeatsVM
 
 }
 
+public class TicketDetailsVM
+{
+    public string BookingId { get; set; }
+    public string BusName { get; set; }
+    public string BusPlate { get; set; }
+    public string CategoryName { get; set; }
+    public string DepartLocation { get; set; }
+    public string Destination { get; set; }
+    public DateTime BookingDateTime { get; set; }
+    public DateOnly DepartDate { get; set; }
+    public TimeOnly DepartTime { get; set; }
+    public DateOnly ArrivalDate { get; set; }  // Added
+    public TimeOnly ArrivalTime { get; set; }
+    public List<string> SeatNumbers { get; set; }
+    public decimal Price { get; set; }
+    public int Quantity { get; set; }
+    public decimal Subtotal { get; set; }
+    public decimal Total { get; set; }
+    public string Status { get; set; }
+    public string? VoucherApplied { get; set; }
+}
+
+public class HistoryBookingVM
+{
+    public string BookingId { get; set; }
+    public string DepartLocation { get; set; }
+    public string Destination { get; set; }
+    public DateOnly DepartDate { get; set; }
+    public TimeOnly DepartTime { get; set; }
+    public int Quantity { get; set; }
+    public decimal Total { get; set; }
+    public DateTime CancelledDateTime { get; set; }
+}

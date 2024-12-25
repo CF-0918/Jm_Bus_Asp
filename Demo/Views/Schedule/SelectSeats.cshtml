@@ -69,7 +69,7 @@
 
             </div>
         </div>
-    </div>
+    
 
     <form  method="post" class="seat_container" style="margin-top: 20px; text-align: center;">
         <div>
@@ -130,11 +130,11 @@
 
                 </table>
 
-                <ul class="room_features" style="font-weight: 600;">
-                    <li style="font-size: 1.2em;"><i class="fas fa-road"></i>Seats : </li>
-                    <li style="font-size: 1.2em;"></i> Price : RM </li>
-                </ul>
-            </div>
+
+        </div><ul class="room_features" style="font-weight: 600;">
+            <li style="font-size: 1.2em;"><i class="fas fa-road"></i>Seats : </li>
+            <li style="font-size: 1.2em;"> Price : RM </li>
+        </ul>
         </div>
 
         <div>
@@ -190,3 +190,66 @@
         </button>
     </div>
 </section>
+@section foot {
+    <script>
+                      document.addEventListener('DOMContentLoaded', function() {
+            const seatCheckboxes = document.querySelectorAll('.seat-checkbox');
+            const seatCountDisplay = document.querySelector('.room_features li:first-child');
+            const priceDisplay = document.querySelector('.room_features li:last-child');
+            const resetButton = document.querySelector('input[type="reset"]');
+            const basePrice = parseFloat('@Model.Price'.replace(/[^0-9.]/g, ''));
+
+            function updateSeatAndPrice() {
+                const selectedSeats = Array.from(document.querySelectorAll('.seat-checkbox:checked'));
+                const seatCount = selectedSeats.length;
+                const totalPrice = basePrice * seatCount;
+
+                // Get selected seat numbers
+                const selectedSeatNumbers = selectedSeats.map(checkbox => checkbox.value).join(', ');
+
+                // Update the seat count display with seat numbers
+                seatCountDisplay.innerHTML = `<i class="fas fa-road"></i>Seats : ${seatCount}<br>${selectedSeatNumbers ? ` (${selectedSeatNumbers})` : ''}`;
+
+                // Update the price display
+                priceDisplay.innerHTML = `<i class="fas fa-money-bill"></i> Price : RM ${totalPrice.toFixed(2)}`;
+
+                // Update seat images
+                seatCheckboxes.forEach(checkbox => {
+                    const seatImage = checkbox.closest('.seat-label').querySelector('.seat-image');
+                    if (checkbox.checked) {
+                        seatImage.src = '/photo/images/white-seat.png'; // Using white-seat for selected state
+                    } else if (!checkbox.disabled) {
+                        seatImage.src = '/photo/images/white-seat.png';
+                    }
+                });
+            }
+
+            // Function to reset everything
+            function resetSeats() {
+                // Reset all checkboxes that aren't disabled
+                seatCheckboxes.forEach(checkbox => {
+                    if (!checkbox.disabled) {
+                        checkbox.checked = false;
+                        const seatImage = checkbox.closest('.seat-label').querySelector('.seat-image');
+                        seatImage.src = '/photo/images/white-seat.png';
+                    }
+                });
+
+                // Reset the displays
+                seatCountDisplay.innerHTML = '<i class="fas fa-road"></i>Seats : 0';
+                priceDisplay.innerHTML = '<i class="fas fa-money-bill"></i> Price : RM 0.00';
+            }
+
+            // Add click event listener to each seat checkbox
+            seatCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSeatAndPrice);
+            });
+
+            // Add click event listener to reset button
+            resetButton.addEventListener('click', resetSeats);
+
+            // Initialize displays
+            updateSeatAndPrice();
+        });
+    </script>
+}

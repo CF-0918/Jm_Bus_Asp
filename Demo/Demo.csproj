@@ -22,4 +22,11 @@
     <Folder Include="wwwroot\photo\users\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Schedule\MyBookingHistory.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Schedule | My Booking History";
+}
+
+@Html.Hidden("sort", "", new { form = "f" })
+@Html.Hidden("dir", "", new { form = "f" })
+
+<div class="container">
+    <form data-ajax="true"
+          data-ajax-update="#target"
+          data-ajax-loading="#loader"
+          id="f">
+        <div class="form-group">
+            <input type="search" name="name" autofocus value="@ViewBag.Name" placeholder="Search by booking ID" class="form-control" id="name" />
+        </div>
+        <button class="btn btn-primary">Search</button>
+        <img src="/photo/images/loader.gif" id="loader" style="display: none" />
+    </form>
+
+    <div id="target">
+        <partial name="_HistoryBookingList">
+    </div>
+</div>
+
+@section foot {
+    <script>
+        let timer = null;
+        document.addEventListener('DOMContentLoaded', function () {
+            var input = document.getElementById('name');
+            if (input) {
+                input.setSelectionRange(input.value.length, input.value.length);
+                input.focus();
+            }
+        });
+
+        $('#name').on('input', function (e) {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                $(e.target.form).submit();
+            }, 500);
+        });
+    </script>
+}
