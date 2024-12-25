@@ -7,6 +7,7 @@ using Demo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Demo.Migrations;
 using System.Numerics;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Demo.Controllers;
 
@@ -24,7 +25,7 @@ public class ScheduleController : Controller
         this.hp = hp;
     }
 
-    private void SendScheduleSubscribeMail(string email, string firstName, string lastName, int price, int discountPrice, string depart,string destination,string scheduleId)
+    private void SendScheduleSubscribeMail(string email, string firstName, string lastName, int price, int discountPrice, string depart, string destination, string scheduleId)
     {
         var fullName = $"{firstName} {lastName}";
         var mail = new MailMessage();
@@ -95,7 +96,8 @@ public class ScheduleController : Controller
         if (tableName == "Schedules")
         {
             currentMaxId = db.Schedules.Max(m => m.Id) ?? "OW0000"; // Default if table is empty
-        }else if (tableName == "Bookings")
+        }
+        else if (tableName == "Bookings")
         {
             currentMaxId = db.Bookings.Max(m => m.Id) ?? "BK0000"; // Default if table is empty
         }
@@ -156,21 +158,98 @@ public class ScheduleController : Controller
     }
 
 
-    public IActionResult Index(HomeView vm)
+    public IActionResult Index(HomeView vm, int page = 1)
     {
+        // Define page size
+        int pageSize = 10;
+
         // Retrieve the schedule data and related entities (RouteLocation, Bus, and CategoryBus of Bus)
         var schedulesQuery = db.Schedules
             .Where(s => s.Status == "Active")
-            .Include(s => s.RouteLocation)
-            .Include(s => s.Bus)
-            .Include(s => s.Bus.CategoryBus)
+            .Include(s => s.RouteLocation) // Ensure RouteLocation is included
+            .Include(s => s.Bus)           // Ensure Bus is included
+            .Include(s => s.Bus.CategoryBus) // Ensure CategoryBus is included inside Bus
             .Include(s => s.Bookings)
-            .ThenInclude(b => b.BookingSeats);
+            .ThenInclude(b => b.BookingSeats)
+            .AsQueryable(); // Ensure it's IQueryable for later LINQ operations
 
-        var schedules = schedulesQuery.ToList();
+        // Apply Price Range filter if provided
+        if (!string.IsNullOrEmpty(Request.Query["minPrice"]) && decimal.TryParse(Request.Query["minPrice"], out decimal minPrice))
+        {
+            schedulesQuery = schedulesQuery.Where(s => s.Price >= minPrice);
+        }
+
+        if (!string.IsNullOrEmpty(Request.Query["maxPrice"]) && decimal.TryParse(Request.Query["maxPrice"], out decimal maxPrice))
+        {
+            schedulesQuery = schedulesQuery.Where(s => s.Price <= maxPrice);
+        }
+
+        // Apply Depart filter if a valid value is selected
+        var departFilter = Request.Query["Depart"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(departFilter) && departFilter != "Choose...")
+        {
+            schedulesQuery = schedulesQuery.Where(s => s.RouteLocation.Depart == departFilter);
+        }
+
+        // Apply Destination filter if a valid value is selected
+        var destinationFilter = Request.Query["Destination"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(destinationFilter) && destinationFilter != "Choose...")
+        {
+            schedulesQuery = schedulesQuery.Where(s => s.RouteLocation.Destination == destinationFilter);
+        }
+
+        // Apply Travel Date filter (fromDate) if provided
+        if (!string.IsNullOrEmpty(Request.Query["fromDate"]) && DateOnly.TryParse(Request.Query["fromDate"], out DateOnly fromDate))
+        {
+            schedulesQuery = schedulesQuery.Where(s => s.DepartDate >= fromDate);
+        }
+
+        // Apply Travel Date filter (toDate) if provided
+        if (!string.IsNullOrEmpty(Request.Query["toDate"]) && DateOnly.TryParse(Request.Query["toDate"], out DateOnly toDate))
+        {
+            schedulesQuery = schedulesQuery.Where(s => s.DepartDate <= toDate);
+        }
+
+
+
+        //// Apply Return Date filter if provided
+        //if (!string.IsNullOrEmpty(Request.Query["returnDate"]) && DateTime.TryParse(Request.Query["returnDate"], out DateTime returnDate))
+        //{
+        //    schedulesQuery = schedulesQuery.Where(s => s.ReturnDate <= returnDate);  // Assuming there's a ReturnDate property in the model
+        //}
+
+        // Check for sort options
+        var sortOption = Request.Query["sortOption"].FirstOrDefault();
+
+        if (!string.IsNullOrEmpty(sortOption))
+        {
+            switch (sortOption)
+            {
+                case "Cheapest":
+                    schedulesQuery = schedulesQuery.OrderBy(s => s.Price);
+                    break;
+
+                case "HighestDiscount":
+                    schedulesQuery = schedulesQuery.OrderByDescending(s => s.DiscountPrice);
+                    break;
+
+                case "Earliest":
+                    schedulesQuery = schedulesQuery.OrderBy(s => s.DepartTime); // Assuming DepartTime is a TimeOnly or DateTime
+                    break;
+
+                case "Latest":
+                    schedulesQuery = schedulesQuery.OrderByDescending(s => s.DepartTime);
+                    break;
+
+                default:
+                    break; // No sorting if no valid option is selected
+            }
+        }
+
+        var schedulesPaged = schedulesQuery.ToPagedList(page, pageSize);
 
         // Convert the schedules data into ScheduleDetailsVM
-        var scheduleDetails = schedules.Select(s => new ScheduleDetailsVM
+        var scheduleDetails = schedulesPaged.Select(s => new ScheduleDetailsVM
         {
             ScheduleId = s.Id.ToString(),
             DepartDate = s.DepartDate,
@@ -196,20 +275,31 @@ public class ScheduleController : Controller
                 .Count(bs => bs.Status == "Booked" || bs.Status == "Pending") // Count the relevant seats
         }).ToList();
 
+        // Build query string for pagination links
+        var queryParams = new Dictionary<string, string>(Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString()));
+
         // Store the data in ViewBag
         ViewBag.ScheduleDetails = scheduleDetails;
+        ViewBag.CurrentPage = schedulesPaged.PageNumber;
+        ViewBag.TotalPages = schedulesPaged.PageCount;
+
+        ViewBag.QueryParams = queryParams;
+
+        // Set up ViewBag for filters and sorting options
+        ViewBag.MinPrice = Request.Query["minPrice"];
+        ViewBag.MaxPrice = Request.Query["maxPrice"];
+        ViewBag.Depart = departFilter;  // Store Depart filter in ViewBag
+        ViewBag.Destination = destinationFilter;  // Store Destination filter in ViewBag
+        ViewBag.TravelDate = Request.Query["travelDate"]; // Store Travel Date filter
+        ViewBag.ReturnDate = Request.Query["toDate"]; // Store Return Date filter
 
         return View();
     }
 
-
-
-
-
     public IActionResult AddSchedule()
     {
-       ViewBag.Buses= db.Buses.Where(b => b.Status == "Active");
-       ViewBag.Routes = db.RouteLocations;
+        ViewBag.Buses = db.Buses.Where(b => b.Status == "Active");
+        ViewBag.Routes = db.RouteLocations;
         return View();
     }
 
@@ -221,7 +311,7 @@ public class ScheduleController : Controller
             ModelState.AddModelError("Price", "Price Should Not Be 0 Or Less Than.");
         }
 
-        if (vm.DiscountPrice <0)
+        if (vm.DiscountPrice < 0)
         {
             ModelState.AddModelError("Price", "Discount Price Should Not Be Negative.");
         }
@@ -236,7 +326,7 @@ public class ScheduleController : Controller
         if (!isBusAvailable)
         {
             // Add the error message returned by the CheckBusAvailableSlot method
-            ModelState.AddModelError("", busAvailabilityMessage+"Ops");
+            ModelState.AddModelError("", busAvailabilityMessage + "Ops");
         }
 
         if (ModelState.IsValid)
@@ -259,20 +349,20 @@ public class ScheduleController : Controller
                 }
             }
 
-                db.Schedules.Add(new()
-                {
-                    Id = SchedulesId,
-                    DepartDate = vm.DepartDate,
-                    DepartTime = vm.DepartTime,
-                    Status = vm.Status,
-                    Price = vm.Price,
-                    DiscountPrice = vm.DiscountPrice,
-                    Remark = vm.Remark,
-                    BusId = vm.BusId,
-                    RouteLocationId = vm.RouteId,
-                });
-                db.SaveChanges();
-                TempData["Info"] = "One-Way Schedule Has Been Added.";
+            db.Schedules.Add(new()
+            {
+                Id = SchedulesId,
+                DepartDate = vm.DepartDate,
+                DepartTime = vm.DepartTime,
+                Status = vm.Status,
+                Price = vm.Price,
+                DiscountPrice = vm.DiscountPrice,
+                Remark = vm.Remark,
+                BusId = vm.BusId,
+                RouteLocationId = vm.RouteId,
+            });
+            db.SaveChanges();
+            TempData["Info"] = "One-Way Schedule Has Been Added.";
             return RedirectToAction("ShowScheduleList", "Schedule");
 
         }
@@ -387,32 +477,46 @@ public class ScheduleController : Controller
             ModelState.AddModelError("DepartDate", "Depart Date Should Not Be Past");
         }
         // Check if the bus is available at the selected time
-        string busAvailabilityMessage;
-        bool isBusAvailable = CheckBusAvailableSlot_After(vm.BusId, vm.DepartDate, vm.DepartTime, out busAvailabilityMessage);
 
-        if (!isBusAvailable)
+        var currentSchedule = db.Schedules.Find(id);
+        if (currentSchedule == null)
         {
-            // Add the error message returned by the CheckBusAvailableSlot method
-            ModelState.AddModelError("", busAvailabilityMessage + "Ops");
+            TempData["Error"] = "Schedule not found.";
+            return RedirectToAction("ShowScheduleList", "Schedule");
+        }
+        // Check if the DepartDate or DepartTime has changed
+        bool isDateOrTimeChanged = currentSchedule.DepartDate != vm.DepartDate || currentSchedule.DepartTime != vm.DepartTime;
+
+        if (isDateOrTimeChanged)
+        {
+            // Check if the bus is available at the selected time
+            string busAvailabilityMessage;
+            bool isBusAvailable = CheckBusAvailableSlot_After(vm.BusId, vm.DepartDate, vm.DepartTime, out busAvailabilityMessage);
+
+            if (!isBusAvailable)
+            {
+                // Add the error message returned by the CheckBusAvailableSlot method
+                ModelState.AddModelError("", busAvailabilityMessage + "Ops");
+            }
         }
 
         if (ModelState.IsValid)
         {
-            if (vm.SubscribeEmail == "Send")
-            {
-                // Fetch subscribed members who are subscribed to the newsletter
-                var subscribePersons = db.Subscriptionses
-                                         .Include(s => s.Member)
-                                         .Where(s => s.Member.IsSubscribedToNewsletter == true)
-                                         .ToList();
+            //if (vm.SubscribeEmail == "Send")
+            //{
+            //    // Fetch subscribed members who are subscribed to the newsletter
+            //    var subscribePersons = db.Subscriptionses
+            //                             .Include(s => s.Member)
+            //                             .Where(s => s.Member.IsSubscribedToNewsletter == true)
+            //                             .ToList();
 
-                var RouteLocations = db.RouteLocations.FirstOrDefault(rl => rl.Id == vm.RouteId);
-                // Loop through each subscribed person and send the subscription email
-                foreach (var subscribedPerson in subscribePersons)
-                {
-                    SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination,vm.ScheduleId);
-                }
-            }
+            //    var RouteLocations = db.RouteLocations.FirstOrDefault(rl => rl.Id == vm.RouteId);
+            //    // Loop through each subscribed person and send the subscription email
+            //    foreach (var subscribedPerson in subscribePersons)
+            //    {
+            //        SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination,vm.ScheduleId);
+            //    }
+            //}
 
             // Modify the existing schedule record
             var m = db.Schedules.Find(id);
@@ -440,6 +544,33 @@ public class ScheduleController : Controller
         //if fail valdiate
         ViewBag.Buses = db.Buses.Where(b => b.Status == "Active");
         ViewBag.Routes = db.RouteLocations;
+        return View(vm);
+    }
+
+    public IActionResult ScheduleDetails(string id)
+    {
+        // Retrieve the schedule record based on the ID
+        ViewBag.Buses = db.Buses.Where(b => b.Status == "Active");
+        ViewBag.Routes = db.RouteLocations;
+        var m = db.Schedules.Find(id);
+        if (m == null)
+            return RedirectToAction("ShowScheduleList", "Schedule"); // Redirect if schedule not found
+
+        // Prepare the view model
+        var vm = new ShowScheduleDetailsVM
+        {
+            ScheduleId = m.Id, // Include ScheduleId for identifying the record during the update
+            DepartDate = m.DepartDate,
+            DepartTime = m.DepartTime,
+            Status = m.Status,
+            Price = m.Price,
+            DiscountPrice = m.DiscountPrice,
+            Remark = m.Remark,
+            BusId = m.BusId,
+            RouteId = m.RouteLocationId,
+            // Add properties to store buses and routes
+        };
+
         return View(vm);
     }
 
@@ -501,7 +632,7 @@ public class ScheduleController : Controller
         return RedirectToAction("ShowScheduleList"); // Redirect to the schedule list page
     }
 
-    [Authorize(Roles ="Member")]
+    [Authorize(Roles = "Member")]
     public IActionResult SelectSeats(string id)
     {
 
@@ -510,15 +641,15 @@ public class ScheduleController : Controller
 
         if (pendingPaymentSchedulesRecord != null)
         {
-            ViewBag.PendingBookingId= pendingPaymentSchedulesRecord.Id;
+            ViewBag.PendingBookingId = pendingPaymentSchedulesRecord.Id;
         }
 
-            // Retrieve the schedule data by its ID (OW0001)
-            var schedule = db.Schedules
-            .Include(s => s.Bus)  // Include related Bus
-            .ThenInclude(b => b.CategoryBus)  // Include related CategoryBus for the Bus
-            .Include(s => s.RouteLocation)  // Include related RouteLocation
-            .FirstOrDefault(s => s.Id == id &&s.Status=="Active");  // Fetch by ScheduleId
+        // Retrieve the schedule data by its ID (OW0001)
+        var schedule = db.Schedules
+        .Include(s => s.Bus)  // Include related Bus
+        .ThenInclude(b => b.CategoryBus)  // Include related CategoryBus for the Bus
+        .Include(s => s.RouteLocation)  // Include related RouteLocation
+        .FirstOrDefault(s => s.Id == id && s.Status == "Active");  // Fetch by ScheduleId
 
         if (schedule == null)
         {
@@ -537,7 +668,7 @@ public class ScheduleController : Controller
         var bookingSeats = db.Bookings
             .Where(b => b.ScheduleId == id)
             .SelectMany(b => b.BookingSeats)
-            .Where(bs => bs.Status == "Booked"||bs.Status=="Pending") // Filter 
+            .Where(bs => bs.Status == "Booked" || bs.Status == "Pending") // Filter 
             .ToList();
 
         // Create a dictionary for the booked seats
@@ -550,11 +681,11 @@ public class ScheduleController : Controller
        .ToList();
 
 
-        if (seatList.Count <= 0||seatList==null)
+        if (seatList.Count <= 0 || seatList == null)
         {
             TempData["Info"] = "Seat List Is empty cant find";
         }
- 
+
         // Convert the schedule data into ScheduleSelectSeatsVM
         var viewModel = new ScheduleSelectSeatsVM
         {
@@ -578,7 +709,7 @@ public class ScheduleController : Controller
 
     [Authorize(Roles = "Member")]
     [HttpPost]
-    public IActionResult SelectSeats(string id,string[] seat)
+    public IActionResult SelectSeats(string id, string[] seat)
     {
         //check scheudle Id
         if (id == null)
@@ -602,7 +733,7 @@ public class ScheduleController : Controller
                 //TempData["Info"] = "You have a record of this booking in system,Please Complete Booking !";
                 //// Redirect to Payment Index with bookingId
                 //return RedirectToAction("Index", "Payment", new { bookingId = pendingPaymentSchedulesRecord.Id });
-              
+
 
                 //if checked user has a previous code and didnt check out still pending then cancelled the booking help him add another new one
                 pendingPaymentSchedulesRecord.Status = "Cancelled";
@@ -632,7 +763,7 @@ public class ScheduleController : Controller
                 decimal subtotal = schedulePrice * seat.Length;
 
                 decimal total = (subtotal * 10 / 100) + subtotal;
-                
+
                 var member = db.Members.FirstOrDefault(m => m.Id == User.Identity.Name);
                 var rankMember = db.Ranks.FirstOrDefault(r => r.Id == member.RankId);
 
@@ -652,12 +783,12 @@ public class ScheduleController : Controller
                 var newBooking = new Booking
                 {
                     Id = bookingId,
-                    Price= schedulePrice,
-                    Qty=seat.Length,
-                    Status="Pending",
-                    VoucherId=null,
+                    Price = schedulePrice,
+                    Qty = seat.Length,
+                    Status = "Pending",
+                    VoucherId = null,
                     BookingDateTime = DateTime.Now,
-                     Subtotal = subtotal,
+                    Subtotal = subtotal,
                     Total = total,
                     ScheduleId = id,
                     MemberId = User.Identity.Name,
@@ -700,70 +831,71 @@ public class ScheduleController : Controller
                 .Include(s => s.RouteLocation)  // Include related RouteLocation
                 .FirstOrDefault(s => s.Id == id);  // Fetch by ScheduleId
 
-            if (schedule == null)
-            {
-                TempData["Info"] = "Schedule not found.";
-                return RedirectToAction("Index");
-            }
+        if (schedule == null)
+        {
+            TempData["Info"] = "Schedule not found.";
+            return RedirectToAction("Index");
+        }
 
-            // Check if Bus and RouteLocation are null
-            if (schedule.Bus == null || schedule.RouteLocation == null)
-            {
-                TempData["Info"] = "Bus or RouteLocation data is missing.";
-                return RedirectToAction("Index");
-            }
+        // Check if Bus and RouteLocation are null
+        if (schedule.Bus == null || schedule.RouteLocation == null)
+        {
+            TempData["Info"] = "Bus or RouteLocation data is missing.";
+            return RedirectToAction("Index");
+        }
 
-            // Retrieve booking seats based on the selected schedule
-            var bookingSeats = db.Bookings
-                .Where(b => b.ScheduleId == id)
-                .SelectMany(b => b.BookingSeats)
-                 .Where(bs => bs.Status == "Booked" || bs.Status == "Pending") // Filter by Status
-                .ToList();
+        // Retrieve booking seats based on the selected schedule
+        var bookingSeats = db.Bookings
+            .Where(b => b.ScheduleId == id)
+            .SelectMany(b => b.BookingSeats)
+             .Where(bs => bs.Status == "Booked" || bs.Status == "Pending") // Filter by Status
+            .ToList();
 
-            // Create a dictionary for the booked seats
-            var disctornaryBookedSeats = bookingSeats.ToDictionary(seat => seat.SeatNo, seat => seat.Status);
+        // Create a dictionary for the booked seats
+        var disctornaryBookedSeats = bookingSeats.ToDictionary(seat => seat.SeatNo, seat => seat.Status);
 
-            // Check if schedule.Bus and schedule.Bus.Seats are not null before selecting seats
-            var seatList = db.Schedules
-           .Where(s => s.Id == id)  // Ensure you're filtering by the specific 'id'
-           .SelectMany(s => s.Bus.Seats.Select(seat => seat.SeatNo))  // Flatten the seats collection
-           .ToList();
+        // Check if schedule.Bus and schedule.Bus.Seats are not null before selecting seats
+        var seatList = db.Schedules
+       .Where(s => s.Id == id)  // Ensure you're filtering by the specific 'id'
+       .SelectMany(s => s.Bus.Seats.Select(seat => seat.SeatNo))  // Flatten the seats collection
+       .ToList();
 
 
-            if (seatList.Count <= 0 || seatList == null)
-            {
-                TempData["Info"] = "Seat List Is empty cant find";
-            }
-            // Convert the schedule data into ScheduleSelectSeatsVM
-            var viewModel = new ScheduleSelectSeatsVM
-            {
-                ScheduleId = schedule.Id,
-                BusName = schedule.Bus.Name ?? "Unknown Bus",  // Default value if Bus.Name is null
-                CategoryName = schedule.Bus.CategoryBus?.Name ?? "Unknown Category",  // Null check for CategoryBus
-                Price = schedule.Price,
-                Discount = schedule.DiscountPrice,
-                DepartTime = schedule.DepartTime,
-                Depart = schedule.RouteLocation.Depart ?? "Unknown Depart Location",  // Default if Depart is null
-                Destination = schedule.RouteLocation.Destination ?? "Unknown Destination",  // Default if Destination is null
-                Hour = schedule.RouteLocation.Hour,
-                Minute = schedule.RouteLocation.Min,
-                SeatId = seatList,
-                BookedSeats = disctornaryBookedSeats  // Pass the booked seats here
-            };
+        if (seatList.Count <= 0 || seatList == null)
+        {
+            TempData["Info"] = "Seat List Is empty cant find";
+        }
+        // Convert the schedule data into ScheduleSelectSeatsVM
+        var viewModel = new ScheduleSelectSeatsVM
+        {
+            ScheduleId = schedule.Id,
+            BusName = schedule.Bus.Name ?? "Unknown Bus",  // Default value if Bus.Name is null
+            CategoryName = schedule.Bus.CategoryBus?.Name ?? "Unknown Category",  // Null check for CategoryBus
+            Price = schedule.Price,
+            Discount = schedule.DiscountPrice,
+            DepartTime = schedule.DepartTime,
+            Depart = schedule.RouteLocation.Depart ?? "Unknown Depart Location",  // Default if Depart is null
+            Destination = schedule.RouteLocation.Destination ?? "Unknown Destination",  // Default if Destination is null
+            Hour = schedule.RouteLocation.Hour,
+            Minute = schedule.RouteLocation.Min,
+            SeatId = seatList,
+            BookedSeats = disctornaryBookedSeats  // Pass the booked seats here
+        };
 
-            // Return the view with the populated viewModel
-            return View(viewModel);
+        // Return the view with the populated viewModel
+        return View(viewModel);
     }
 
     [Authorize(Roles = "Member")]
-    public IActionResult MyBookingList(string? id, string? sort, string? dir, int page = 1)
+    public IActionResult MyBookingList(string? search, string? id, string? sort, DateOnly? departDate, string? dir, int page = 1)
     {
         // (1) Searching ------------------------
         ViewBag.Name = id = id?.Trim() ?? "";
+        ViewBag.DepartDate = departDate?.ToString("yyyy-MM-dd"); // Format for consistency in the view
 
         // Filter bookings by ID and join with Schedule and RouteLocations
         var searched = db.Bookings
-            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name &&b.Status!="Cancelled")
+            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status != "Cancelled")
             .Join(db.Schedules,
                 booking => booking.ScheduleId,
                 schedule => schedule.Id,
@@ -776,6 +908,21 @@ public class ScheduleController : Controller
                     combined.schedule,
                     route
                 });
+
+        // Apply search filter (ID, Depart, or Arrival)
+        if (!string.IsNullOrEmpty(search))
+        {
+            searched = searched.Where(x =>
+                x.booking.Id.Contains(search) ||
+                x.route.Depart.Contains(search) ||
+                x.route.Destination.Contains(search));
+        }
+
+        // Apply depart date filter if provided
+        if (departDate.HasValue)
+        {
+            searched = searched.Where(x => x.schedule.DepartDate == departDate.Value);
+        }
 
         // (2) Sorting --------------------------
         ViewBag.Sort = sort;
@@ -948,11 +1095,11 @@ public class ScheduleController : Controller
                 bookingSchedule.VoucherId = null; // Remove the voucher from the booking
             }
 
-            
-            decimal newSubtotal = bookingSchedule.Subtotal-bookingSchedule.Price;
+
+            decimal newSubtotal = bookingSchedule.Subtotal - bookingSchedule.Price;
             decimal newTotal = newSubtotal + (newSubtotal * 0.10M); // Add 10% tax
 
-      
+
             if (memberRank.Discounts > 0)
             {
                 newTotal = newTotal - ((newTotal * memberRank.Discounts) / 100);
@@ -971,10 +1118,10 @@ public class ScheduleController : Controller
                 return RedirectToAction("Index");
             }
 
-            
+
             // Update the booking status to "Pending"
             bookingSchedule.Status = "Pending";
-           
+
 
             var otherSeats = db.BookingSeats
                 .Where(bs => bs.SeatNo != SeatNo && bs.Status == "Booked" && bs.BookingId == BookingId);

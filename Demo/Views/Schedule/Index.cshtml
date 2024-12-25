@@ -1,4 +1,7 @@
-﻿
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core
+@model IPagedList<Schedule>
 @{
     ViewBag.Title = "Schedule | Index";
     // List of states in Malaysia
@@ -7,135 +10,174 @@
         "Perlis", "Negeri Sembilan", "Sabah", "Sarawak", "Labuan", "Putrajaya"
     };
 }
-
-<div class="bus-container">
-    <aside class="filter-section">
-        <h3>Filter</h3>
-        <div class="filter-group">
-            <h4>Price Range</h4>
-            <input type="number" id="min-price" placeholder="Min Price" />
-            <input type="number" id="max-price" placeholder="Max Price" />
-        </div>
-        <div class="filter-group d-flex">
-
-            <div class="form-group">
-                <label for="Depart"><i class="fas fa-location-arrow form-icon"></i> Depart</label>
-                <select name="Depart">
-                    <option selected>Choose...</option>
-                    @foreach (var state in states)
-                    {
-                        <option value="@state">@state</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="Destination">
-                    <i class="fas fa-location-arrow form-icon"></i>Destination
-                    </label>
-                <select name="Destination">
-                    <option selected>Choose...</option>
-                    @foreach (var state in states)
-                    {
-                        <option value="@state">@state</option>
-                    }
-                </select>
-            </div>
-        </div>
-
-        <div class="filter-group d-flex">
-            <!-- Travel Date -->
-            <div class="form-group">
-                <label for="travel-date">Travel Date</label>
-                <input type="date" id="travel-date" class="form-control">
-            </div>
-
-            <!-- Return Date -->
-            <div class="form-group">
-                <label for="return-date">Return Date (Optional)</label>
-                <input type="date" id="return-date" class="form-control">
-            </div>
-        </div>
-
-
-        <div class="filter-group">
-            <h4>Ticket Type</h4>
-            <input type="radio" id="one-way" name="ticket-type" />
-            <label for="one-way">One-Way</label><br />
-            <input type="radio" id="two-way" name="ticket-type" />
-            <label for="two-way">Two-Way</label>
-        </div>
-    </aside>
-    <div class="bus-listing">
-        <div class="sort-buttons">
-            <button>Cheapest</button>
-            <button>Earliest</button>
-            <button>Latest</button>
-        </div>
-
-        @foreach (var schedule in ViewBag.ScheduleDetails)
-        {
-            <div class="bus-card">
-                <img src="/photo/buses/@schedule.PhotoURL" alt="Bus Logo" />
-                <div class="bus-info">
-                    <h3><i class="fas fa-bus"></i>@schedule.BusName</h3>
-
-                    <!-- Time with icon -->
-                    <p><i class="fas fa-calendar"></i> <strong>Depart Date : </strong>@schedule.DepartDate.ToString("dd/MM/yyyy")</p>
-                    <p><i class="fas fa-clock"></i> <strong>Depart Time : </strong> @schedule.DepartTime.ToString("hh:mm tt") &nbsp; <strong>Estimated Time : @schedule.Hour H @schedule.Min Min</strong></p>
-
-                    <!-- Price with icon -->
-                    <p class="price_bus_tag">
-                        <i class="fas fa-tag"></i>
-                        <strong>Price : </strong>
-                        RM @schedule.Price
-                        @if (schedule.DiscountPrice < schedule.Price && schedule.DiscountPrice!=0)
-                        {
-                            <span class="discount-price"> (Discounted: RM @schedule.DiscountPrice)</span>
-                        }
-                    </p>
-
-                    <!-- Route with icon -->
-                    <p>
-
-                        <i class="fas fa-location-arrow"></i>  <strong>Schedule : </strong> <strong>@schedule.Depart</strong>
-                        <i class="fas fa-arrow-right"></i>
-                        <strong>@schedule.Destination</strong>
-                    </p>
-
-                    <!-- Bus Category Name (Optional) -->
-                    @if (!string.IsNullOrEmpty(schedule.CategoryBusName))
-                    {
-                        <p><strong>Category:</strong> @schedule.CategoryBusName</p>
-                    }
-
-                    <div class="bus-tags">
-                        <!-- Seat status with icon -->
-                        <span class="seat_status @(schedule.BusCapacity - schedule.SeatsBooked > 0 ? "available" : "InActive_Seat")">
-                            <i class="fas fa-chair"></i> @(schedule.BusCapacity - schedule.SeatsBooked) / @schedule.BusCapacity Seat(s)
-                        </span>
-
-                        <!-- Additional tags with icons -->
-                        <span><i class="fas fa-gem"></i> Valuable</span>
-                    </div>
+<form method="get" action="/Schedule/Index">
+    <div class="bus-container">
+        <!-- Wrapping the filter section in a container to control height -->
+        <aside class="filter-wrapper">
+            <div class="filter-section">
+                <h3>Filter</h3>
+                <div class="filter-group">
+                    <h4>Price Range</h4>
+                    <input type="number" id="min-price" placeholder="Min Price" name="minPrice" value="@ViewBag.MinPrice" />
+                    <input type="number" id="max-price" placeholder="Max Price" name="maxPrice" value="@ViewBag.MaxPrice" />
                 </div>
 
-                @if (schedule.BusCapacity - schedule.SeatsBooked > 0)
+                <div class="filter-group d-flex">
+
+                    <div class="form-group">
+                        <label for="Depart"><i class="fas fa-location-arrow form-icon"></i> Depart</label>
+                        <select name="Depart">
+                            <!-- Set "Choose..." as the default option if ViewBag.Depart is empty or null -->
+                            <option value="" selected="@(string.IsNullOrEmpty(ViewBag.Depart))">Choose...</option>
+                            @foreach (var state in states)
+                            {
+                                <option value="@state" selected="@(state == ViewBag.Depart)">@state</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Destination">
+                            <i class="fas fa-location-arrow form-icon"></i> Destination
+                        </label>
+                        <select name="Destination">
+                            <!-- Set "Choose..." as the default option if ViewBag.Destination is empty or null -->
+                            <option value="" selected="@(string.IsNullOrEmpty(ViewBag.Destination))">Choose...</option>
+                            @foreach (var state in states)
+                            {
+                                <option value="@state" selected="@(state == ViewBag.Destination)">@state</option>
+                            }
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <div class="filter-group d-flex">
+                    <!-- Travel Date -->
+                    <div class="form-group">
+                        <label for="travel-date">From:</label>
+                        <input type="date" id="travelDate" name="travelDate" class="form-control" value="@ViewBag.TravelDate" />
+                    </div>
+
+                    <!-- Return Date -->
+                    <div class="form-group">
+                        <label for="return-date">To:</label>
+                        <input type="date" id="toDate" name="toDate" class="form-control" value="@ViewBag.ToDate" />
+                    </div>
+
+                </div>
+                <div class="sort-buttons">
+                    <button type="submit">Filter</button>
+                </div>
+            </div>
+</form>
+
+    </aside>
+
+<div class="bus-listing">
+    <div class="sort-buttons">
+        <form method="get" id="sort-form">
+            <input type="hidden" name="sortOption" id="sort-option" />
+
+            <button type="button" onclick="applySort('Cheapest')">Cheapest</button>
+            <button type="button" onclick="applySort('HighestDiscount')">Highest Discount</button>
+            <button type="button" onclick="applySort('Earliest')">Earliest</button>
+            <button type="button" onclick="applySort('Latest')">Latest</button>
+        </form>
+    </div>
+
+    @foreach (var schedule in ViewBag.ScheduleDetails)
+    {
+        <div class="bus-card">
+            <img src="/photo/buses/@schedule.PhotoURL" alt="Bus Logo" />
+            <div class="bus-info">
+                <h3><i class="fas fa-bus"></i>@schedule.BusName</h3>
+
+                <!-- Time with icon -->
+                <p><i class="fas fa-calendar"></i> <strong>Depart Date : </strong>@schedule.DepartDate.ToString("dd/MM/yyyy")</p>
+                <p><i class="fas fa-clock"></i> <strong>Depart Time : </strong> @schedule.DepartTime.ToString("hh:mm tt") &nbsp; <strong>Estimated Time : @schedule.Hour H @schedule.Min Min</strong></p>
+
+                <!-- Price with icon -->
+                <p class="price_bus_tag">
+                    <i class="fas fa-tag"></i>
+                    <strong>Price : </strong>
+                    RM @schedule.Price
+                    @if (schedule.DiscountPrice < schedule.Price && schedule.DiscountPrice != 0)
+                    {
+                        <span class="discount-price"> (Discounted: RM @schedule.DiscountPrice)</span>
+                    }
+                </p>
+
+                <!-- Route with icon -->
+                <p>
+
+                    <i class="fas fa-location-arrow"></i>  <strong>Schedule : </strong> <strong>@schedule.Depart</strong>
+                    <i class="fas fa-arrow-right"></i>
+                    <strong>@schedule.Destination</strong>
+                </p>
+
+                <!-- Bus Category Name (Optional) -->
+                @if (!string.IsNullOrEmpty(schedule.CategoryBusName))
                 {
-                    <!-- Show the 'Select' button if seats are available -->
-                    <a href="/Schedule/SelectSeats/@schedule.ScheduleId" class="select-btn">
-                        <i class="fas fa-check-circle"></i> Select
-                    </a>
-                }
-                else
-                {
-                    <!-- Add a blocked CSS class to style as disabled, or hide the button -->
-                    <a class="select-btn blocked" style="pointer-events: none; opacity: 0.5;background-color:red">
-                        <i class="fas fa-times-circle"></i> No Seats Available
-                    </a>
+                    <p><strong>Category:</strong> @schedule.CategoryBusName</p>
                 }
 
+                <div class="bus-tags">
+                    <!-- Seat status with icon -->
+                    <span class="seat_status @(schedule.BusCapacity - schedule.SeatsBooked > 0 ? "available" : "InActive_Seat")">
+                        <i class="fas fa-chair"></i> @(schedule.BusCapacity - schedule.SeatsBooked) / @schedule.BusCapacity Seat(s)
+                    </span>
+
+                    <!-- Additional tags with icons -->
+                    <span><i class="fas fa-gem"></i> Valuable</span>
+                </div>
             </div>
+
+            @if (schedule.BusCapacity - schedule.SeatsBooked > 0)
+            {
+                <!-- Show the 'Select' button if seats are available -->
+                <a href="/Schedule/SelectSeats/@schedule.ScheduleId" class="select-btn">
+                    <i class="fas fa-check-circle"></i> Select
+                </a>
+            }
+            else
+            {
+                <!-- Add a blocked CSS class to style as disabled, or hide the button -->
+                <a class="select-btn blocked" style="pointer-events: none; opacity: 0.5;background-color:red">
+                    <i class="fas fa-times-circle"></i> No Seats Available
+                </a>
+            }
+
+        </div>
+    }
+    <div class="pagination-container">
+        @if (ViewBag.TotalPages > 1)
+        {
+            <ul class="pagination">
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    var pageParams = new Dictionary<string, string>(ViewBag.QueryParams)
+                    {
+                        ["page"] = i.ToString()
+                    };
+                    string url = Url.Action("Index", pageParams);
+
+                    <li class="page-item @((i == ViewBag.CurrentPage) ? "active" : "")">
+                        <a class="page-link" href="@url">@i</a>
+                    </li>
+                }
+            </ul>
         }
     </div>
 
+
+
+</div>
+
+<script>
+    function applySort(sortOption) {
+        document.getElementById("sort-option").value = sortOption;
+        document.getElementById("sort-form").submit();
+    }
+</script>

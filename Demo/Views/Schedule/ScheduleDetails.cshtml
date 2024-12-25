@@ -1,17 +1,16 @@
-﻿@model EditScheduleVM
+﻿@model ShowScheduleDetailsVM
 @{
-    ViewBag.Title = "Schedule | Edit Schedule";
+    ViewBag.Title = "Schedule | Schedule Details";
     IEnumerable<Bus> buses = ViewBag.Buses;
     IEnumerable<RouteLocation> routes = ViewBag.Routes;
 }
-
 <div class="back-button-container">
     <a href="@Url.Action("ShowScheduleList", "Schedule")" class="back-button">
         <i class="fas fa-arrow-left"></i> Back to Schedule List
     </a>
 </div>
 <div class="schedule-container">
-    <h2><i class="fas fa-bus"></i> Edit Bus Schedule</h2>
+    <h2><i class="fas fa-bus"></i> Bus Schedule Details</h2>
     <small>**Take Note That If the Bus Return Time is scheduled on another day, the bus can reuse before the time</small>
 
     <div class="errorMessage my-2" asp-validation-summary="All"></div>
@@ -22,7 +21,7 @@
         <div class="form-row">
             <div class="form-group col-md-10">
                 <label asp-for="BusId"><i class="fas fa-list-alt form-icon"></i> Select Bus</label>
-                <select asp-for="BusId" asp-items="@(new SelectList(buses, "Id", "Name"))">
+                <select asp-for="BusId" asp-items="@(new SelectList(buses, "Id", "Name"))" disabled>
                     <option value="" selected disabled>Choose...</option>
                 </select>
                 <span asp-validation-for="BusId" class="errorMessage"></span>
@@ -32,12 +31,12 @@
         <div class="form-row">
             <div class="form-group col-md-10">
                 <label asp-for="RouteId"><i class="fas fa-map-marker-alt form-icon"></i> Route</label>
-                <select asp-for="RouteId">
+                <select asp-for="RouteId" disabled>
                     <option value="" selected disabled>Choose...</option>
                     @foreach (var route in routes)
                     {
                         <option value="@route.Id">@route.Depart - @route.Destination</option>
-                    
+
                     }
                 </select>
                 <span asp-validation-for="RouteId" class="errorMessage"></span>
@@ -47,12 +46,12 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="DepartDate"><i class="fas fa-calendar-alt form-icon"></i> Depart Date</label>
-                <input asp-for="DepartDate" type="date" />
+                <input asp-for="DepartDate" type="date" readonly />
                 <span asp-validation-for="DepartDate" class="errorMessage"></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="DepartTime"><i class="fas fa-clock form-icon"></i> Time</label>
-                <input asp-for="DepartTime" type="time" />
+                <input asp-for="DepartTime" type="time" readonly/>
                 <span asp-validation-for="DepartTime" class="errorMessage"></span>
             </div>
         </div>
@@ -60,7 +59,7 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="Status"><i class="fas fa-ticket-alt form-icon"></i> Status</label>
-                <select asp-for="Status">
+                <select asp-for="Status" disabled>
                     <option value="Active" selected>Active</option>
                     <option value="Inactive">Inactive</option>
                 </select>
@@ -71,12 +70,12 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="Price"><i class="fas fa-dollar-sign form-icon"></i> Price</label>
-                <input asp-for="Price" type="number" class="form-control" placeholder="Enter price" />
+                <input asp-for="Price" type="number" class="form-control" placeholder="Enter price" readonly/>
                 <span asp-validation-for="Price" class="errorMessage"></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="DiscountPrice"><i class="fas fa-tag form-icon"></i> Discount Price</label>
-                <input asp-for="DiscountPrice" type="number" class="form-control" placeholder="Enter discount" />
+                <input asp-for="DiscountPrice" type="number" class="form-control" placeholder="Enter discount" readonly/>
                 <p class="text-info">**IF Not Doing Any Discount Just Leave 0 As Usual</p>
                 <span asp-validation-for="DiscountPrice" class="errorMessage"></span>
             </div>
@@ -84,24 +83,24 @@
 
         <div class="form-group">
             <label asp-for="Remark"><i class="fas fa-sticky-note form-icon"></i> Remark</label>
-            <textarea asp-for="Remark" class="form-control" rows="3" placeholder="Add Remark"></textarea>
+            <textarea asp-for="Remark" class="form-control" rows="3" placeholder="Add Remark" readonly></textarea>
             <span asp-validation-for="Remark" class="errorMessage"></span>
         </div>
 
         <div class="actions d-flex justify-content-between align-items-center">
-@*             <div class="set-reminder">
+            @*             <div class="set-reminder">
                 <input asp-for="SubscribeEmail" type="checkbox" />
                 <label asp-for="SubscribeEmail">Send Email to Subscribers</label>
                 <span asp-validation-for="SubscribeEmail" class="text-danger"></span>
             </div> *@
-            <div>
+@*             <div>
                 <a asp-action="ShowScheduleList" asp-controller="Schedule" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Cancel
                 </a>
                 <button type="submit" id="save-btn" class="btn btn-primary">
                     <i class="fas fa-save"></i> Save
                 </button>
-            </div>
+            </div> *@
         </div>
     </form>
 </div>

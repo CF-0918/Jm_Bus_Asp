@@ -50,6 +50,7 @@
             <td>RM @s.MinSpend</td>
             <td>@s.Discounts %</td>
             <td>
+                    <a href="@Url.Action("RankDetails", "Membership", new { id = s.Id })" class="btn btn-info btn-sm">Details</a>
                     <a href="@Url.Action("EditRank", "Membership", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
                     <button class="btn btn-danger btn-sm" onclick="deleteRank('@s.Id')">Delete</button>
             </td>

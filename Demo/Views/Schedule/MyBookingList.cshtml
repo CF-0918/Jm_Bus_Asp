@@ -15,10 +15,19 @@
           data-ajax-loading="#loader"
           id="f">
         <div class="form-group">
-            <input type="search" name="name" autofocus value="@ViewBag.Name" placeholder="Search by name" class="form-control" id="name" />
+            <input type="search" name="search" autofocus value="@ViewBag.Search" placeholder="Search by ID, Departure, or Arrival" class="form-control" id="search" />
         </div>
-        <div class="filter-group">
-           
+
+        <div class="form-group row">
+@*             <label for="departDate" class="col-sm-3 col-form-label">Depart Date</label> *@
+            <div class="col-sm-6">
+                <input type="date"
+                       name="departDate"
+                       value="@ViewBag.DepartDate"
+                       placeholder="Search by Depart Date"
+                       class="form-control"
+                       id="departDate" />
+            </div>
         </div>
         <button class="btn btn-primary">Search</button>
         <img src="/photo/images/loader.gif" id="loader" style="display: none" />
@@ -37,7 +46,7 @@
 
             // Focus at the end of the input field after page load
             document.addEventListener('DOMContentLoaded', function () {
-                var input = document.getElementById('name');
+                var input = document.getElementById('search');
                 if (input) {
                     input.setSelectionRange(input.value.length, input.value.length); // Set cursor at the end
                     input.focus(); // Focus on the input field
@@ -45,7 +54,7 @@
             });
 
             // Handle input event for the search field
-            $('#name').on('input', function (e) {
+            $('#search').on('input', function (e) {
                 clearTimeout(timer); // Clear the previous timeout
                 timer = setTimeout(function () {
                     // Submit the form after 500ms delay
@@ -67,7 +76,7 @@
                 });
             });
 
-                        document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function () {
                         const statusDropdown = document.getElementById("status");
 
                         statusDropdown.addEventListener("change", function () {
@@ -75,6 +84,11 @@
                             this.form.submit();
                         });
                     });
+
+            // Auto-submit when date changes
+            $('#departDate').on('change', function (e) {
+                $(e.target.form).submit();
+            });
 
         </script>
     }

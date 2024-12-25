@@ -237,6 +237,24 @@ public class MembershipController : Controller
         return View(vm);
     }
 
+    public IActionResult RankDetails(string id)
+    {
+
+        // Get staff/admin  record based on email (PK)
+        var m = db.Ranks.Find(id);
+        if (m == null) return RedirectToAction("EditRank", "Membership");
+
+        var vm = new RankDetailsVM
+        {
+            Name = m.Name,
+            Description = m.Description,
+            Discounts = m.Discounts,
+            MinSpend = m.MinSpend,
+        };
+
+        return View(vm);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Staff,Admin")]
     public IActionResult DeleteRank(string rankId)
@@ -453,6 +471,27 @@ public class MembershipController : Controller
             TempData["Info"] = $"{vm.Name} Edited.";
             return RedirectToAction("ShowVoucherList", "Membership");
         }
+
+        return View(vm);
+    }
+
+    public IActionResult VoucherDetails(string id)
+    {
+
+        // Get staff/admin  record based on email (PK)
+        var m = db.Vouchers.Find(id);
+        if (m == null) return RedirectToAction("EditVoucher", "Membership");
+
+        var vm = new VoucherDetailsVM
+        {
+            Name = m.Name,
+            Description = m.Description,
+            PointNeeded = m.PointNeeded,
+            CashDiscount = m.CashDiscount,
+            Qty = m.Qty,
+            StartDate = m.StartDate,
+            EndDate = m.EndDate,
+        };
 
         return View(vm);
     }
