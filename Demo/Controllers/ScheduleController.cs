@@ -158,29 +158,14 @@ public class ScheduleController : Controller
 
     public IActionResult Index(HomeView vm)
     {
-
         // Retrieve the schedule data and related entities (RouteLocation, Bus, and CategoryBus of Bus)
         var schedulesQuery = db.Schedules
             .Where(s => s.Status == "Active")
             .Include(s => s.RouteLocation)
             .Include(s => s.Bus)
-            .Include(s => s.Bus.CategoryBus); // Ensure CategoryBus is included
-
-        //// Apply filtering only if `vm` is provided and has valid data
-        //if (vm != null)
-        //{
-        //    if (vm.StartDate != null)
-        //    {
-        //        schedulesQuery = schedulesQuery.Where(s => s.DepartDate == vm.StartDate);
-        //    }
-
-        //    if (!string.IsNullOrEmpty(vm.Depart) && !string.IsNullOrEmpty(vm.Destination))
-        //    {
-        //        schedulesQuery = schedulesQuery.Where(s =>
-        //            s.RouteLocation.Depart == vm.Depart &&
-        //            s.RouteLocation.Destination == vm.Destination);
-        //    }
-        //}
+            .Include(s => s.Bus.CategoryBus)
+            .Include(s => s.Bookings)
+            .ThenInclude(b => b.BookingSeats);
 
         var schedules = schedulesQuery.ToList();
 
@@ -200,10 +185,15 @@ public class ScheduleController : Controller
             // Populate Bus-related details
             BusId = s.Bus.Id.ToString(),
             BusName = s.Bus.Name,
-            BusCapacity = s.Bus.Capacity.ToString(),
+            BusCapacity = s.Bus.Capacity,
             BusPlate = s.Bus.BusPlate,
-            CategoryBusName = s.Bus.CategoryBus != null ? s.Bus.CategoryBus.Name : "Unknown", // Assuming CategoryBus has a Name property
-            PhotoURL = s.Bus.PhotoURL  // Assuming PhotoURL exists on the Bus model
+            CategoryBusName = s.Bus.CategoryBus != null ? s.Bus.CategoryBus.Name : "Unknown",
+            PhotoURL = s.Bus.PhotoURL,
+
+            // Calculate booked seats across all bookings for this schedule
+            SeatsBooked = s.Bookings
+                .SelectMany(b => b.BookingSeats) // Flatten the BookingSeats lists from all bookings
+                .Count(bs => bs.Status == "Booked" || bs.Status == "Pending") // Count the relevant seats
         }).ToList();
 
         // Store the data in ViewBag
@@ -211,6 +201,7 @@ public class ScheduleController : Controller
 
         return View();
     }
+
 
 
 

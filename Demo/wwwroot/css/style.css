@@ -19,6 +19,10 @@ body {
 .Expired,.Suspended,.Deleted,.Blocked,.Cancelled{
     color:red;
 }
+.seat_status.InActive_Seat {
+    background-color: red;
+    color: white;
+}
 /* Flash Message -------------------------------------------------------------- */
 
 .info {

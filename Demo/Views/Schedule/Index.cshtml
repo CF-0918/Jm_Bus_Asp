@@ -111,17 +111,30 @@
 
                     <div class="bus-tags">
                         <!-- Seat status with icon -->
-                        <span class="seat_status available ">
-                            <i class="fas fa-chair"></i> @schedule.BusCapacity Seat(s)
+                        <span class="seat_status @(schedule.BusCapacity - schedule.SeatsBooked > 0 ? "available" : "InActive_Seat")">
+                            <i class="fas fa-chair"></i> @(schedule.BusCapacity - schedule.SeatsBooked) / @schedule.BusCapacity Seat(s)
                         </span>
+
                         <!-- Additional tags with icons -->
                         <span><i class="fas fa-gem"></i> Valuable</span>
                     </div>
                 </div>
 
-                <a href="/Schedule/SelectSeats/@schedule.ScheduleId" class="select-btn">
-                    <i class="fas fa-check-circle"></i> Select
-                </a>
+                @if (schedule.BusCapacity - schedule.SeatsBooked > 0)
+                {
+                    <!-- Show the 'Select' button if seats are available -->
+                    <a href="/Schedule/SelectSeats/@schedule.ScheduleId" class="select-btn">
+                        <i class="fas fa-check-circle"></i> Select
+                    </a>
+                }
+                else
+                {
+                    <!-- Add a blocked CSS class to style as disabled, or hide the button -->
+                    <a class="select-btn blocked" style="pointer-events: none; opacity: 0.5;background-color:red">
+                        <i class="fas fa-times-circle"></i> No Seats Available
+                    </a>
+                }
+
             </div>
         }
     </div>

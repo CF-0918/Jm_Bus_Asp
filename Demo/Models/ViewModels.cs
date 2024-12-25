@@ -627,7 +627,7 @@ public class ScheduleDetailsVM
 {
     public string BusId { get; set; }
     public string BusName { get; set; }
-    public string BusCapacity { get; set; }
+    public int BusCapacity { get; set; }
     public string BusPlate { get; set; }
     public string CategoryBusName { get; set; }
     public string PhotoURL { get; set; }
@@ -642,6 +642,8 @@ public class ScheduleDetailsVM
     public string Destination { get; set; }
     public int Hour { get; set; }
     public int Min { get; set; }
+    // New property for booked seats
+    public int SeatsBooked { get; set; }
 }
 
 public class EditScheduleVM
