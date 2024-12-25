@@ -57,8 +57,11 @@
                 <td>@member.Email</td>
                 <td>@member.Phone</td>
                 <td>@member.IcNo</td>
-                    <td class="@member.Status">
-                       @member.Status
+                    <td>
+                        <select class="status-dropdown @member.Status" data-member-id="@member.Id">
+                            <option value="Active" selected="@(member.Status == "Active")">Active</option>
+                            <option value="Inactive" selected="@(member.Status == "Inactive")">Inactive</option>
+                        </select>
                     </td>
 
                 <td>

@@ -134,16 +134,18 @@ public class PaymentController : Controller
                         // Calculate the discounted total
                         decimal totalSpend =total - vouchersDB.CashDiscount;
 
+                        TempData["Info"] = $"Total Spend = {totalSpend}, cashDiscount : {vouchersDB.CashDiscount} ";
                         // Round the total spend to the nearest integer for points calculation
                         int roundedTotalSpendPoints = (int)Math.Round(totalSpend, MidpointRounding.AwayFromZero);
 
                         // Update member's minimum spend and points
                         member.MinSpend += totalSpend;
                         member.Points += roundedTotalSpendPoints;
-                        TempData["Info"] = $"The Points after {roundedTotalSpendPoints} , {totalSpend}  has been completed.";
+                        bookingDetailsDB.Total = totalSpend;
+                       //TempData["Info"] = $"The Points after {roundedTotalSpendPoints} , {totalSpend}  has been completed.";
 
                         // Update the voucher quantity in MemberVouchers
-                        var memberVoucher = db.MemberVouchers.FirstOrDefault(mv => mv.VoucherId == vm.VoucherId);
+                       var memberVoucher = db.MemberVouchers.FirstOrDefault(mv => mv.VoucherId == vm.VoucherId);
                         if (memberVoucher != null)
                         {
                             memberVoucher.Amount -= 1;
@@ -165,7 +167,7 @@ public class PaymentController : Controller
 
                     // Perform bulk update of BookingSeats status
                     db.BookingSeats
-                    .Where(bs => bs.BookingId == vm.BookingId) 
+                    .Where(bs => bs.BookingId == vm.BookingId &&bs.Status=="Pending") 
                     .ExecuteUpdate(bs => bs.SetProperty(b => b.Status, "Booked")); 
 
                 db.SaveChanges();
@@ -220,7 +222,7 @@ public class PaymentController : Controller
 
         var ranks = db.Members.Include(s => s.Rank).FirstOrDefault(m => m.Id == User.Identity.Name);
 
-        ViewBag.UserRanks = ranks;
+        ViewBag.UserRanks = ranks?.Rank; // Pass only the Rank information
         ViewBag.RouteSchedules = routeSchedules;
 
         ViewBag.BookingDetails = bookingDetails;
@@ -242,7 +244,7 @@ public class PaymentController : Controller
             var voucherIds = string.Join(", ", vouchersList.Select(mv => mv.VoucherId.ToString()));
 
             // Store the voucherIds in TempData
-            TempData["Info"] = voucherIds;
+            TempData["Info"] = $"Vouceher have :{voucherIds}";
         }
 
         // Map to ViewModel

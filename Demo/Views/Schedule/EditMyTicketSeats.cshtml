@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "Ticket Details | Editing";
+    var booking = (Booking)ViewBag.BookingSchedule; // Assuming a single booking is passed
+    var bookingSeats = ViewBag.BookingSeats as IEnumerable<BookingSeat>;
+}
+
+<section class="ticket-section">
+
+    <h3 style="text-decoration:underline;font-weight:800;">Editing Booking</h3>
+
+    <a href="#" class="list_of_all_tickets">
+        <i class="fas fa-ticket"></i>
+        ALL
+    </a>
+    <!-- Header -->
+    <div class="ticket-header">
+        <div class="ticket-header-left">
+            <img src="/photo/images/logo_JMBus.png" alt="JMBus Logo" class="ticket-logo">
+            <h1 class="ticket-title">@booking.Id</h1>
+        </div>
+        <input type="hidden" name="bookingId" value="@booking.Id">
+    </div>
+
+    <!-- Body -->
+    <div class="ticket-body">
+        <h4 class="ticket-info-title">Ticket Information</h4>
+        <p class="ticket-info-item"><strong>Bus:</strong> @booking.Schedule.Bus.Name</p>
+        <p class="ticket-info-item">
+            <strong>Route :</strong> @booking.Schedule.RouteLocation.Depart
+            <i class="fas fa-exchange"></i>
+            @booking.Schedule.RouteLocation.Destination
+        </p>
+        <p class="ticket-info-item">
+            <strong>Depart Date & Time:</strong>
+            @booking.Schedule.DepartDate @booking.Schedule.DepartTime
+            <span class="ticket-type two-way"><i class="fas fa-ticket-alt"></i>One-Way Ticket</span>
+        </p>
+        <p class="ticket-info-item">
+            <strong>Booking Status:</strong>
+            <span class="payment-status">@booking.Status</span>
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <table class="ticket-footer">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Seat No</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (bookingSeats != null && bookingSeats.Any())
+            {
+                int count = 1;
+                foreach (var seat in bookingSeats)
+                {
+                    <tr>
+                        <td>@count</td>
+                        <td>@seat.SeatNo</td>
+                        <td class="@seat.Status">@seat.Status</td>
+                        <td>RM @booking.Price</td>
+                        <td>
+                            @if (seat.Status == "Cancelled")
+                            {
+                                <span class="text-danger">This Seat has Been Cancelled</span>
+                            }
+                            else
+                            {
+                                <form method="post">
+                                    <input type="hidden" name="SeatNo" value="@seat.SeatNo" />
+                                    <input type="hidden" name="BookingId" value="@booking.Id" />
+                                    <input type="submit" class="btn btn-danger" value="Cancel Seat" />
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                    count++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" style="text-align:center;">No seats available for this booking.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <span class="remark">* Remark: Payment is made in Invoice 001</span>
+</section>

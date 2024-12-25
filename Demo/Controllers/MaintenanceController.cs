@@ -41,16 +41,16 @@ public class MaintenanceController : Controller
         // Filter staff based on the search term
         var searched = db.Staffs.Where(s => string.IsNullOrEmpty(name) || s.FirstName.Contains(name) || s.LastName.Contains(name));
 
+        // (2) Sorting --------------------------
+        ViewBag.Sort = sort;
+        ViewBag.Dir = dir;
+
         ViewBag.Status = status = status?.Trim() ?? "All";
 
         if (status != "All")
         {
             searched = searched.Where(s => s.Status == status);
         }
-
-        // (2) Sorting --------------------------
-        ViewBag.Sort = sort;
-        ViewBag.Dir = dir;
 
         // Define sorting logic
         Func<Staff, object> fn = sort switch
@@ -669,8 +669,9 @@ public class MaintenanceController : Controller
     }
 
     //Get Request [Show Bus List]
-    public IActionResult ShowBusList(string? name, string? sort, string? status, string? dir, int page = 1)
+    public IActionResult ShowBusList(string? name, string? sort, string? status, string? dir, string? categoryId, int page = 1)
     {
+        ViewBag.Categories = db.CategoryBuses.ToList();
         // (1) Searching ------------------------
         ViewBag.Name = name = name?.Trim() ?? "";
 
@@ -681,6 +682,13 @@ public class MaintenanceController : Controller
         if (status != "All")
         {
             searched = searched.Where(s => s.Status == status);
+        }
+
+        ViewBag.CategoryId = categoryId = categoryId?.Trim() ?? "All";
+
+        if (categoryId != "All")
+        {
+            searched = searched.Where(b => b.CategoryBusId == categoryId);
         }
 
         // (2) Sorting --------------------------
@@ -713,6 +721,8 @@ public class MaintenanceController : Controller
             return RedirectToAction(null, new { name, sort, dir, page = m.PageCount });
         }
 
+        // Pass categories to the view
+        ViewBag.Categories = db.CategoryBuses.ToList();
 
         if (Request.IsAjax())
         {
@@ -788,6 +798,25 @@ public class MaintenanceController : Controller
         return View(vm);
     }
 
+    public IActionResult BusDetails(string id)
+    {
+        // Get staff/admin  record based on email (PK)
+        var m = db.Buses.Find(id);
+        ViewBag.CategoryList = new SelectList(db.CategoryBuses, "Id", "Name");
+        if (m == null) return RedirectToAction("EditBus", "Maintenance");
+
+        var vm = new BusDetailsVM
+        {
+            Name = m.Name,
+            BusPlate = m.BusPlate,
+            Capacity = m.Capacity,
+            CategoryBusId = m.CategoryBusId,
+            PhotoURL = m.PhotoURL,
+        };
+
+        return View(vm);
+    }
+
     [Authorize(Roles = "Staff,Admin")]
     public IActionResult AddCategoryBus()
     {
@@ -800,6 +829,15 @@ public class MaintenanceController : Controller
     [HttpPost]
     public IActionResult AddCategoryBus(AddCategoryBus vm)
     {
+        const int maxCategories = 10;
+        var currentCategoryCount = db.CategoryBuses.Count();
+
+        if (currentCategoryCount >= maxCategories)
+        {
+            TempData["Info"] = "Maximum number of categories reached. You cannot add more categories.";
+            ViewBag.CategoryBuses = db.CategoryBuses;
+            return View(vm);
+        }
         if (ModelState.IsValid)
         {
             // Determine the new ID
@@ -1076,6 +1114,24 @@ public class MaintenanceController : Controller
             TempData["Info"] = "Route updated.";
             return RedirectToAction("ShowRouteList", "Maintenance");
         }
+
+        return View(vm);
+    }
+
+    public IActionResult RouteDetails(string id)
+    {
+
+        // Get staff/admin  record based on email (PK)
+        var m = db.RouteLocations.Find(id);
+        if (m == null) return RedirectToAction("EditRoute", "Membership");
+
+        var vm = new RouteDetailsVM
+        {
+            Destination = m.Destination,
+            Depart = m.Depart,
+            Hour = m.Hour,
+            Min = m.Min,
+        };
 
         return View(vm);
     }

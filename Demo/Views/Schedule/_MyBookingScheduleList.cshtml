@@ -44,7 +44,7 @@
                            href="?name=@ViewBag.Name&sort=@f&dir=@d" class="@c">@f</a>
                     </th>
                 }
-                <th></th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -70,7 +70,7 @@
                     <td>
                         <!-- Edit and Delete actions -->
                         <a href="@Url.Action("TicketDetails", "Schedule", new { id = booking.booking.Id })" class="btn btn-info btn-sm">View Details</a>
-                        <a href="@Url.Action("Actions", "Schedule", new { id = booking.booking.Id })" class="btn btn-warning btn-sm">Actions</a>
+                        <a href="@Url.Action("EditMyTicketSeats", "Schedule", new { id = booking.booking.Id })" class="btn btn-warning btn-sm">Edit Seat</a>
                     </td>
                 </tr>
             }

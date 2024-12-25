@@ -40,6 +40,11 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpPost]
+    public IActionResult Index(HomeView vm)
+    {
+        return View(vm);
+    }
 
     [HttpPost]
     [Authorize(Roles = "Member")]

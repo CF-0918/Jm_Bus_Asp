@@ -52,7 +52,7 @@ public class RegisterVM
     public string Email { get; set; }
     [MaxLength(6)]
     [Display(Name = "Verfication Code")]
-    public string VerificationNumberEmail{  get; set; }
+    public string VerificationNumberEmail { get; set; }
 
     [Required(ErrorMessage = "Email hasn't been verified.")]
     public string EmailVerifiedHiddenField { get; set; }
@@ -125,14 +125,22 @@ public class UpdateProfileVM
     [Display(Name = "Phone Number")]
     public string PhoneNo { get; set; }
 
-    public string Country { get; set; } 
+    public string Country { get; set; }
 
-    public string? Status {  get; set; }
+    public string? Status { get; set; }
 
     public bool? Subscribe { get; set; }
 
-    public string? PhotoURL {  get; set; }
+    public string? PhotoURL { get; set; }
     public IFormFile? Photo { get; set; }
+}
+
+
+public class HomeView
+{
+    public DateOnly StartDate { get; set; }
+    public string Depart { get; set; }
+    public string Destination { get; set; }
 }
 
 public class VoucherVM
@@ -147,7 +155,7 @@ public class VoucherVM
     [Remote("CheckDateIsTodayOrGreaterThan", "Membership", ErrorMessage = "Start Date Should Not Be Past")]
     public DateOnly StartDate { get; set; }
 
-    [Remote(action: "CheckRangeDate", controller: "Membership", AdditionalFields = nameof(StartDate) ,ErrorMessage = "End Date Should Be Greater Than Start Date.")]
+    [Remote(action: "CheckRangeDate", controller: "Membership", AdditionalFields = nameof(StartDate), ErrorMessage = "End Date Should Be Greater Than Start Date.")]
     public DateOnly EndDate { get; set; }
 
     [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
@@ -158,6 +166,28 @@ public class VoucherVM
 }
 
 public class EditVoucherVM
+{
+    [StringLength(50)]
+    public string Name { get; set; }
+
+    public int PointNeeded { get; set; }
+
+    [Display(Name = "Value (RM)")]
+    public int CashDiscount { get; set; }
+    [Remote("CheckDateIsTodayOrGreaterThan", "Membership", ErrorMessage = "Start Date Should Not Be Past")]
+    public DateOnly StartDate { get; set; }
+
+    [Remote(action: "CheckRangeDate", controller: "Membership", AdditionalFields = nameof(StartDate), ErrorMessage = "End Date Should Be Greater Than Start Date.")]
+    public DateOnly EndDate { get; set; }
+
+    [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
+    public int Qty { get; set; }
+
+    [StringLength(100)]
+    public string Description { get; set; }
+}
+
+public class VoucherDetailsVM
 {
     [StringLength(50)]
     public string Name { get; set; }
@@ -226,6 +256,25 @@ public class EditRankVM
     public int Discounts { get; set; }
 }
 
+public class RankDetailsVM
+{
+    public string? Id { get; set; }
+    [StringLength(50)]
+
+    public string Name { get; set; }
+
+    [StringLength(100)]
+    public string Description { get; set; }
+
+    [Display(Name = "Min Spend")]
+    [Range(0, int.MaxValue, ErrorMessage = "Min Spend must be a positive value.")]
+    public int MinSpend { get; set; }
+
+    [Range(0, 100, ErrorMessage = "Discounts Percentage must be between 0 and 100.")]
+    [Display(Name = "Discounts Percentage (%)")]
+    public int Discounts { get; set; }
+}
+
 public class VoucherViewModel
 {
     public string VoucherId { get; set; }
@@ -236,7 +285,7 @@ public class VoucherViewModel
     public decimal CashDiscount { get; set; }
     public int PointNeeded { get; set; }
     public string Status { get; set; }
-    public int Amount { get; set; } 
+    public int Amount { get; set; }
 }
 public class ResetPasswordVM
 {
@@ -537,11 +586,37 @@ public class AddBusVM
 
     [Required(ErrorMessage = "Category Bus ID is required.")]
     [RegularExpression(@"^[A-Z0-9\-]{1,20}$", ErrorMessage = "Category Bus ID must be alphanumeric and up to 20 characters.")]
-    [Display(Name="Category")]
+    [Display(Name = "Category")]
     public string CategoryBusId { get; set; }
 }
 
 public class EditBusVM
+{
+    public string? Id { get; set; }
+    public string Name { get; set; }
+
+    [Required(ErrorMessage = "Bus plate is required.")]
+    [RegularExpression(@"^[A-Z]{3}[0-9]{4}$", ErrorMessage = "Bus plate must start with three uppercase letters followed by four digits (e.g., VHA5309).")]
+
+    public string BusPlate { get; set; }
+
+    public string? Status { get; set; }
+
+    [Required(ErrorMessage = "Capacity is required.")]
+    [Range(10, 50, ErrorMessage = "Capacity must be between 10 and 50.")]
+    public int Capacity { get; set; }
+
+    [Url]
+    public string? PhotoURL { get; set; }
+    public IFormFile? Photo { get; set; }
+
+    [Required(ErrorMessage = "Category Bus ID is required.")]
+    [RegularExpression(@"^[A-Z0-9\-]{1,20}$", ErrorMessage = "Category Bus ID must be alphanumeric and up to 20 characters.")]
+    [Display(Name = "Category")]
+    public string CategoryBusId { get; set; }
+}
+
+public class BusDetailsVM
 {
     public string? Id { get; set; }
     public string Name { get; set; }
@@ -595,31 +670,43 @@ public class EditRouteVM
     public int Min { get; set; }
 }
 
+public class RouteDetailsVM
+{
+    public string? Id { get; set; }
+    public string Depart { get; set; }
+
+    [Remote("CheckDepartAndDestination", "Maintenance", ErrorMessage = "Destination should not be the same as Depart")]
+    public string Destination { get; set; }
+
+    public int Hour { get; set; }
+    public int Min { get; set; }
+}
+
 public class ScheduleVM
 {
-    [Display(Name ="Bus")]
-   public string BusId { get; set; }
+    [Display(Name = "Bus")]
+    public string BusId { get; set; }
     [Display(Name = "Route")]
     public string RouteId { get; set; }
     [Display(Name = "Depart Date")]
-    public DateOnly DepartDate {  get; set; }
+    public DateOnly DepartDate { get; set; }
     [Display(Name = "Depart Time")]
     public TimeOnly DepartTime { get; set; }
 
     public string Status { get; set; }
-    public int Price {  get; set; }
+    public int Price { get; set; }
     [Display(Name = "Discount Price")]
     public int DiscountPrice { get; set; }
     public string Remark { get; set; }
     [Display(Name = "Send Email To Subscriber")]
-    public string? SubscribeEmail {  get; set; }
+    public string? SubscribeEmail { get; set; }
 }
 
 public class ScheduleDetailsVM
 {
     public string BusId { get; set; }
     public string BusName { get; set; }
-    public string BusCapacity { get; set; }
+    public int BusCapacity { get; set; }
     public string BusPlate { get; set; }
     public string CategoryBusName { get; set; }
     public string PhotoURL { get; set; }
@@ -634,6 +721,8 @@ public class ScheduleDetailsVM
     public string Destination { get; set; }
     public int Hour { get; set; }
     public int Min { get; set; }
+    //New property for booked seats
+    public int SeatsBooked { get; set; }
 }
 
 public class EditScheduleVM
@@ -667,11 +756,41 @@ public class EditScheduleVM
     public List<RouteLocation>? Routes { get; set; }
 }
 
+public class ShowScheduleDetailsVM
+{
+    public string? ScheduleId { get; set; }
+
+    [Display(Name = "Bus")]
+    public string? BusId { get; set; }
+
+    [Display(Name = "Route")]
+    public string? RouteId { get; set; }
+
+    [Display(Name = "Depart Date")]
+    public DateOnly DepartDate { get; set; }
+
+    [Display(Name = "Depart Time")]
+    public TimeOnly DepartTime { get; set; }
+
+    public string? Status { get; set; }
+    public int Price { get; set; }
+
+    [Display(Name = "Discount Price")]
+    public int DiscountPrice { get; set; }
+    public string Remark { get; set; }
+
+    [Display(Name = "Send Email To Subscriber")]
+    public string? SubscribeEmail { get; set; }
+
+    // Add these two properties to hold lists of buses and routes for the dropdowns
+    public List<Bus>? Buses { get; set; }
+    public List<RouteLocation>? Routes { get; set; }
+}
 
 public class VoucherUserDetailsVM
 {
-    public string VoucherId {  get; set; }
-    public string VoucherName {  get; set; }
+    public string VoucherId { get; set; }
+    public string VoucherName { get; set; }
     public int CashDiscount { get; set; }
     public int Qty { get; set; }
 
@@ -684,13 +803,13 @@ public class SubscribeNewsLetterVM
 public class PaymentVM
 {
     public string BookingId { get; set; }
-    public string CardType {  get; set; }
-    public string CardHolderName {  get; set; }
+    public string CardType { get; set; }
+    public string CardHolderName { get; set; }
     public string CardNumber { get; set; }
-    public string ExpirationDate {  get; set; }
-    public string Cvv {  get; set; }
-    [Display(Name ="Terms Checking")]
-    public string TermsCheck {  get; set; }
+    public string ExpirationDate { get; set; }
+    public string Cvv { get; set; }
+    [Display(Name = "Terms Checking")]
+    public string TermsCheck { get; set; }
 
     public string? VoucherId { get; set; }
 
@@ -699,8 +818,8 @@ public class PaymentVM
 public class ITSupportVM
 {
     public string Priority { get; set; }
-    [Display(Name ="Domain Name System (DNS)")]
-    public string DNS {  get; set; }
+    [Display(Name = "Domain Name System (DNS)")]
+    public string DNS { get; set; }
     public string Description { get; set; }
 
 }

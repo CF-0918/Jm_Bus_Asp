@@ -56,6 +56,7 @@
                 <td>@s.Hour</td>
                 <td>@s.Min</td>
                 <td>
+                    <a href="@Url.Action("RouteDetails", "Maintenance", new { id = s.Id })" class="btn btn-info btn-sm">Details</a>
                     <a href="@Url.Action("EditRoute", "Maintenance", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
                 <button class="btn btn-danger btn-sm" onclick="deleteRoute('@s.Id')">Delete</button>
                 </td>

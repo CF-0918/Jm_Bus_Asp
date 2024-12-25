@@ -63,7 +63,7 @@
             <td>@s.Capacity</td>
                 <td>
                     <!-- Edit and Delete actions -->
-                    
+                    <a href="@Url.Action("BusDetails", "Maintenance", new { id = s.Id })" class="btn btn-info btn-sm">Details</a>
                     <a href="@Url.Action("EditBus", "Maintenance", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
 @*                     @if (s.Status != "Inactive")
                     {
