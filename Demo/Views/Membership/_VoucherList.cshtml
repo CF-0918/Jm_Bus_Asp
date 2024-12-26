@@ -64,6 +64,7 @@
             <td>@s.StartDate</td>
             <td>@s.EndDate</td>
             <td>
+                    <a href="@Url.Action("VoucherDetails", "Membership", new { id = s.Id })" class="btn btn-info btn-sm">Details</a>
                     <a href="@Url.Action("EditVoucher", "Membership", new { id = s.Id })" class="btn btn-warning btn-sm">Edit</a>
 @*                     @if (s.Status != "Draft")
                     {

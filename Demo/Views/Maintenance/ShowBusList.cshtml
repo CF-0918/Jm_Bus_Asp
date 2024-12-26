@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Maintenance | Bus List";
+    IEnumerable<CategoryBus> categories = ViewBag.Categories as IEnumerable<CategoryBus>;
 }
 
 
@@ -21,8 +22,29 @@
                 <option value="Inactive" selected="@(ViewBag.Status == "Inactive")">Inactive</option>
             </select>
         </div>
-    <button class="btn btn-primary">Search</button>
-    <img src="/images/loader.gif" id="loader" style="display: none">
+        <!-- Category Buttons -->
+        <div class="filter-group">
+            <!-- Existing Search and Filter Buttons -->
+            <button type="submit" class="btn btn-primary">Search</button>
+            <img src="/images/loader.gif" id="loader" style="display: none">
+
+            <!-- Dynamically Generated Category Buttons -->
+            <div class="category-buttons" style="display: inline-block; margin-left: 10px;">
+                <button type="submit" name="categoryId" value="All" class="btn btn-outline-secondary @(string.IsNullOrEmpty(ViewBag.CategoryId) || ViewBag.CategoryId == "All" ? "active" : "")">
+                    All
+                </button>
+                @foreach (var category in categories)
+                {
+                    <button type="submit" name="categoryId" value="@category.Id" class="btn btn-outline-secondary @(ViewBag.CategoryId == category.Id ? "active" : "")">
+                        @category.Name
+                    </button>
+                }
+            </div>
+        </div>
+
+
+
+    
 </form>
 
 <div id="target">
@@ -114,6 +136,15 @@
                 if (statusDropdown) {
                     statusDropdown.addEventListener("change", function () {
                         // Trigger the form submission when the dropdown value changes
+                        this.form.submit();
+                    });
+                }
+            });
+
+                        document.addEventListener("DOMContentLoaded", function () {
+                const categoryDropdown = document.getElementById("categoryId");
+                if (categoryDropdown) {
+                    categoryDropdown.addEventListener("change", function () {
                         this.form.submit();
                     });
                 }
