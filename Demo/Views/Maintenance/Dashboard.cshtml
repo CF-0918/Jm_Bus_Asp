@@ -35,29 +35,37 @@
         <div class="row text-center">
             <div class="col-md-3">
                 <div class="box p-3">
-                    <i class="fa fa-cash-register"></i> <!-- Replace with your icon -->
-                    <p>Create POS Invoice</p>
+                    <a href="/Maintenance/AddBus">
+                        <i class="fa fa-cash-register"></i> <!-- Replace with your icon -->
+                        <p>Add Bus</p>
+                    </a>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="box p-3">
-                    <i class="fa fa-file-invoice"></i> <!-- Replace with your icon -->
-                    <p>Create New Invoice</p>
+                    <a href="/Maintenance/AddRoute">
+                        <i class="fa fa-file-invoice"></i> <!-- Replace with your icon -->
+                        <p>Add Route</p>
+                    </a>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="box p-3">
-                    <i class="fa fa-box"></i> <!-- Replace with your icon -->
-                    <p>Add Product</p>
+                    <a href="/Schedule/AddSchedule">
+                        <i class="fa fa-box"></i> <!-- Replace with your icon -->
+                        <p>Add Schedule</p>
+                    </a>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="box p-3">
-                    <i class="fa fa-user-plus"></i> <!-- Replace with your icon -->
-                    <p>Add Customer</p>
+                    <a href="/Account/CreateStaff">
+                        <i class="fa fa-user-plus"></i> <!-- Replace with your icon -->
+                        <p>Add Staff</p>
+                    </a>
                 </div>
             </div>
 
@@ -97,9 +105,33 @@
     <div style="height: 1px; margin-top:30px;width: 100%; background-color: rgb(201, 201, 201);"></div>
 
     <div class="statistics">
-        <div class="chartDiagram">
-            <h4>Monhtly Sales Report</h4>
-            <canvas id="myChart" style="z-index:1;"></canvas>
+        <div class="seat-status">
+            <div class="status-box">
+                <span class="booked-seats">
+                    Booked Seats
+                    <span id="bookedSeatsCounter">0</span>
+                </span>
+            </div>
+        </div>
+
+
+        <div class="most-popular-route">
+            <div class="status-box">
+                <h4>Most Popular Route</h4>
+                <div class="route-details">
+                    <p>Route: <strong>@ViewBag.MostPopularRoute</strong></p>
+                    <p>Bookings: <strong id="popularRouteCounter">@ViewBag.PopularRouteCount</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="active-members">
+            <div class="status-box">
+                <h4>Active Members</h4>
+                <div class="member-details">
+                    <p>Members: <strong id="activeMemberCounter">@ViewBag.ActiveMembers</strong></p>
+                </div>
+            </div>
         </div>
 
         <div class="todaySales">
@@ -127,3 +159,199 @@
     </div>
 
 </div> <!-- right container -->
+<style>
+    .seat-status {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .status-box {
+        background: linear-gradient(45deg, #36A2EB, #1E90FF);
+        color: white;
+        padding: 20px 40px;
+        border-radius: 5px;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        min-width: 250px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .status-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .seat-status .status-box .booked-seats {
+        display: flex;
+        flex-direction: column; /* Stack text and number vertically */
+        align-items: center; /* Center align the text and number */
+    }
+
+        .seat-status .status-box .booked-seats #bookedSeatsCounter {
+            font-size: 24px; /* Adjust the size as needed */
+            font-weight: bold;
+            margin-top: 5px; /* Space between text and number */
+        }
+
+
+    /* General styling for status boxes to make them equal size */
+    .status-box {
+        background: linear-gradient(45deg, #28a745, #218838);
+        color: white;
+        padding: 20px 40px;
+        border-radius: 5px;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        min-width: 250px; /* Ensure a minimum width */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 150px; /* Set a fixed height for all boxes */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .most-popular-route .status-box {
+        background: linear-gradient(45deg, #28a745, #218838); /* Green gradient */
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 180px; /* Adjust height to fit content */
+    }
+
+        .most-popular-route .status-box h4 {
+            margin-bottom: 10px; /* Space below the heading */
+        }
+
+    .most-popular-route .route-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px; /* Space between each row */
+    }
+
+        .most-popular-route .route-details p {
+            margin: 0; /* Remove any extra margins */
+            font-size: 16px; /* Adjust font size */
+        }
+
+        .most-popular-route .route-details strong {
+            font-weight: normal; /* Make the value not bold */
+        }
+
+    .active-members .status-box {
+        background: linear-gradient(45deg, #28a745, #218838); /* Turquoise color */
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 180px; /* Adjust height as needed */
+    }
+
+        .active-members .status-box h4 {
+            margin-bottom: 10px;
+        }
+
+    .active-members .member-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px; /* Space between the rows */
+    }
+
+        .active-members .member-details p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .active-members .member-details strong {
+            font-weight: normal;
+        }
+
+
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Booked Seats Counter
+        const bookedSeats = @Html.Raw(Json.Serialize(ViewBag.BookedSeats ?? 0)); // Fetch the booked seats count
+        const bookedSeatsCounterElement = document.getElementById('bookedSeatsCounter');
+
+        let bookedSeatsCurrentCount = 0; // Start count at 0 for booked seats
+        const bookedSeatsAnimationSpeed = 40; // Adjust for faster or slower increment (lower = faster)
+
+        function animateBookedSeatsCounter() {
+            if (bookedSeatsCurrentCount < bookedSeats) {
+                bookedSeatsCurrentCount++;
+                bookedSeatsCounterElement.textContent = bookedSeatsCurrentCount;
+                setTimeout(animateBookedSeatsCounter, bookedSeatsAnimationSpeed);
+            } else {
+                bookedSeatsCounterElement.textContent = bookedSeats; // Ensure the final count matches exactly
+            }
+        }
+
+        animateBookedSeatsCounter(); // Start the booked seats animation
+
+    // Popular Route Counter
+    const popularRouteCount = @Html.Raw(Json.Serialize(ViewBag.PopularRouteCount ?? 0)); // Fetch the popular route bookings count
+    const popularRouteCounterElement = document.getElementById('popularRouteCounter');
+
+    let popularRouteCurrentCount = 0; // Start count at 0 for popular route
+    const popularRouteAnimationSpeed = 40; // Adjust for faster or slower increment (lower = faster)
+
+    function animatePopularRouteCounter() {
+        if (popularRouteCurrentCount < popularRouteCount) {
+            popularRouteCurrentCount++;
+            popularRouteCounterElement.textContent = popularRouteCurrentCount;
+            setTimeout(animatePopularRouteCounter, popularRouteAnimationSpeed);
+        } else {
+            popularRouteCounterElement.textContent = popularRouteCount; // Ensure the final count matches exactly
+        }
+    }
+
+    // Start the popular route animation
+    animatePopularRouteCounter();
+
+    // Active Member Counter
+    const activeMemberCount = @Html.Raw(Json.Serialize(ViewBag.ActiveMembers ?? 0)); // Fetch the active members count
+    const activeMemberCounterElement = document.getElementById('activeMemberCounter');
+
+    let activeMemberCurrentCount = 0; // Start count at 0 for active members
+    const activeMemberAnimationSpeed = 40; // Adjust for faster or slower increment (lower = faster)
+
+    function animateActiveMemberCounter() {
+        if (activeMemberCurrentCount < activeMemberCount) {
+            activeMemberCurrentCount++;
+            activeMemberCounterElement.textContent = activeMemberCurrentCount;
+            setTimeout(animateActiveMemberCounter, activeMemberAnimationSpeed);
+        } else {
+            activeMemberCounterElement.textContent = activeMemberCount; // Ensure the final count matches exactly
+        }
+    }
+
+    // Start the active member animation
+    animateActiveMemberCounter();
+
+    });
+
+</script>
