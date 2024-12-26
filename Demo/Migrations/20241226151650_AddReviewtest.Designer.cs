@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20241226014054_JaydenPart")]
-    partial class JaydenPart
+    [Migration("20241226151650_AddReviewtest")]
+    partial class AddReviewtest
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -261,6 +261,36 @@ namespace Demo.Migrations
                     b.HasIndex("MemberId");
 
                     b.ToTable("Rents");
+                });
+
+            modelBuilder.Entity("Demo.Models.Review", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("CommentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("numberOfComments")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Demo.Models.RouteLocation", b =>
@@ -633,6 +663,17 @@ namespace Demo.Migrations
                     b.Navigation("Member");
                 });
 
+            modelBuilder.Entity("Demo.Models.Review", b =>
+                {
+                    b.HasOne("Demo.Models.Member", "Member")
+                        .WithOne("Review")
+                        .HasForeignKey("Demo.Models.Review", "MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+                });
+
             modelBuilder.Entity("Demo.Models.Schedule", b =>
                 {
                     b.HasOne("Demo.Models.Bus", "Bus")
@@ -746,6 +787,9 @@ namespace Demo.Migrations
                     b.Navigation("MemberVoucher");
 
                     b.Navigation("Rents");
+
+                    b.Navigation("Review")
+                        .IsRequired();
 
                     b.Navigation("Subscriptions")
                         .IsRequired();

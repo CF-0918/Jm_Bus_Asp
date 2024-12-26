@@ -27,15 +27,11 @@ public class RatingController : Controller
     [HttpPost]
     public IActionResult AddReview(ReviewVM vm)
     {
-        // Validate the input
-        if (!CheckRating(vm.comment, vm.rating))
+        // Check if rating requires a comment
+        if ((vm.rating == 1 || vm.rating == 2) && string.IsNullOrWhiteSpace(vm.comment))
         {
-            ModelState.AddModelError("comment", "Please enter a comment when the rating is 1 or 2.");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return View(vm);
+            TempData["Error"] = "Please enter a comment when the rating is 1 or 2.";
+            return RedirectToAction("Index", "Home");
         }
 
         // Check if the member has already reviewed this month
@@ -46,46 +42,47 @@ public class RatingController : Controller
 
         if (currentMonthReview != null)
         {
-            ModelState.AddModelError(string.Empty, "You can only leave one review per month.");
-            return View(vm);
+            TempData["Info"] = "You can only leave one review per month.";
+            return RedirectToAction("Index", "Home");
         }
 
         // Generate a new Review ID
         string newId;
         var maxId = db.Reviews
-                      .Where(r => r.Id.StartsWith("Review"))
-                      .OrderByDescending(r => r.Id)
-                      .FirstOrDefault()?.Id;
+            .Where(r => r.Id.StartsWith("Review"))
+            .OrderByDescending(r => r.Id)
+            .FirstOrDefault()?.Id;
 
-        if (maxId == null)
-        {
-            newId = "Review01";
-        }
-        else
-        {
-            int numericPart = int.Parse(maxId.Substring(6));
-            newId = $"Review{(numericPart + 1):D2}";
-        }
+        newId = maxId == null
+            ? "Review01"
+            : $"Review{(int.Parse(maxId.Substring(6)) + 1):D2}";
 
-        // Create a new review
+        // Create a new review object
         var newReview = new Review
         {
             Id = newId,
             Rating = vm.rating,
             Comment = vm.comment,
             CommentDate = DateOnly.FromDateTime(DateTime.Now), // Current date
-            numberOfComments = currentMonthReview?.numberOfComments + 1 ?? 1,
+            numberOfComments = 1, // Assuming this is for the current review cycle
             MemberId = User.Identity.Name
         };
 
-        var member=db.Members.Find(User.Identity.Name);
-        member.Points += 50;
-        // Save to database
+        // Update member's points
+        var member = db.Members.Find(User.Identity.Name);
+        if (member != null)
+        {
+            member.Points += 50;
+        }
+
+        // Save the review to the database
         db.Reviews.Add(newReview);
         db.SaveChanges();
 
+        // Set success message
         TempData["Info"] = "Your review has been added successfully!";
-        return RedirectToAction("Index","Home");
+        return RedirectToAction("Index", "Home");
     }
+
 
 }

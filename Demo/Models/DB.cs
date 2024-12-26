@@ -102,7 +102,6 @@ public class Member : User
 
     public List<Rent> Rents { get; set; }
     public Subscriptions Subscriptions { get; set; }
-    public Review Review { get; set; }
 }
 
 public class Voucher

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20241219030537_editsomething3")]
-    partial class editsomething3
+    [Migration("20241226152832_AddReviewtest1")]
+    partial class AddReviewtest1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,13 +30,26 @@ namespace Demo.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("BookingDateTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MemberId")
                         .IsRequired()
                         .HasColumnType("nvarchar(10)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("int");
+
                     b.Property<string>("ScheduleId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("decimal(18,2)");
@@ -44,11 +57,16 @@ namespace Demo.Migrations
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("VoucherId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MemberId");
 
                     b.HasIndex("ScheduleId");
+
+                    b.HasIndex("VoucherId");
 
                     b.ToTable("Bookings");
                 });
@@ -201,8 +219,8 @@ namespace Demo.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("End_Date")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("End_Date")
+                        .HasColumnType("date");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -231,8 +249,8 @@ namespace Demo.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Start_Date")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("Start_Date")
+                        .HasColumnType("date");
 
                     b.Property<string>("status")
                         .IsRequired()
@@ -242,7 +260,36 @@ namespace Demo.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("Rent");
+                    b.ToTable("Rents");
+                });
+
+            modelBuilder.Entity("Demo.Models.Review", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("CommentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("numberOfComments")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Demo.Models.RouteLocation", b =>
@@ -552,9 +599,15 @@ namespace Demo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Demo.Models.Voucher", "Voucher")
+                        .WithMany("Bookings")
+                        .HasForeignKey("VoucherId");
+
                     b.Navigation("Member");
 
                     b.Navigation("Schedule");
+
+                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("Demo.Models.BookingSeat", b =>
@@ -602,6 +655,17 @@ namespace Demo.Migrations
                 {
                     b.HasOne("Demo.Models.Member", "Member")
                         .WithMany("Rents")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("Demo.Models.Review", b =>
+                {
+                    b.HasOne("Demo.Models.Member", "Member")
+                        .WithMany()
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -712,6 +776,8 @@ namespace Demo.Migrations
 
             modelBuilder.Entity("Demo.Models.Voucher", b =>
                 {
+                    b.Navigation("Bookings");
+
                     b.Navigation("MemberVoucher");
                 });
 

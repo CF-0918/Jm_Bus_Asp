@@ -5,7 +5,7 @@ using System.Net.Mail;
 using X.PagedList.Extensions;
 using Demo.Models;
 using Microsoft.AspNetCore.Authorization;
-using Demo.Migrations;
+
 using System.Numerics;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Globalization;

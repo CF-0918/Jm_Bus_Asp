@@ -284,8 +284,7 @@ namespace Demo.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MemberId")
-                        .IsUnique();
+                    b.HasIndex("MemberId");
 
                     b.ToTable("Reviews");
                 });
@@ -663,8 +662,8 @@ namespace Demo.Migrations
             modelBuilder.Entity("Demo.Models.Review", b =>
                 {
                     b.HasOne("Demo.Models.Member", "Member")
-                        .WithOne("Review")
-                        .HasForeignKey("Demo.Models.Review", "MemberId")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -784,9 +783,6 @@ namespace Demo.Migrations
                     b.Navigation("MemberVoucher");
 
                     b.Navigation("Rents");
-
-                    b.Navigation("Review")
-                        .IsRequired();
 
                     b.Navigation("Subscriptions")
                         .IsRequired();

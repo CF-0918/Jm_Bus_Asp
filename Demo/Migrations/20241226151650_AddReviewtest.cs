@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Demo.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateYijunDB : Migration
+    public partial class AddReviewtest : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -209,14 +209,14 @@ namespace Demo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Rent",
+                name: "Rents",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DepTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     ArrTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    Start_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    End_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Start_Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    End_Date = table.Column<DateOnly>(type: "date", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Destination = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Purpose = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -230,9 +230,31 @@ namespace Demo.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rent", x => x.Id);
+                    table.PrimaryKey("PK_Rents", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rent_Users_MemberId",
+                        name: "FK_Rents_Users_MemberId",
+                        column: x => x.MemberId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CommentDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    numberOfComments = table.Column<int>(type: "int", nullable: false),
+                    MemberId = table.Column<string>(type: "nvarchar(10)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reviews_Users_MemberId",
                         column: x => x.MemberId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -280,6 +302,84 @@ namespace Demo.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    Qty = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BookingDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    VoucherId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ScheduleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MemberId = table.Column<string>(type: "nvarchar(10)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Schedules_ScheduleId",
+                        column: x => x.ScheduleId,
+                        principalTable: "Schedules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Users_MemberId",
+                        column: x => x.MemberId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Vouchers_VoucherId",
+                        column: x => x.VoucherId,
+                        principalTable: "Vouchers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookingSeats",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SeatNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BookingId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingSeats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BookingSeats_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_MemberId",
+                table: "Bookings",
+                column: "MemberId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_ScheduleId",
+                table: "Bookings",
+                column: "ScheduleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_VoucherId",
+                table: "Bookings",
+                column: "VoucherId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingSeats_BookingId",
+                table: "BookingSeats",
+                column: "BookingId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Buses_CategoryBusId",
                 table: "Buses",
@@ -296,9 +396,15 @@ namespace Demo.Migrations
                 column: "VoucherId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rent_MemberId",
-                table: "Rent",
+                name: "IX_Rents_MemberId",
+                table: "Rents",
                 column: "MemberId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_MemberId",
+                table: "Reviews",
+                column: "MemberId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedules_BusId",
@@ -337,13 +443,16 @@ namespace Demo.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BookingSeats");
+
+            migrationBuilder.DropTable(
                 name: "MemberVouchers");
 
             migrationBuilder.DropTable(
-                name: "Rent");
+                name: "Rents");
 
             migrationBuilder.DropTable(
-                name: "Schedules");
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Seats");
@@ -355,22 +464,28 @@ namespace Demo.Migrations
                 name: "Tokens");
 
             migrationBuilder.DropTable(
-                name: "Vouchers");
+                name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "RouteLocations");
-
-            migrationBuilder.DropTable(
-                name: "Buses");
+                name: "Schedules");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "CategoryBuses");
+                name: "Vouchers");
+
+            migrationBuilder.DropTable(
+                name: "Buses");
+
+            migrationBuilder.DropTable(
+                name: "RouteLocations");
 
             migrationBuilder.DropTable(
                 name: "Ranks");
+
+            migrationBuilder.DropTable(
+                name: "CategoryBuses");
         }
     }
 }
