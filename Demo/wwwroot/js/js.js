@@ -1,28 +1,35 @@
 $(document).ready(function () {
     // Define the toggleSidebar function
-    function toggleSidebar() {
-        const sidebar = document.getElement
 
-            ('sidebar');
-        const rightContainer = document.getElementById('right_container');
-        const table_account_container = document.getElementById('table_account_container');
-        sidebar.classList.toggle('collapsed');
-        rightContainer.classList.toggle('collapsed');
-        table_account_container.classList.toggle('collapsed');
+    // Show the overlay and review form when the notification is clicked
+    $('.review_circle_notification').on('click', function () {
+        $('.review_overlay').fadeIn();
+        $('.review_container').fadeIn();
+    });
 
-        const toggleIcon = sidebar.querySelector('.toggle-btn i');
+    // Hide the overlay and review form when the close button is clicked
+    $('.review_close_btn').on('click', function () {
+        $('.review_overlay').fadeOut();
+        $('.review_container').fadeOut();
+    });
 
-        toggleIcon.classList.toggle('fa-arrow-right');
-    }
+    // Enable/disable the comment box based on rating selection
+    $('.rate_review').on('change', function () {
+        var reviewValue = $(this).data('review-value'); // Get the review value from the data attribute
+        var commentBox = $('#bad_review_comment_box'); // The container for the comment box
+        var comment = $('#review_comment'); // The textarea inside the comment box
 
-    // Attach the toggleSidebar function to the toggle button click event
-    $('.toggle-btn').on('click', toggleSidebar);
-
-    $("#dropDownFilterButton").on('click', toggleFilter);
-
-    function toggleFilter() {
-        $(".filter").toggleClass("show");
-    }
+        // Check if the rating value is less than or equal to 4
+        if (parseInt(reviewValue) <= 2) {
+            // Show the comment box and enable the textarea
+            commentBox.show();
+            comment.prop('disabled', false); // Enable the textarea
+        } else {
+            // Hide the comment box and disable the textarea
+            commentBox.hide();
+            comment.prop('disabled', true); // Disable the textarea
+        }
+    });
 
     $("#autoGeneratePassword").on('click', autoGeneratePassword);
 

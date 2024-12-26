@@ -1,4 +1,6 @@
-﻿@{
+﻿
+@model ReviewVM;
+@{
     ViewBag.Title = "Home | Index";
     IEnumerable<Schedule> schedules = ViewBag.ValueableSchedules;
 }
@@ -8,7 +10,36 @@
     <partial name="_NewsLetterSubscribe" />
 }
 
+<div class="review_circle_notification">
+    <img src="/photo/images/reviews_icon.png" alt="Review Icon">
+</div>
 
+<div class="review_overlay"></div>
+
+@if(User.IsInRole("Member")){
+    <form class="review_container" action="/Rating/AddReview" method="POST">
+        <div class="review_close_btn">
+            <i class="fas fa-times"></i>
+        </div>
+        <h4>Will You Suggest JM Bus To Your Surroundings, Siblings, or Friends?</h4>
+
+        <div class="rating_group">
+            @for (int i = 1; i <= 5; i++)
+            {
+                <input type="radio" asp-for="rating" class="rate_review" data-review-value="@i" id="review_choice_@i" value="@i" />
+                <label for="review_choice_@i">@i</label>
+            }
+        </div>
+
+        <!-- Hidden comment box, initially hidden -->
+        <div id="bad_review_comment_box" class="bad_review_comment_box" style="display:none;">
+            <span>If given 1-2 rate,please wrote a review let us to be improve</span>
+            <textarea asp-for="comment" id="review_comment" disabled></textarea>
+        </div>
+        <span class="errorMessage" asp-validation-for="comment"></span><br />
+        <button class="submit_comment_button" type="submit">Submit</button>
+    </form>
+}
 
 <div class="home_section1">
     <div class="banner_title">
@@ -179,6 +210,7 @@
 
 @section foot{
     <script>
+
            document.addEventListener('DOMContentLoaded', () => {
             const newsletterContainer = document.querySelector('.newsletter-container');
             const newsletterOverlay = document.querySelector('.newsletter-overlay');
@@ -214,7 +246,7 @@
                 });
             });
 
-        });
+       
 
     </script>
 }
