@@ -4005,3 +4005,245 @@ hr {
     color: #4CAF50;
     margin-right: 10px;
 }
+
+/*Jayden Part----------------------------------------------------------------------------------------------------------------------------*/
+
+.rent-history-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.rent-item {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Added margin-bottom for space between each container */
+}
+
+    .rent-item div {
+        display: flex;
+        align-items: center;
+    }
+
+    .rent-item label {
+        font-weight: bold;
+        width: 40%;
+    }
+
+    .rent-item span {
+        flex: 1;
+    }
+
+.status-pending {
+    background-color: orange;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    max-width: 120px;
+    text-align: center;
+}
+
+.status-cancelled {
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    max-width: 120px;
+    text-align: center;
+}
+
+.status-approved {
+    background-color: green;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    max-width: 120px;
+    text-align: center;
+}
+
+.status-done {
+    background-color: blue;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    max-width: 120px;
+    text-align: center;
+}
+
+.no-data {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 20px 0;
+}
+
+.cancel-button {
+    display: block;
+    width: 150px;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .cancel-button:hover {
+        background-color: #c82333;
+    }
+
+
+
+/* Admin Partttttttttttttttttttttttttt*/
+
+.details-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #333; /* Ensure border is dark enough to be visible */
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: white; /* Ensure background doesn't blend with container */
+}
+
+.details-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+    .details-item:last-child {
+        border-bottom: none;
+    }
+
+    .details-item label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .details-item span {
+        color: #555;
+    }
+
+.status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    color: white !important; /* Force the text color to white */
+}
+
+.status-pending {
+    background-color: orange;
+    color: white !important; /* Force the text color to white */
+}
+
+.status-approved {
+    background-color: green;
+    color: white !important; /* Force the text color to white */
+}
+
+.status-done {
+    background-color: blue;
+    color: white !important; /* Force the text color to white */
+}
+
+.status-cancelled {
+    background-color: red;
+    color: white !important; /* Force the text color to white */
+}
+
+.back-button, .action-button {
+    display: inline-block;
+    margin: 10px 5px 0;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    border: none;
+}
+
+.back-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.action-button {
+    background-color: #6c757d;
+    color: white;
+}
+
+    .action-button.approve {
+        background-color: green;
+    }
+
+    .action-button.done {
+        background-color: blue;
+    }
+
+    .action-button.cancel {
+        background-color: red;
+    }
+
+    .action-button.disabled {
+        background-color: grey;
+        border: 1px solid white;
+        cursor: not-allowed;
+    }
+
+.back-button:hover {
+    background-color: #0056b3;
+}
+
+.action-button:not(.disabled):hover {
+    opacity: 0.9;
+}
+
+
+/*RENT list*/
+.status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    color: white !important; /* Ensure the text color is white */
+}
+
+.status-pending {
+    background-color: orange;
+    color: white !important;
+}
+
+.status-approved {
+    background-color: green;
+    color: white !important;
+}
+
+.status-done {
+    background-color: blue;
+    color: white !important;
+}
+
+.status-cancelled {
+    background-color: red;
+    color: white !important;
+}

@@ -1,0 +1,111 @@
+﻿@model Demo.Models.RentHistoryVM
+
+<div class="container mt-5">
+    <h2 class="mb-4">Rent Details</h2>
+
+    @if (TempData["Cancelled"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Cancelled"]
+        </div>
+    }
+
+    <div class="details-container">
+        <div class="details-item">
+            <label>Rent ID:</label>
+            <span>@Model.Id</span>
+        </div>
+        <div class="details-item">
+            <label>Member ID:</label>
+            <span>@Model.MemberId</span>
+        </div>
+        <div class="details-item">
+            <label>Start Date:</label>
+            <span>@Model.Start_Date.ToString("yyyy-MM-dd")</span>
+        </div>
+        <div class="details-item">
+            <label>End Date:</label>
+            <span>@Model.End_Date.ToString("yyyy-MM-dd")</span>
+        </div>
+        <div class="details-item">
+            <label>Depart Time:</label>
+            <span>@Model.DepTime.ToString("hh\\:mm")</span>
+        </div>
+        <div class="details-item">
+            <label>Return Time:</label>
+            <span>@Model.ArrTime.ToString("hh\\:mm")</span>
+        </div>
+        <div class="details-item">
+            <label>Location:</label>
+            <span>@Model.Location</span>
+        </div>
+        <div class="details-item">
+            <label>Destination:</label>
+            <span>@Model.Destination</span>
+        </div>
+        <div class="details-item">
+            <label>Number of People:</label>
+            <span>@Model.Numppl</span>
+        </div>
+        <div class="details-item">
+            <label>Email:</label>
+            <span>@Model.Email</span>
+        </div>
+        <div class="details-item">
+            <label>Purpose:</label>
+            <span>@Model.Purpose</span>
+        </div>
+        <div class="details-item">
+            <label>Personal In Charge:</label>
+            <span>@Model.PerIC</span>
+        </div>
+        <div class="details-item">
+            <label>Special Request:</label>
+            <span>@Model.Req</span>
+        </div>
+        <div class="details-item">
+            <label>Phone:</label>
+            <span>@Model.Phone</span>
+        </div>
+        <div class="details-item">
+            <label>Status:</label>
+            @if (Model.Status == "Pending")
+            {
+                <span class="status status-pending">@Model.Status</span>
+            }
+            else if (Model.Status == "Approved")
+            {
+                <span class="status status-approved">@Model.Status</span>
+            }
+            else if (Model.Status == "Done")
+            {
+                <span class="status status-done">@Model.Status</span>
+            }
+            else if (Model.Status == "Cancelled")
+            {
+                <span class="status status-cancelled">@Model.Status</span>
+            }
+        </div>
+    </div>
+
+    <form method="post" action="@Url.Action("UpdateRentStatus", "Maintenance")" class="text-center">
+        <input type="hidden" name="rentId" value="@Model.Id" />
+        <button type="submit" name="status" value="Approved"
+                class="action-button approve @(Model.Status == "Pending" ? "" : "disabled")"
+        @(Model.Status == "Pending" ? "" : "disabled")>
+            Approve
+        </button>
+        <button type="submit" name="status" value="Done"
+                class="action-button done @(Model.Status == "Approved" ? "" : "disabled")"
+        @(Model.Status == "Approved" ? "" : "disabled")>
+            Done
+        </button>
+        <button type="submit" name="status" value="Cancelled"
+                class="action-button cancel @(Model.Status == "Pending" ? "" : "disabled")"
+        @(Model.Status == "Pending" ? "" : "disabled")>
+            Cancel
+        </button>
+    </form>
+
+    <a href="@Url.Action("RentList", "Maintenance")" class="back-button">Back to List</a>
+</div>

@@ -1,0 +1,60 @@
+﻿@model IEnumerable<RentHistoryVM>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Admin Rent List</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Member ID</th>
+                <th>Rent ID</th>
+                <th>Number of People</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Arrival Time</th>
+                <th>Departure Time</th>
+                <th>Status</th> <!-- New Status Column -->
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rent in Model)
+            {
+                    <tr>
+                        <td>@rent.MemberId</td>
+                        <td>@rent.Id</td>
+                        <td>@rent.Numppl</td>
+                        <td>@rent.Start_Date.ToString("yyyy-MM-dd")</td>
+                        <td>@rent.End_Date.ToString("yyyy-MM-dd")</td>
+                        <td>@rent.ArrTime.ToString("hh\\:mm")</td>
+                        <td>@rent.DepTime.ToString("hh\\:mm")</td>
+                        <td>
+                            <!-- Status Column Logic -->
+                        @if (rent.Status == "Pending")
+                        {
+                                    <span class="status status-pending">@rent.Status</span>
+                        }
+                        else if (rent.Status == "Approved")
+                        {
+                                    <span class="status status-approved">@rent.Status</span>
+                        }
+                        else if (rent.Status == "Done")
+                        {
+                                    <span class="status status-done">@rent.Status</span>
+                        }
+                        else if (rent.Status == "Cancelled")
+                        {
+                                    <span class="status status-cancelled">@rent.Status</span>
+                        }
+                        </td>
+                        <td>
+                            <form method="get" action="@Url.Action("RentDetails", "Maintenance")">
+                                <input type="hidden" name="rentId" value="@rent.Id" />
+                                <button type="submit" class="btn btn-info">Details</button>
+                            </form>
+                        </td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+</div>
