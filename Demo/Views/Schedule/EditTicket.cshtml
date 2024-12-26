@@ -1,0 +1,119 @@
+﻿@model EditTicketVM
+
+@{
+    ViewBag.Title = "Ticket | Edit Ticket";
+}
+
+<div class="back-button-container">
+    <a href="@Url.Action("ShowTicketList", "Ticket")" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Ticket List
+    </a>
+</div>
+
+<div class="ticket-container">
+    <h2><i class="fas fa-ticket-alt"></i> Edit Ticket</h2>
+
+    <div class="errorMessage my-2" asp-validation-summary="All"></div>
+
+    <form method="post">
+        <input type="hidden" asp-for="BookingId" />
+        <input type="hidden" asp-for="OriginalPrice" />
+        <input type="hidden" asp-for="OriginalQuantity" />
+
+        <div class="ticket-details">
+            <div class="form-group">
+                <label><i class="fas fa-bus"></i> Bus:</label>
+                <span class="form-control-static">@Model.BusName</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-route"></i> Route:</label>
+                <span class="form-control-static">@Model.DepartLocation - @Model.Destination</span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label><i class="fas fa-calendar"></i> Depart Date:</label>
+                    <span class="form-control-static">@Model.DepartDate.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label><i class="fas fa-clock"></i> Depart Time:</label>
+                    <span class="form-control-static">@Model.DepartTime.ToString("HH:mm")</span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Quantity"><i class="fas fa-users"></i> Quantity:</label>
+                    <input asp-for="Quantity" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="Quantity" class="errorMessage"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label><i class="fas fa-dollar-sign"></i> Price per Ticket:</label>
+                    <span class="form-control-static">RM @Model.Price.ToString("F2")</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Status"><i class="fas fa-info-circle"></i> Status:</label>
+                <select asp-for="Status" class="form-control">
+                    <option value="Booked">Booked</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+                <span asp-validation-for="Status" class="errorMessage"></span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-chair"></i> Selected Seats:</label>
+                <div class="seat-list">
+                    @foreach (var seat in Model.SeatNumbers)
+                    {
+                        <span class="badge bg-primary">@seat</span>
+                    }
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.VoucherApplied))
+            {
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Applied Voucher:</label>
+                    <span class="form-control-static">@Model.VoucherApplied</span>
+                </div>
+            }
+
+            <div class="form-group">
+                <label><i class="fas fa-calculator"></i> Total Amount:</label>
+                <span class="form-control-static">RM @Model.Total.ToString("F2")</span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a asp-action="ShowTicketList" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+
+@section foot {
+    <script>
+        // Update total amount when quantity changes
+        document.querySelector('input[name="Quantity"]').addEventListener('change', function() {
+            const quantity = parseInt(this.value);
+            const pricePerTicket = @Json.Serialize(Model.Price);
+            const total = (quantity * pricePerTicket).toFixed(2);
+            document.querySelector('.form-control-static:last-child').textContent = `RM ${total}`;
+        });
+
+        // Confirm before form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!confirm('Are you sure you want to save these changes?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

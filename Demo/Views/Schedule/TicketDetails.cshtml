@@ -1,5 +1,6 @@
-﻿@{
-    ViewBag.Title = "My Booking Ticket";
+﻿@model TicketDetailsVM;
+@{
+    ViewBag.Title = "Schedule | Ticket Details";
 }
 
 <section class="ticket-section">
@@ -12,9 +13,9 @@
     <div class="ticket-header">
         <div class="ticket-header-left">
             <img src="/photo/images/logo_JMBus.png" alt="JMBus Logo" class="ticket-logo">
-            <h1 class="ticket-title">Booking ID :  @ViewBag.BookingId</h1>
+            <h1 class="ticket-title">Booking ID :  @Model.BookingId</h1>
         </div>
-        <input type="hidden" id="ticketId" name="ticketId" value="@ViewBag.BookingId">
+        <input type="hidden" id="ticketId" name="ticketId" value="@Model.BookingId">
         <div class="ticket-header-right">
             <div id="qrcode" class="ticket-qrcode"></div>
         </div>
@@ -23,15 +24,18 @@
     <!-- Body -->
     <div class="ticket-body">
         <h4 class="ticket-info-title">Ticket Information</h4>
-        <p class="ticket-info-item"><strong>Bus:</strong> T250</p>
-        <p class="ticket-info-item"><strong>Route : KL <i class="fas fa-exchange"></i> Melaka</strong></p>
-        <p class="ticket-info-item"><strong>Depart Date & Time:</strong> 20/12/2022 9:00 AM</p>
-        <p class="ticket-info-item"><strong>Back Date & Time:</strong> 25/12/2022 9:00 AM</p>
+        <p class="ticket-info-item"><strong>Bus:  </strong>@Model.BusName (@Model.BusPlate)</p>
+        <p class="ticket-info-item"><strong>Route :  @Model.DepartLocation <i class="fas fa-exchange"></i> @Model.Destination</strong></p>
+        <p class="ticket-info-item"><strong>Depart Date & Time:  </strong> @Model.DepartDate @Model.DepartTime</p>
+        <p class="ticket-info-item"><strong>Estimated Arrived Date & Time:  </strong> @Model.ArrivalDate @Model.ArrivalTime</p>
         <p class="ticket-info-item">
-            <span class="ticket-type two-way"><i class="fas fa-ticket-alt"></i> Two-way Ticket</span>
+            <span class="ticket-type two-way"><i class="fas fa-ticket-alt"></i> ONE-WAY TICKET </span>
         </p>
-        <p class="ticket-info-item"><strong>Payment Status:</strong> <span class="payment-status paid">Paid</span></p>
-        <h3 class="seat-info"><strong>Seat Numbers:</strong> A01, A02, A03</h3>
+        <p class="ticket-info-item"><strong>Payment Status:</strong> <span class="payment-status paid">@Model.Status</span></p>
+        <h3 class="seat-info">
+            <strong>Seat Numbers:</strong>
+            @string.Join(", ", Model.SeatNumbers)
+        </h3>
     </div>
 
     <!-- Footer -->
@@ -40,18 +44,18 @@
             <tr>
                 <th>Price</th>
                 <th>Quantity</th>
-                <th>Total Price</th>
+                <th>Subtotal</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>RM 60</td>
-                <td>3</td>
-                <td>RM 180</td>
+                <td>RM @Model.Price</td>
+                <td>@Model.Quantity</td>
+                <td>RM @Model.Subtotal</td>
             </tr>
             <tr>
-                <td colspan="2"><strong>Subtotal</strong></td>
-                <td><strong>RM 180</strong></td>
+                <td colspan="2"><strong>Total Price</strong></td>
+                <td><strong>RM @Model.Total</strong></td>
             </tr>
         </tbody>
     </table>

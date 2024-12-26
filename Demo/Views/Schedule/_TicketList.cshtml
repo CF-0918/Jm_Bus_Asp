@@ -1,0 +1,101 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Ticket>
+
+@{
+    string[] fields = ["", "Id", "ScheduleId", "PassengerName", "Status", "BookingDate", "SeatNumber"];
+}
+
+@Html.Hidden("sort", "", new { form = "f" })
+@Html.Hidden("dir", "", new { form = "f" })
+
+<p>
+    @Model.Count() of @Model.TotalItemCount record(s) |
+    Page @Model.PageNumber of @Model.PageCount
+</p>
+
+<form method="post" action="/Ticket/DeleteManyTickets" id="deleteManyForm">
+    <p>
+        <button type="button" data-check="ids">Check All</button>
+        <button type="button" data-uncheck="ids">Uncheck All</button>
+        <button type="submit">Cancel Checked</button>
+    </p>
+
+    <table class="table" id="target">
+        <tr>
+            @foreach (var f in fields)
+            {
+                string d = "asc";
+                string c = "";
+
+                if (f == ViewBag.Sort)
+                {
+                    d = ViewBag.Dir == "des" ? "asc" : "des";
+                    c = ViewBag.Dir;
+                }
+
+                <th>
+                    <a data-ajax="true"
+                       data-ajax-update="#target"
+                       data-ajax-loading="#loader"
+                       href="?name=@ViewBag.Name&status=@ViewBag.Status&sort=@f&dir=@d" class="@c">@f</a>
+                </th>
+            }
+            <th></th>
+        </tr>
+
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" name="ids" value="@t.TicketId" />
+                </td>
+                <td>@t.MemberId</td>
+                <td>@t.ScheduleId</td>
+                <td>@t.MemberName</td>
+                <td>
+                    <select class="status-dropdown" data-ticket-id="@t.TicketId">
+                        <option value="Booked" selected="@(t.Status == "Booked")">Booked</option>
+                        <option value="Cancelled" selected="@(t.Status == "Cancelled")">Cancelled</option>
+                        <option value="Completed" selected="@(t.Status == "Completed")">Completed</option>
+                    </select>
+                </td>
+                <td>@t.DepartDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@t.SeatNo</td>
+                <td>
+                    <a href="@Url.Action("TicketDetails", "Ticket", new { id = t.MemberId })" class="btn btn-info btn-sm">Details</a>
+                    @if (t.Status != "Cancelled" && t.Status != "Completed")
+                    {
+                        <a href="@Url.Action("EditTicket", "Ticket", new { id = t.MemberId })" class="btn btn-warning btn-sm">Edit</a>
+                        <form method="post" action="/Ticket/CancelTicket/@t.TicketId" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this ticket?')">Cancel</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</form>
+
+<div>
+    @{
+        var options = PagedListRenderOptions.ClassicPlusFirstAndLast;
+        options.LinkToFirstPageFormat = "First";
+        options.LinkToLastPageFormat = "Last";
+        options.LinkToPreviousPageFormat = "Previous";
+        options.LinkToNextPageFormat = "Next";
+
+        var ajaxOptions = new AjaxOptions
+            {
+                HttpMethod = "get",
+                UpdateTargetId = "target",
+                LoadingElementId = "#loader"
+            };
+    }
+
+    @Html.PagedListPager(
+            Model,
+            page => $"?name={ViewBag.Name}&status={ViewBag.Status}&sort={ViewBag.Sort}&dir={ViewBag.Dir}&page={page}",
+            PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(options, ajaxOptions)
+            )
+</div>

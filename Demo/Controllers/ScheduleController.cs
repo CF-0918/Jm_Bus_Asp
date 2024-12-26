@@ -430,6 +430,8 @@ public class ScheduleController : Controller
     }
 
 
+    
+
     [HttpPost]
     public IActionResult EditSchedule(EditScheduleVM vm, string id)
     {
@@ -873,7 +875,8 @@ public class ScheduleController : Controller
             .Join(db.RouteLocations,
                 combined => combined.schedule.RouteLocationId,
                 route => route.Id,
-                (combined, route) => new {
+                (combined, route) => new
+                {
                     combined.booking,
                     combined.schedule,
                     route
@@ -1128,13 +1131,117 @@ public class ScheduleController : Controller
     //Get Request - in here we just want to show result then no need opne another HttpPost
     public IActionResult TicketDetails(string id)
     {
-        //run db
+        var booking = db.Bookings
+            .Include(b => b.Schedule)
+                .ThenInclude(s => s.Bus)
+                    .ThenInclude(b => b.CategoryBus)
+            .Include(b => b.Schedule)
+                .ThenInclude(s => s.RouteLocation)
+            .Include(b => b.BookingSeats)
+            .Include(b => b.Voucher)
+            .FirstOrDefault(b => b.Id == id);
 
-        //fetch result store in view bag  pass to view
+        if (booking == null)
+        {
+            return NotFound();
+        }
 
+        // Create a DateTime combining DepartDate and DepartTime
+        var departDateTime = new DateTime(
+            booking.Schedule.DepartDate.Year,
+            booking.Schedule.DepartDate.Month,
+            booking.Schedule.DepartDate.Day,
+            booking.Schedule.DepartTime.Hour,
+            booking.Schedule.DepartTime.Minute,
+            0
+        );
 
-        return View();
+        // Calculate arrival DateTime by adding hours and minutes
+        var arrivalDateTime = departDateTime
+            .AddHours(booking.Schedule.RouteLocation.Hour)
+            .AddMinutes(booking.Schedule.RouteLocation.Min);
+
+        // Maps to TicketDetailsVM view model
+        var ticketDetails = new TicketDetailsVM
+        {
+            BookingId = booking.Id,
+            BusName = booking.Schedule.Bus.Name,
+            BusPlate = booking.Schedule.Bus.BusPlate,
+            CategoryName = booking.Schedule.Bus.CategoryBus.Name,
+            DepartLocation = booking.Schedule.RouteLocation.Depart,
+            Destination = booking.Schedule.RouteLocation.Destination,
+            BookingDateTime = booking.BookingDateTime,
+            DepartDate = booking.Schedule.DepartDate,
+            DepartTime = booking.Schedule.DepartTime,
+            ArrivalDate = DateOnly.FromDateTime(arrivalDateTime),
+            ArrivalTime = TimeOnly.FromDateTime(arrivalDateTime),
+            SeatNumbers = booking.BookingSeats.Select(bs => bs.SeatNo).ToList(),
+            Price = booking.Price,
+            Quantity = booking.Qty,
+            Subtotal = booking.Subtotal,
+            Total = booking.Total,
+            Status = booking.Status == "Booked" ? "Paid" : booking.Status,
+            VoucherApplied = booking.Voucher?.Name
+        };
+
+        return View(ticketDetails);
     }
 
 
+    [Authorize(Roles = "Member")]
+    public IActionResult MyBookingHistory(string? id, string? sort, string? dir, int page = 1)
+    {
+        ViewBag.Name = id = id?.Trim() ?? "";
+
+        var searched = db.Bookings
+            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status == "Cancelled")
+            .Join(db.Schedules,
+                booking => booking.ScheduleId,
+                schedule => schedule.Id,
+                (booking, schedule) => new { booking, schedule })
+            .Join(db.RouteLocations,
+                combined => combined.schedule.RouteLocationId,
+                route => route.Id,
+                (combined, route) => new {
+                    combined.booking,
+                    combined.schedule,
+                    route
+                });
+
+        ViewBag.Sort = sort;
+        ViewBag.Dir = dir;
+
+        Func<dynamic, object> fn = sort switch
+        {
+            "Id" => item => item.booking.Id,
+            "CancelledDateTime" => item => item.booking.BookingDateTime,
+            "Qty" => item => item.booking.Qty,
+            "Total" => item => item.booking.Total,
+            "DepartLocation" => item => item.route.Depart,
+            "DepartDate" => item => item.schedule.DepartDate,
+            "DepartTime" => item => item.schedule.DepartTime,
+            _ => item => item.booking.BookingDateTime
+        };
+
+        var sorted = dir == "desc" ? searched.OrderByDescending(fn) : searched.OrderBy(fn);
+
+        if (page < 1)
+        {
+            return RedirectToAction(null, new { id, sort, dir, page = 1 });
+        }
+
+        var pagedResult = sorted.ToPagedList(page, 10);
+
+        if (page > pagedResult.PageCount && pagedResult.PageCount > 0)
+        {
+            return RedirectToAction(null, new { id, sort, dir, page = pagedResult.PageCount });
+        }
+
+        if (Request.IsAjax())
+        {
+            return PartialView("_HistoryBookingList", pagedResult);
+        }
+
+        return View(pagedResult);
+    }
 }
