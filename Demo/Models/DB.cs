@@ -20,6 +20,7 @@ public class DB : DbContext
     public DbSet<Voucher> Vouchers { get; set; }
     public DbSet<MemberVoucher> MemberVouchers { get; set; }
 
+    public DbSet<Rent> Rents { get; set; }
     public DbSet<Token> Tokens { get; set; }
     public DbSet<CategoryBus> CategoryBuses { get; set; }
     public DbSet<Bus> Buses { get; set; }
@@ -96,6 +97,7 @@ public class Member : User
 
     // Navigation property to track the vouchers the member has redeemed
     public List<MemberVoucher> MemberVoucher { get; set; }
+
     public List<Rent> Rents { get; set; }
     public Subscriptions Subscriptions { get; set; }
 }
@@ -251,8 +253,8 @@ public class Rent
     public string Id { get; set; }
     public TimeOnly DepTime { get; set; }
     public TimeOnly ArrTime { get; set; }
-    public DateTime Start_Date { get; set; }
-    public DateTime End_Date { get; set; }
+    public DateOnly Start_Date { get; set; }
+    public DateOnly End_Date { get; set; }
     public string Location { get; set; }
     public string Destination { get; set; }
 
@@ -273,7 +275,6 @@ public class Rent
     // Navigation Property
     public Member Member { get; set; }
 }
-
 public class Subscriptions
 {
     [Key]
@@ -328,3 +329,4 @@ public class BookingSeat
     // Navigation Property
     public Booking Booking { get; set; } // Corrected to a single Booking
 }
+

@@ -732,3 +732,73 @@ public class ScheduleSelectSeatsVM
 
 }
 
+//Jayden part rent vm
+public class AddRentVM
+{
+
+    [Required(ErrorMessage = "Start Date is required.")]
+    [DataType(DataType.Date)]
+    public DateOnly Start_Date { get; set; }
+
+    [Required(ErrorMessage = "End Date is required.")]
+    [DataType(DataType.Date)]
+    public DateOnly End_Date { get; set; }
+
+    [Required(ErrorMessage = "Departure Time is required.")]
+    [DataType(DataType.Time)]
+    public TimeOnly DepTime { get; set; }
+
+    [Required(ErrorMessage = "Arrival Time is required.")]
+    [DataType(DataType.Time)]
+    public TimeOnly ArrTime { get; set; }
+
+    [Required(ErrorMessage = "Location is required.")]
+    [StringLength(100, ErrorMessage = "Location must be at most 100 characters long.")]
+    public string Location { get; set; }
+
+    [Required(ErrorMessage = "Destination is required.")]
+    [StringLength(100, ErrorMessage = "Destination must be at most 100 characters long.")]
+    public string Destination { get; set; }
+
+    [Required(ErrorMessage = "Purpose is required.")]
+    [StringLength(50, ErrorMessage = "Purpose must be at most 50 characters long.")]
+    public string Purpose { get; set; }
+
+    [Required(ErrorMessage = "Number of people is required.")]
+    [Range(1, 100, ErrorMessage = "Number of people must be between 1 and 100.")]
+    public int Numppl { get; set; }
+
+    [Required(ErrorMessage = "Personal IC is required.")]
+    [StringLength(50, ErrorMessage = "Personal IC must be at most 50 characters long.")]
+    public string PerIC { get; set; }
+
+    [Required(ErrorMessage = "Phone number is required.")]
+    [StringLength(15, ErrorMessage = "Phone number must be at most 15 characters long.")]
+    public string Phone { get; set; }
+
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Invalid email address format.")]
+    public string Email { get; set; }
+
+    [StringLength(1000, ErrorMessage = "Request must be at most 1000 characters long.")]
+    public string Req { get; set; }
+}
+
+public class RentHistoryVM
+{
+    public String Id { get; set; }
+    public DateOnly Start_Date { get; set; }
+    public DateOnly End_Date { get; set; }
+    public TimeOnly DepTime { get; set; }
+    public TimeOnly ArrTime { get; set; }
+    public string Location { get; set; }
+    public string Destination { get; set; }
+    public string Purpose { get; set; }
+    public int Numppl { get; set; }
+    public string PerIC { get; set; }
+    public string Phone { get; set; }
+    public string Email { get; set; }
+    public string Req { get; set; }
+    public string Status { get; set; }
+    public string? MemberId { get; set; }
+}

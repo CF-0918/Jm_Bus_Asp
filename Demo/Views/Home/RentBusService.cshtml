@@ -1,105 +1,115 @@
-﻿
-@model RentServiceFormVM;
+﻿@model AddRentVM
 @{
     ViewBag.Title = "Home | Rent Service Form";
 }
+
+
 <div class="container mt-5">
     <h2 class="mb-4">Bus Rental Booking Form</h2>
-    <form>
+    <div class="errorMessage" asp-validation-summary="All"></div>
+    <form class="rent_form" method="post" enctype="multipart/form-data">
+        @* Anti-Forgery Token *@
+        @Html.AntiForgeryToken()
 
         <div class="form-row row">
             <!-- Start Date -->
             <div class="form-group col-3">
-                <label for="startDate"><i class="fas fa-calendar-alt"></i> Start Date</label>
-                <input type="date" class="form-control" id="startDate" required>
+                <label asp-for="Start_Date"><i class="fas fa-calendar-alt"></i> Start Date</label>
+                <input asp-for="Start_Date" type="date" class="form-control" id="Start_Date" name="Start_Date">
+                <span class="errorMessage" asp-validation-for="Start_Date"></span>
             </div>
 
             <!-- End Date -->
             <div class="form-group col-3">
-                <label for="endDate"><i class="fas fa-calendar-alt"></i> End Date</label>
-                <input type="date" class="form-control" id="endDate" required>
+                <label asp-for="End_Date"><i class="fas fa-calendar-alt"></i> End Date</label>
+                <input asp-for="End_Date" type="date" class="form-control" id="End_Date" name="End_Date">
+                <span class="errorMessage" asp-validation-for="End_Date"></span>
             </div>
 
-            <!-- Start Time -->
+            <!-- Depart Time -->
             <div class="form-group col-3">
-                <label for="startTime "><i class="fas fa-clock"></i> Depart Time</label>
-                <input type="time" class="form-control" id="startTime" required>
+                <label asp-for="DepTime"><i class="fas fa-clock"></i> Depart Time</label>
+                <input asp-for="DepTime" type="time" class="form-control" id="DepTime" name="DepTime">
+                <span class="errorMessage" asp-validation-for="DepTime"></span>
             </div>
 
-            <!-- End Time -->
+            <!-- Arrival Time -->
             <div class="form-group col-3">
-                <label for="endTime"><i class="fas fa-clock"></i>Time Back</label>
-                <input type="time" class="form-control" id="endTime" required>
+                <label asp-for="ArrTime"><i class="fas fa-clock"></i> Arrival Time</label>
+                <input asp-for="ArrTime" type="time" class="form-control" id="ArrTime" name="ArrTime">
+                <span class="errorMessage" asp-validation-for="ArrTime"></span>
             </div>
-
         </div>
 
         <div class="form-row row">
-            <!-- Your Place -->
+            <!-- Location -->
             <div class="form-group col-6">
-                <label for="yourPlace"><i class="fas fa-map-marker-alt"></i> Your Place</label>
-                <input type="text" class="form-control" id="yourPlace" placeholder="Enter your location" required>
+                <label asp-for="Location"><i class="fas fa-map-marker-alt"></i> Your Place</label>
+                <input asp-for="Location" type="text" class="form-control" id="Location" name="Location" placeholder="Enter your location">
+                <span class="errorMessage" asp-validation-for="Location"></span>
             </div>
 
-            <!-- Place Will Be Travel -->
+            <!-- Destination -->
             <div class="form-group col-6">
-                <label for="destination"><i class="fas fa-map-marker-alt"></i> Destination</label>
-                <input type="text" class="form-control" id="destination" placeholder="Enter destination" required>
+                <label asp-for="Destination"><i class="fas fa-map-marker-alt"></i> Destination</label>
+                <input asp-for="Destination" type="text" class="form-control" id="Destination" name="Destination" placeholder="Enter destination">
+                <span class="errorMessage" asp-validation-for="Destination"></span>
             </div>
         </div>
-
 
         <div class="form-row row">
             <!-- Purpose -->
             <div class="form-group col-6">
-                <label for="purpose"><i class="fas fa-info-circle"></i> Purpose</label>
-                <select class="" id="purpose" required>
+                <label asp-for="Purpose"><i class="fas fa-info-circle"></i> Purpose</label>
+                <select asp-for="Purpose" class="form-control" id="Purpose" name="Purpose">
                     <option value="">Select Purpose</option>
                     <option value="travel">Travel</option>
                     <option value="business">Business</option>
                     <option value="vacation">Vacation</option>
                     <option value="school_trip">School Trip</option>
                 </select>
+                <span class="errorMessage" asp-validation-for="Purpose"></span>
             </div>
 
             <!-- Number of People -->
             <div class="form-group col-6">
-                <label for="numPeople"><i class="fas fa-users"></i> Number of People</label>
-                <input type="number" class="form-control" id="numPeople" placeholder="Enter number of people"
-                       required>
+                <label asp-for="Numppl"><i class="fas fa-users"></i> Number of People</label>
+                <input asp-for="Numppl" type="number" class="form-control" id="Numppl" name="Numppl" placeholder="Enter number of people">
+                <span class="errorMessage" asp-validation-for="Numppl"></span>
             </div>
         </div>
 
         <div class="form-row row">
-            <!-- Person In Charge -->
+            <!-- Person in Charge -->
             <div class="form-group col-4">
-                <label for="personInCharge"><i class="fas fa-user-tie"></i> Person in Charge</label>
-                <input type="text" class="form-control" id="personInCharge" placeholder="Enter name" required>
+                <label asp-for="PerIC"><i class="fas fa-user-tie"></i> Person in Charge</label>
+                <input asp-for="PerIC" type="text" class="form-control" id="PerIC" name="PerIC" placeholder="Enter name">
+                <span class="errorMessage" asp-validation-for="PerIC"></span>
             </div>
 
             <!-- Phone Number -->
             <div class="form-group col-4">
-                <label for="phoneNumber"><i class="fas fa-phone-alt"></i> Phone Number</label>
-                <input type="tel" class="form-control" id="phoneNumber" placeholder="Enter phone number" required>
+                <label asp-for="Phone"><i class="fas fa-phone-alt"></i> Phone Number</label>
+                <input asp-for="Phone" type="tel" class="form-control" id="Phone" name="Phone" placeholder="Enter phone number">
+                <span class="errorMessage" asp-validation-for="Phone"></span>
             </div>
 
             <!-- Email -->
             <div class="form-group col-4">
-                <label for="email"><i class="fas fa-envelope"></i> Email</label>
-                <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+                <label asp-for="Email"><i class="fas fa-envelope"></i> Email</label>
+                <input asp-for="Email" type="email" class="form-control" id="Email" name="Email" placeholder="Enter email">
+                <span class="errorMessage" asp-validation-for="Email"></span>
             </div>
         </div>
-
 
         <div class="form-row row">
             <!-- Special Requests -->
             <div class="form-group col-12">
-                <label for="specialRequests"><i class="fas fa-comment-dots"></i> Special Requests</label>
-                <textarea class="form-control" id="specialRequests" rows="3"
-                          placeholder="Any special requirements"></textarea>
+                <label asp-for="Req"><i class="fas fa-comment-dots"></i> Special Requests</label>
+                <textarea asp-for="Req" class="form-control" id="Req" name="Req" rows="3" placeholder="Any special requirements"></textarea>
+                <span class="errorMessage" asp-validation-for="Req"></span>
             </div>
         </div>
-
 
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary mt-3">
