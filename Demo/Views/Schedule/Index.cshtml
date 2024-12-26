@@ -86,6 +86,9 @@
             <button type="button" onclick="applySort('Latest')">Latest</button>
         </form>
     </div>
+    <p style="font-weight:bold"> 
+        Displaying: @((ViewBag.ScheduleDetails as List<ScheduleDetailsVM>)?.Count ?? 0) schedule(s)
+    </p>
 
     @foreach (var schedule in ViewBag.ScheduleDetails)
     {

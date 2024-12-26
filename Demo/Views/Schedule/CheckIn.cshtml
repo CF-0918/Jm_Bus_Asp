@@ -1,0 +1,49 @@
+﻿@{
+	ViewBag.Title = "Schedule | Check In Page";
+    var booking = ViewBag.BookingDetails;
+}
+
+ 
+<div class="check-in-container">
+    <!-- Header -->
+    <div class="check-in-header">
+        Booking Check-In
+    </div>
+
+    <!-- Content -->
+    <div class="check-in-content">
+        <!-- Booking Details -->
+        <div class="check-in-details">
+            <p><span>Booking ID:</span> @booking.BookingId</p>
+            <p><span>Member ID:</span> @booking.MemberId</p>
+            <p><span>Depart Date:</span>@ViewBag.RouteSchedules.DepartDate </p>
+            <p><span>Depart Time:</span>@ViewBag.RouteSchedules.DepartTime</p>
+            <p><span>Bus Name:</span>  @ViewBag.RouteSchedules.Bus.Name</p>
+            <p><span>Route:</span> @ViewBag.RouteSchedules.RouteLocation.Depart -> @ViewBag.RouteSchedules.RouteLocation.Destination</p>
+            <p>
+                <span>Seat No:</span>
+                @{
+                    var seatNumbers = new List<string>();
+                    foreach (var seat in booking.Seats)
+                    {
+                        seatNumbers.Add(seat.SeatNo);
+                    }
+                    var seatList = string.Join(", ", seatNumbers);
+                    @seatList
+                }
+                </p>
+            <p><span>Total Seat:</span>@booking.Qty</p>
+            <p><span>Status:</span> @booking.Status</p>
+            <p><span>Total Price:</span> RM @booking.Total</p>
+        </div>
+
+        <!-- Check-In Action -->
+        <div class="check-in-action">
+            <form  method="POST">
+                <!-- Hidden input to pass Booking ID -->
+                <input type="hidden" name="bookingId" value="@booking.BookingId">
+                <button type="submit">Check In</button>
+            </form>
+        </div>
+    </div>
+</div>

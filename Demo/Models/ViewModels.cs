@@ -831,6 +831,7 @@ public class ScheduleSelectSeatsVM
     public string CategoryName { get; set; }
     public decimal Price { get; set; }
     public decimal? Discount { get; set; }
+    public DateOnly DepartDate { get; set; }
     public TimeOnly DepartTime { get; set; }
     public string Depart { get; set; }
     public string Destination { get; set; }

@@ -574,8 +574,8 @@ public class AccountController : Controller
             Subscribe=m.IsSubscribedToNewsletter
         };
 
-        ViewBag.TotalBookingActive = db.Bookings.Where(vm => vm.MemberId == User.Identity!.Name &&vm.Status!="Cancelled").Count();
-        ViewBag.TotalBookingHistory = db.Bookings.Where(vm => vm.MemberId == User.Identity!.Name && vm.Status== "Cancelled").Count();
+        ViewBag.TotalBookingActive = db.Bookings.Where(vm => vm.MemberId == User.Identity!.Name &&vm.Status=="Pending"||vm.Status=="Booked").Count();
+        ViewBag.TotalBookingHistory = db.Bookings.Where(vm => vm.MemberId == User.Identity!.Name && vm.Status== "Cancelled"||vm.Status=="CheckIn"||vm.Status=="Expired").Count();
 
         // Get the number of vouchers the member has
         ViewBag.VouchersQty = db.MemberVouchers.Where(vm => vm.MemberId == User.Identity!.Name).Count();

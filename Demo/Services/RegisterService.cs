@@ -116,5 +116,37 @@ public class RegisterService
         db.SaveChanges();
     }
 
+    public void UpdateRealTimeSchedulBookingsStatus()
+    {
+        // Get current date as DateOnly
+        var today = DateOnly.FromDateTime(DateTime.Now);
+
+        // Retrieve schedules with DepartDate older than today and status as "Active"
+        var scheduleList = db.Schedules
+            .Where(s => s.DepartDate < today && s.Status == "Active")
+            .ToList();
+
+        foreach (var schedule in scheduleList)
+        {
+            // Update schedule status to "Expired"
+            schedule.Status = "Expired";
+
+            // Find all "Booked" bookings associated with this schedule
+            var bookingList = db.Bookings
+                .Where(b => b.ScheduleId == schedule.Id && b.Status == "Booked")
+                .ToList();
+
+            foreach (var booking in bookingList)
+            {
+                // Update booking status to "Expired"
+                booking.Status = "Expired";
+            }
+        }
+
+        // Save changes to the database after all updates
+        db.SaveChanges();
+    }
+
+
 
 }

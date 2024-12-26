@@ -13,6 +13,7 @@
     @Model.Count() of @Model.TotalItemCount record(s) |
     Page @Model.PageNumber of @Model.PageCount
 </p>
+<h3>My Bookings</h3>
 
 <form method="post" action="/" id="deleteManyForm">
     <p>
@@ -70,7 +71,16 @@
                     <td>
                         <!-- Edit and Delete actions -->
                         <a href="@Url.Action("TicketDetails", "Schedule", new { id = booking.booking.Id })" class="btn btn-info btn-sm">View Details</a>
-                        <a href="@Url.Action("EditMyTicketSeats", "Schedule", new { id = booking.booking.Id })" class="btn btn-warning btn-sm">Edit Seat</a>
+                        @if (booking.booking.Status!="Pending"){
+                            <a href="@Url.Action("EditMyTicketSeats", "Schedule", new { id = booking.booking.Id })" class="btn btn-warning btn-sm">Edit Seat</a>
+                        }else{
+                            <a href="@Url.Action("Index", "Payment", new { bookingId = booking.booking.Id })" class="btn btn-warning btn-sm">Pay Now</a>
+                        }
+
+                        @if (booking.booking.Status == "Booked" && booking.schedule.DepartDate == DateOnly.FromDateTime(DateTime.Now))
+                        {
+                            <a href="@Url.Action("CheckIn", "Schedule", new { bookingId = booking.booking.Id })" class="btn btn-success btn-sm">Check In</a>
+                        }
                     </td>
                 </tr>
             }

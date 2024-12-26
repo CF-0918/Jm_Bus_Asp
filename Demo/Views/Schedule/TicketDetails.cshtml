@@ -15,7 +15,7 @@
             <img src="/photo/images/logo_JMBus.png" alt="JMBus Logo" class="ticket-logo">
             <h1 class="ticket-title">Booking ID :  @Model.BookingId</h1>
         </div>
-        <input type="hidden" id="ticketId" name="ticketId" value="@Model.BookingId">
+        <input type="hidden" id="bookingId" name="bookingId" value="@Model.BookingId">
         <div class="ticket-header-right">
             <div id="qrcode" class="ticket-qrcode"></div>
         </div>
@@ -31,7 +31,7 @@
         <p class="ticket-info-item">
             <span class="ticket-type two-way"><i class="fas fa-ticket-alt"></i> ONE-WAY TICKET </span>
         </p>
-        <p class="ticket-info-item"><strong>Payment Status:</strong> <span class="payment-status paid">@Model.Status</span></p>
+        <p class="ticket-info-item"><strong>Payment Status:</strong> <span class="payment-status @Model.Status">@Model.Status</span></p>
         <h3 class="seat-info">
             <strong>Seat Numbers:</strong>
             @string.Join(", ", Model.SeatNumbers)
@@ -51,7 +51,7 @@
             <tr>
                 <td>RM @Model.Price</td>
                 <td>@Model.Quantity</td>
-                <td>RM @Model.Subtotal</td>
+                <td>RM @(Model.Price * Model.Quantity)</td>
             </tr>
             <tr>
                 <td colspan="2"><strong>Total Price</strong></td>
@@ -59,7 +59,7 @@
             </tr>
         </tbody>
     </table>
-    <span class="remark">* Remark: Payment is made in Invoice 001</span>
+    <span class="remark">* Remark: Total has included member discount and tax(10%)</span>
 </section>
 
 @section foot {
@@ -69,13 +69,15 @@
     <script>
         $(document).ready(function () {
             // Get the value from the hidden input
-            const ticketId = $('#ticketId').val();
-            const ticketConfirmationURL = "" + ticketId;
-            console.log("Ticket ID:", ticketId); // Debug: Check if ticketId is fetched correctly
+            const bookingId = $('#bookingId').val();
+                 const ipAddress = "172.20.10.6"; // Replace with your local IP
+        const bookingConfirmationURL = "http://" + ipAddress + ":7291/Schedule/CheckIn?bookingId=" + bookingId;
+
+            console.log("Booking ID:", bookingId); // Debug: Check if ticketId is fetched correctly
 
             // Generate QR code
             $('#qrcode').qrcode({
-                text: ticketConfirmationURL, // Use the dynamic URL
+                text: bookingConfirmationURL, // Use the dynamic URL
                 width: 128, // QR code width
                 height: 128 // QR code height
             });

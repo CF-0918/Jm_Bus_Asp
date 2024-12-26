@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Demo.Migrations;
 using System.Numerics;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Globalization;
 
 namespace Demo.Controllers;
 
@@ -163,15 +164,17 @@ public class ScheduleController : Controller
         // Define page size
         int pageSize = 10;
 
-        // Retrieve the schedule data and related entities
+        // Retrieve the schedule data and related entities sorted by DepartDate in ascending order
         var schedulesQuery = db.Schedules
             .Where(s => s.Status == "Active")
             .Include(s => s.RouteLocation)
             .Include(s => s.Bus)
-            .ThenInclude(b => b.CategoryBus)
+                .ThenInclude(b => b.CategoryBus)
             .Include(s => s.Bookings)
-            .ThenInclude(b => b.BookingSeats)
+                .ThenInclude(b => b.BookingSeats)
+            .OrderBy(s => s.DepartDate) // Sort by DepartDate in ascending order
             .AsQueryable();
+
 
         // Apply price range filter
         if (decimal.TryParse(Request.Query["minPrice"], out decimal minPrice))
@@ -666,6 +669,7 @@ public class ScheduleController : Controller
             CategoryName = schedule.Bus.CategoryBus?.Name ?? "Unknown Category",  // Null check for CategoryBus
             Price = schedule.Price,
             Discount = schedule.DiscountPrice,
+            DepartDate = schedule.DepartDate,
             DepartTime = schedule.DepartTime,
             Depart = schedule.RouteLocation.Depart ?? "Unknown Depart Location",  // Default if Depart is null
             Destination = schedule.RouteLocation.Destination ?? "Unknown Destination",  // Default if Destination is null
@@ -867,7 +871,7 @@ public class ScheduleController : Controller
 
         // Filter bookings by ID and join with Schedule and RouteLocations
         var searched = db.Bookings
-            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status != "Cancelled")
+            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status == "Booked" || b.Status=="Pending" )
             .Join(db.Schedules,
                 booking => booking.ScheduleId,
                 schedule => schedule.Id,
@@ -1194,7 +1198,7 @@ public class ScheduleController : Controller
         ViewBag.Name = id = id?.Trim() ?? "";
 
         var searched = db.Bookings
-            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status == "Cancelled")
+            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status == "Cancelled"||b.Status=="Expired"||b.Status=="CheckIn")
             .Join(db.Schedules,
                 booking => booking.ScheduleId,
                 schedule => schedule.Id,
@@ -1217,6 +1221,7 @@ public class ScheduleController : Controller
             "CancelledDateTime" => item => item.booking.BookingDateTime,
             "Qty" => item => item.booking.Qty,
             "Total" => item => item.booking.Total,
+            "Status" => item => item.booking.Status,
             "DepartLocation" => item => item.route.Depart,
             "DepartDate" => item => item.schedule.DepartDate,
             "DepartTime" => item => item.schedule.DepartTime,
@@ -1243,5 +1248,72 @@ public class ScheduleController : Controller
         }
 
         return View(pagedResult);
+    }
+
+    //cf add additional things 
+
+    [Authorize(Roles ="Member,Staff,Admin")]
+    public IActionResult CheckIn(string bookingId)
+    {
+        // Fetch booking and related booking seats
+        var bookingDetails = db.Bookings
+             .Where(b => b.Id == bookingId && b.Status == "Booked")
+            .Select(b => new
+            {
+                BookingId = b.Id,
+                ScheduleId = b.ScheduleId,
+                Price = b.Price,
+                Qty = b.Qty,
+                Subtotal = b.Subtotal,
+                Total = b.Total,
+                Status=b.Status,
+                MemberId = b.MemberId,
+                Seats = b.BookingSeats
+                    .Where(bs => bs.Status == "Booked")
+                    .Select(bs => new
+                    {
+                        SeatNo = bs.SeatNo,
+                        Status = bs.Status
+                    }).ToList()
+            })
+            .FirstOrDefault();
+
+        if (bookingDetails == null)
+        {
+            TempData["Info"] = "The Booking is not found here!";
+            return RedirectToAction("Index", "Schedule");
+        }
+
+        var routeSchedules = db.Schedules
+      .Include(s => s.RouteLocation) // Include related RouteLocation entity
+      .Include(s=>s.Bus)
+      .FirstOrDefault(s => s.Id == bookingDetails.ScheduleId);
+
+        if (routeSchedules == null)
+        {
+            TempData["Error"] = "Route schedule not found!";
+            return RedirectToAction("Index", "Schedule");
+        }
+
+        ViewBag.RouteSchedules = routeSchedules;
+        ViewBag.BookingDetails = bookingDetails;
+        return View();
+    }
+
+    [Authorize(Roles = "Member,Staff,Admin")]
+    [HttpPost]
+    public IActionResult CheckIn(string bookingId,string addtionalFields=null)
+    {
+         var booking=db.Bookings.FirstOrDefault(b => b.Id == bookingId&&b.Status=="Booked");
+        if(booking != null)
+        {
+            booking.Status = "CheckIn";
+            TempData["Info"] = $"{booking.Id} has checked-in,success !";
+            db.SaveChanges();
+            return RedirectToAction("MyBookingList", "Schedule");
+        }
+
+            TempData["Info"] = "Unknown Booking Id";
+        return RedirectToAction("Index", "Schedule");
     }
 }

@@ -3,13 +3,15 @@
 @model IPagedList<dynamic>
 
 @{
-    string[] fields = { "Id", "DepartLocation", "DepartDate", "DepartTime", "Qty", "Total", "CancelledDateTime" };
+    string[] fields = { "Id", "DepartLocation", "DepartDate", "DepartTime", "Qty", "Total","Status", "BookingDateTIme" };
 }
 
 <p>
     @Model.Count() of @Model.TotalItemCount record(s) |
     Page @Model.PageNumber of @Model.PageCount
 </p>
+
+<h3>History Bookings</h3>
 
 <table class="table" id="target">
     <thead>
@@ -45,6 +47,7 @@
                 <td>@booking.schedule.DepartTime</td>
                 <td>@booking.booking.Qty (Seats)</td>
                 <td>RM @booking.booking.Total</td>
+                <td class="payment-status @booking.booking.Status ">@booking.booking.Status</td>
                 <td>@booking.booking.BookingDateTime</td>
                 <td>
                     <a href="@Url.Action("TicketDetails", "Schedule", new { id = booking.booking.Id })" class="btn btn-info btn-sm">View Details</a>

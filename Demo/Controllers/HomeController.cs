@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Controllers;
 
@@ -36,6 +37,19 @@ public class HomeController : Controller
             // Non-members should not see the modal
             ViewBag.IsSubscriber = false;
         }
+
+        // Retrieve the top 4 schedules with the highest DiscountPrice where the status is "Active"
+        var ValueableSchedules = db.Schedules
+       .Where(s => s.Status == "Active" && s.DiscountPrice > 0) // Exclude schedules with DiscountPrice of 0
+       .OrderByDescending(s => s.DiscountPrice) // Sort by DiscountPrice in descending order
+       .Take(4) // Limit the result to 4
+       .Include(s => s.Bus)
+       .Include(s => s.RouteLocation) // Adjust for your model structure
+       .ToList(); // Execute the query and materialize the results
+
+        // Pass the result to the ViewBag
+        ViewBag.ValueableSchedules = ValueableSchedules;
+
 
         return View();
     }

@@ -55,6 +55,7 @@
         <!-- Details Section -->
         <div style="display: flex; justify-content: space-around; align-items: center;">
             <div>
+        <p style="margin: 0; font-size: 16px; color: #333;"><strong>Depart Date:</strong> @Model.DepartDate</p>
                 <p style="margin: 0; font-size: 16px; color: #333;"><strong>Depart Time:</strong> @Model.DepartTime (@Model.Hour h @Model.Minute m)</p>
                 @{
                     int availableSeats = Model.SeatId.Count - Model.BookedSeats.Count;
