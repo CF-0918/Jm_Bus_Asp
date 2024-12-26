@@ -158,97 +158,73 @@ public class ScheduleController : Controller
     }
 
 
-    public IActionResult Index(HomeView vm, int page = 1)
+    public IActionResult Index(string departFilter = "", string destinationFilter = "", DateOnly? fromDateIdnex = null, int page = 1)
     {
         // Define page size
         int pageSize = 10;
 
-        // Retrieve the schedule data and related entities (RouteLocation, Bus, and CategoryBus of Bus)
+        // Retrieve the schedule data and related entities
         var schedulesQuery = db.Schedules
             .Where(s => s.Status == "Active")
-            .Include(s => s.RouteLocation) // Ensure RouteLocation is included
-            .Include(s => s.Bus)           // Ensure Bus is included
-            .Include(s => s.Bus.CategoryBus) // Ensure CategoryBus is included inside Bus
+            .Include(s => s.RouteLocation)
+            .Include(s => s.Bus)
+            .ThenInclude(b => b.CategoryBus)
             .Include(s => s.Bookings)
             .ThenInclude(b => b.BookingSeats)
-            .AsQueryable(); // Ensure it's IQueryable for later LINQ operations
+            .AsQueryable();
 
-        // Apply Price Range filter if provided
-        if (!string.IsNullOrEmpty(Request.Query["minPrice"]) && decimal.TryParse(Request.Query["minPrice"], out decimal minPrice))
+        // Apply price range filter
+        if (decimal.TryParse(Request.Query["minPrice"], out decimal minPrice))
         {
             schedulesQuery = schedulesQuery.Where(s => s.Price >= minPrice);
         }
-
-        if (!string.IsNullOrEmpty(Request.Query["maxPrice"]) && decimal.TryParse(Request.Query["maxPrice"], out decimal maxPrice))
+        if (decimal.TryParse(Request.Query["maxPrice"], out decimal maxPrice))
         {
             schedulesQuery = schedulesQuery.Where(s => s.Price <= maxPrice);
         }
 
-        // Apply Depart filter if a valid value is selected
-        var departFilter = Request.Query["Depart"].FirstOrDefault();
+        // Apply depart filter
+        departFilter = Request.Query["Depart"].FirstOrDefault() ?? departFilter;
+        departFilter = departFilter?.Trim();
         if (!string.IsNullOrEmpty(departFilter) && departFilter != "Choose...")
         {
             schedulesQuery = schedulesQuery.Where(s => s.RouteLocation.Depart == departFilter);
         }
 
-        // Apply Destination filter if a valid value is selected
-        var destinationFilter = Request.Query["Destination"].FirstOrDefault();
+        // Apply destination filter
+        destinationFilter = Request.Query["Destination"].FirstOrDefault() ?? destinationFilter;
+        destinationFilter = destinationFilter?.Trim();
         if (!string.IsNullOrEmpty(destinationFilter) && destinationFilter != "Choose...")
         {
             schedulesQuery = schedulesQuery.Where(s => s.RouteLocation.Destination == destinationFilter);
         }
 
-        // Apply Travel Date filter (fromDate) if provided
-        if (!string.IsNullOrEmpty(Request.Query["fromDate"]) && DateOnly.TryParse(Request.Query["fromDate"], out DateOnly fromDate))
+        // Apply travel date filter
+        if (fromDateIdnex.HasValue)
         {
-            schedulesQuery = schedulesQuery.Where(s => s.DepartDate >= fromDate);
+            schedulesQuery = schedulesQuery.Where(s => s.DepartDate >= fromDateIdnex.Value);
         }
 
-        // Apply Travel Date filter (toDate) if provided
-        if (!string.IsNullOrEmpty(Request.Query["toDate"]) && DateOnly.TryParse(Request.Query["toDate"], out DateOnly toDate))
+        if (DateOnly.TryParse(Request.Query["toDate"], out DateOnly toDate))
         {
             schedulesQuery = schedulesQuery.Where(s => s.DepartDate <= toDate);
         }
 
-
-
-        //// Apply Return Date filter if provided
-        //if (!string.IsNullOrEmpty(Request.Query["returnDate"]) && DateTime.TryParse(Request.Query["returnDate"], out DateTime returnDate))
-        //{
-        //    schedulesQuery = schedulesQuery.Where(s => s.ReturnDate <= returnDate);  // Assuming there's a ReturnDate property in the model
-        //}
-
-        // Check for sort options
-        var sortOption = Request.Query["sortOption"].FirstOrDefault();
-
-        if (!string.IsNullOrEmpty(sortOption))
+        // Apply sorting options
+        var sortOption = Request.Query["sortOption"].FirstOrDefault()?.Trim();
+        schedulesQuery = sortOption switch
         {
-            switch (sortOption)
-            {
-                case "Cheapest":
-                    schedulesQuery = schedulesQuery.OrderBy(s => s.Price);
-                    break;
+            "Cheapest" => schedulesQuery.OrderBy(s => s.Price),
+            "HighestDiscount" => schedulesQuery.OrderByDescending(s => s.DiscountPrice),
+            "Earliest" => schedulesQuery.OrderBy(s => s.DepartTime),
+            "Latest" => schedulesQuery.OrderByDescending(s => s.DepartTime),
+            _ => schedulesQuery // No sorting if no valid option is provided
+        };
 
-                case "HighestDiscount":
-                    schedulesQuery = schedulesQuery.OrderByDescending(s => s.DiscountPrice);
-                    break;
-
-                case "Earliest":
-                    schedulesQuery = schedulesQuery.OrderBy(s => s.DepartTime); // Assuming DepartTime is a TimeOnly or DateTime
-                    break;
-
-                case "Latest":
-                    schedulesQuery = schedulesQuery.OrderByDescending(s => s.DepartTime);
-                    break;
-
-                default:
-                    break; // No sorting if no valid option is selected
-            }
-        }
-
+        // Paginate the results
         var schedulesPaged = schedulesQuery.ToPagedList(page, pageSize);
 
-        // Convert the schedules data into ScheduleDetailsVM
+        // Map to ScheduleDetailsVM
         var scheduleDetails = schedulesPaged.Select(s => new ScheduleDetailsVM
         {
             ScheduleId = s.Id.ToString(),
@@ -260,38 +236,32 @@ public class ScheduleController : Controller
             Destination = s.RouteLocation.Destination,
             Hour = s.RouteLocation.Hour,
             Min = s.RouteLocation.Min,
-
-            // Populate Bus-related details
             BusId = s.Bus.Id.ToString(),
             BusName = s.Bus.Name,
             BusCapacity = s.Bus.Capacity,
             BusPlate = s.Bus.BusPlate,
-            CategoryBusName = s.Bus.CategoryBus != null ? s.Bus.CategoryBus.Name : "Unknown",
+            CategoryBusName = s.Bus.CategoryBus?.Name ?? "Unknown",
             PhotoURL = s.Bus.PhotoURL,
-
-            // Calculate booked seats across all bookings for this schedule
             SeatsBooked = s.Bookings
-                .SelectMany(b => b.BookingSeats) // Flatten the BookingSeats lists from all bookings
-                .Count(bs => bs.Status == "Booked" || bs.Status == "Pending") // Count the relevant seats
+                .SelectMany(b => b.BookingSeats)
+                .Count(bs => bs.Status == "Booked" || bs.Status == "Pending")
         }).ToList();
-
-        // Build query string for pagination links
-        var queryParams = new Dictionary<string, string>(Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString()));
 
         // Store the data in ViewBag
         ViewBag.ScheduleDetails = scheduleDetails;
         ViewBag.CurrentPage = schedulesPaged.PageNumber;
         ViewBag.TotalPages = schedulesPaged.PageCount;
 
-        ViewBag.QueryParams = queryParams;
+        // Store query parameters for pagination links
+        ViewBag.QueryParams = Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString());
 
-        // Set up ViewBag for filters and sorting options
+        // Store filters and sorting options in ViewBag
         ViewBag.MinPrice = Request.Query["minPrice"];
         ViewBag.MaxPrice = Request.Query["maxPrice"];
-        ViewBag.Depart = departFilter;  // Store Depart filter in ViewBag
-        ViewBag.Destination = destinationFilter;  // Store Destination filter in ViewBag
-        ViewBag.TravelDate = Request.Query["travelDate"]; // Store Travel Date filter
-        ViewBag.ReturnDate = Request.Query["toDate"]; // Store Return Date filter
+        ViewBag.Depart = departFilter;
+        ViewBag.Destination = destinationFilter;
+        ViewBag.TravelDate = fromDateIdnex?.ToString() ?? Request.Query["fromDate"];
+        ViewBag.ReturnDate = Request.Query["toDate"];
 
         return View();
     }

@@ -69,11 +69,11 @@
         </div>
 
         <div class="bus-booking-banner">
-            <form class="bus-booking-form">
+            <form class="bus-booking-form" action="/Schedule/Index" method="get">
                 <!-- Origin -->
                 <div class="form-group">
                     <label for="origin">Origin</label>
-                    <select id="origin">
+                <select id="origin" name="departFilter">
                         <option value="" disabled selected>Select Origin</option>
                         <option value="Johor">Johor</option>
                         <option value="Kedah">Kedah</option>
@@ -93,7 +93,7 @@
 
                 <!-- Destination -->
                 <div class="form-group">
-                    <label for="destination">Destination</label>
+                <label for="destination" name="destinationFilter">Destination</label>
                     <select id="destination">
                         <option value="" disabled selected>Select Destination</option>
                         <option value="Johor">Johor</option>
@@ -115,13 +115,7 @@
                 <!-- Travel Date -->
                 <div class="form-group">
                     <label for="travel-date">Travel Date</label>
-                    <input type="date" id="travel-date" class="form-control">
-                </div>
-
-                <!-- Return Date -->
-                <div class="form-group">
-                    <label for="return-date">Return Date (Optional)</label>
-                    <input type="date" id="return-date" class="form-control">
+                <input type="date" name="fromDateIdnex" id="travel-date" class="form-control">
                 </div>
 
                 <!-- Search Button -->

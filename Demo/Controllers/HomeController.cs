@@ -63,160 +63,7 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult About()
-    {
-        return View();
-    }
-    // New Chat action
-    public IActionResult Chat()
-    {
-        return View();
-    }
-
-    //Jayden Partttttttt
-    //For rentList
-    [HttpGet]
-
-    public IActionResult RentList()
-    {
-        var rentList = db.Rents?
-            .Select(r => new RentHistoryVM
-            {
-                Id = r.Id,
-                MemberId = r.MemberId,
-                Start_Date = r.Start_Date,
-                End_Date = r.End_Date,
-                DepTime = r.DepTime,
-                ArrTime = r.ArrTime,
-                Location = r.Location,
-                Destination = r.Destination,
-                Purpose = r.Purpose,
-                Numppl = r.Numppl,
-                PerIC = r.PerIC,
-                Phone = r.Phone,
-                Email = r.Email,
-                Req = r.Req,
-                Status = r.status ?? "Pending"
-            })
-            .ToList();
-
-        return View(rentList); // This returns a collection, which is expected by the view.
-    }
-
-
-    // For rent Details
-    [HttpGet]
-
-    public IActionResult RentDetails(string rentId)
-    {
-        var rentDetail = db.Rents?
-            .Where(r => r.Id == rentId)
-            .Select(r => new RentHistoryVM
-            {
-                Id = r.Id,
-                MemberId = r.MemberId,
-                Start_Date = r.Start_Date,
-                End_Date = r.End_Date,
-                DepTime = r.DepTime,
-                ArrTime = r.ArrTime,
-                Location = r.Location,
-                Destination = r.Destination,
-                Purpose = r.Purpose,
-                Numppl = r.Numppl,
-                PerIC = r.PerIC,
-                Phone = r.Phone,
-                Email = r.Email,
-                Req = r.Req,
-                Status = r.status ?? "Pending"
-            })
-            .FirstOrDefault();
-
-        if (rentDetail == null)
-        {
-            return NotFound();
-        }
-
-        return View(rentDetail); // Pass a single object
-    }
-
-
-
-
-    [HttpPost]
-    public IActionResult UpdateRentStatus(string rentId, string status)
-    {
-        // Fetch the rent by ID
-        var rent = db.Rents.FirstOrDefault(r => r.Id == rentId);
-        if (rent == null)
-        {
-            TempData["Message"] = "Rent not found.";
-            return RedirectToAction("RentList");
-        }
-
-        // Update the status
-        rent.status = status;
-        db.SaveChanges();
-
-        TempData["Message"] = $"Rent status updated to {status}.";
-        return RedirectToAction("RentDetails", new { rentId = rent.Id });
-    }
-    [HttpGet]
     [Authorize(Roles = "Member")]
-    public IActionResult RentHistory()
-    {
-        var rentHistory = db.Rents
-            .Select(r => new RentHistoryVM
-            {
-                Id = r.Id,
-                Start_Date = r.Start_Date,
-                End_Date = r.End_Date,
-                DepTime = r.DepTime,
-                ArrTime = r.ArrTime,
-                Location = r.Location,
-                Destination = r.Destination,
-                Purpose = r.Purpose,
-                Numppl = r.Numppl,
-                PerIC = r.PerIC,
-                Phone = r.Phone,
-                Email = r.Email,
-                Req = r.Req,
-                Status = r.status ?? "Pending" // Ensure "Pending" is used if status is null
-            })
-            .OrderBy(r => r.Status == "Pending" ? 0 : 1)  // This will sort "Pending" entries first
-            .ThenBy(r => r.Start_Date)  // Optionally, you can add more sorting (e.g., by Start Date)
-            .ToList();
-
-        return View(rentHistory);
-    }
-
-
-    [HttpPost]
-    public IActionResult CancelBooking(string rentId)
-    {
-        // Fetch the rent booking by its ID
-        var rent = db.Rents.FirstOrDefault(r => r.Id == rentId);
-
-        if (rent != null)
-        {
-            // Update the status to "Cancelled"
-            rent.status = "Cancelled";
-
-            // Save changes to the database
-            db.SaveChanges();
-
-            // Set a success message using TempData
-            TempData["Cancelled"] = "Rent booking Cancelled!";
-
-            // Redirect to the same page or the Rent History page
-            return RedirectToAction("RentHistory"); // Adjust to your action if needed
-        }
-
-        // If rent not found, return an error message or a different page
-        TempData["Cancelled"] = "Booking Not Found";
-        return RedirectToAction("RentHistory"); // Adjust to your action if needed
-    }
-
-
     [HttpPost]
     public IActionResult RentBusService(AddRentVM model)
     {
@@ -280,6 +127,165 @@ public class HomeController : Controller
         TempData["Info"] = "There were errors with your submission.";
         return View(model);
     }
+
+
+
+    public IActionResult About()
+    {
+        return View();
+    }
+    // New Chat action
+    [Authorize(Roles = "Member")]
+    public IActionResult Chat()
+    {
+        return View();
+    }
+
+    // Jayden Partttttttt
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult RentList()
+    {
+        var rentList = db.Rents?
+            .Where(r => r.status != "Cancelled" && r.status != "Done") // Exclude Cancelled and Done statuses
+            .Select(r => new RentHistoryVM
+            {
+                Id = r.Id,
+                MemberId = r.MemberId,
+                Start_Date = r.Start_Date,
+                End_Date = r.End_Date,
+                DepTime = r.DepTime,
+                ArrTime = r.ArrTime,
+                Location = r.Location,
+                Destination = r.Destination,
+                Purpose = r.Purpose,
+                Numppl = r.Numppl,
+                PerIC = r.PerIC,
+                Phone = r.Phone,
+                Email = r.Email,
+                Req = r.Req,
+                Status = r.status ?? "Pending"
+            })
+            .ToList();
+
+        return View(rentList); // This returns a collection, which is expected by the view.
+    }
+
+
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult RentDetails(string rentId)
+    {
+        if (rentId == null)
+        {
+            TempData["Info"] = "Please Provide A Rent Id";
+            return RedirectToAction("RentList", "Home");
+        }
+        var rentDetail = db.Rents?
+            .Where(r => r.Id == rentId)
+            .Select(r => new RentHistoryVM
+            {
+                Id = r.Id,
+                MemberId = r.MemberId,
+                Start_Date = r.Start_Date,
+                End_Date = r.End_Date,
+                DepTime = r.DepTime,
+                ArrTime = r.ArrTime,
+                Location = r.Location,
+                Destination = r.Destination,
+                Purpose = r.Purpose,
+                Numppl = r.Numppl,
+                PerIC = r.PerIC,
+                Phone = r.Phone,
+                Email = r.Email,
+                Req = r.Req,
+                Status = r.status ?? "Pending"
+            })
+            .FirstOrDefault();
+
+        if (rentDetail == null)
+        {
+            TempData["Info"] = "No Rent Founded";
+            return RedirectToAction("RentList", "Home");
+        }
+
+        return View(rentDetail);
+    }
+
+    [Authorize(Roles = "Staff,Admin")]
+    [HttpPost]
+    public IActionResult UpdateRentStatus(string rentId, string status)
+    {
+        // Fetch the rent by ID
+        var rent = db.Rents.FirstOrDefault(r => r.Id == rentId);
+        if (rent == null)
+        {
+            TempData["Message"] = "Rent not found.";
+            return RedirectToAction("RentList");
+        }
+
+        // Update the status
+        rent.status = status;
+        db.SaveChanges();
+
+        TempData["Message"] = $"Rent status updated to {status}.";
+        return RedirectToAction("RentDetails", new { rentId = rent.Id });
+    }
+
+    [Authorize(Roles = "Staff,Admin")]
+    public IActionResult RentHistory()
+    {
+        var rentHistory = db.Rents
+            .Where(r => r.status == "Done"||r.status=="Cancelled") // Filter for Approved and Done statuses
+            .Select(r => new RentHistoryVM
+            {
+                Id = r.Id,
+                Start_Date = r.Start_Date,
+                End_Date = r.End_Date,
+                DepTime = r.DepTime,
+                ArrTime = r.ArrTime,
+                Location = r.Location,
+                Destination = r.Destination,
+                Purpose = r.Purpose,
+                Numppl = r.Numppl,
+                PerIC = r.PerIC,
+                Phone = r.Phone,
+                Email = r.Email,
+                Req = r.Req,
+                Status = r.status
+            })
+            .OrderBy(r => r.Start_Date) // Sort by Start Date
+            .ToList();
+
+        return View(rentHistory);
+    }
+
+
+    [Authorize(Roles = "Staff,Admin")]
+    [HttpPost]
+    public IActionResult CancelBooking(string rentId)
+    {
+        // Fetch the rent booking by its ID
+        var rent = db.Rents.FirstOrDefault(r => r.Id == rentId);
+
+        if (rent != null)
+        {
+            // Update the status to "Cancelled"
+            rent.status = "Cancelled";
+
+            // Save changes to the database
+            db.SaveChanges();
+
+            // Set a success message using TempData
+            TempData["Cancelled"] = "Rent booking Cancelled!";
+
+            // Redirect to the same page or the Rent History page
+            return RedirectToAction("RentHistory"); // Adjust to your action if needed
+        }
+
+        // If rent not found, return an error message or a different page
+        TempData["Cancelled"] = "Booking Not Found";
+        return RedirectToAction("RentHistory"); // Adjust to your action if needed
+    }
+
 
 
     // Handle form submission and save to database

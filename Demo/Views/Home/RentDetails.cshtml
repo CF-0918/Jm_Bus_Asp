@@ -88,7 +88,7 @@
         </div>
     </div>
 
-    <form method="post" action="@Url.Action("UpdateRentStatus", "Maintenance")" class="text-center">
+    <form method="post" action="@Url.Action("UpdateRentStatus", "Home")" class="text-center">
         <input type="hidden" name="rentId" value="@Model.Id" />
         <button type="submit" name="status" value="Approved"
                 class="action-button approve @(Model.Status == "Pending" ? "" : "disabled")"
@@ -107,5 +107,5 @@
         </button>
     </form>
 
-    <a href="@Url.Action("RentList", "Maintenance")" class="back-button">Back to List</a>
+    <a href="@Url.Action("RentList", "Home")" class="back-button">Back to List</a>
 </div>
