@@ -460,6 +460,8 @@ public class ScheduleController : Controller
     }
 
 
+    
+
     [HttpPost]
     public IActionResult EditSchedule(EditScheduleVM vm, string id)
     {
@@ -510,13 +512,13 @@ public class ScheduleController : Controller
             //                             .Where(s => s.Member.IsSubscribedToNewsletter == true)
             //                             .ToList();
 
-                var RouteLocations = db.RouteLocations.FirstOrDefault(rl => rl.Id == vm.RouteId);
-                // Loop through each subscribed person and send the subscription email
-                foreach (var subscribedPerson in subscribePersons)
-                {
-                    SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination,vm.ScheduleId);
-                }
-            }
+            //    var RouteLocations = db.RouteLocations.FirstOrDefault(rl => rl.Id == vm.RouteId);
+            //    // Loop through each subscribed person and send the subscription email
+            //    foreach (var subscribedPerson in subscribePersons)
+            //    {
+            //        SendScheduleSubscribeMail(subscribedPerson.Member.Email, subscribedPerson.Member.FirstName, subscribedPerson.Member.LastName, vm.Price, vm.DiscountPrice, RouteLocations.Depart, RouteLocations.Destination,vm.ScheduleId);
+            //    }
+            //}
 
             // Modify the existing schedule record
             var m = db.Schedules.Find(id);

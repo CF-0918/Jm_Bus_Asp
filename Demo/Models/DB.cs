@@ -328,3 +328,4 @@ public class BookingSeat
     // Navigation Property
     public Booking Booking { get; set; } // Corrected to a single Booking
 }
+

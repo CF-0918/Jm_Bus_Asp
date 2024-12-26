@@ -874,3 +874,39 @@ public class HistoryBookingVM
     public decimal Total { get; set; }
     public DateTime CancelledDateTime { get; set; }
 }
+
+public class EditTicketVM
+{
+    public string BookingId { get; set; }
+    public string BusName { get; set; }
+    public string DepartLocation { get; set; }
+    public string Destination { get; set; }
+    public DateOnly DepartDate { get; set; }
+    public TimeOnly DepartTime { get; set; }
+    public int Quantity { get; set; }
+    public int OriginalQuantity { get; set; }
+    public decimal Price { get; set; }
+    public decimal OriginalPrice { get; set; }
+    public string Status { get; set; }
+    public decimal Total { get; set; }
+    public string VoucherApplied { get; set; }
+    public List<string> SeatNumbers { get; set; }
+}
+public class Ticket
+{
+    public string TicketId { get; set; } // Represents BookingSeat.Id or Booking.Id based on requirements
+    public string MemberId { get; set; } // Associated member ID
+    public string MemberName { get; set; } // Concatenated Member.FirstName + Member.LastName
+    public string BusName { get; set; } // Bus.Name
+    public string SeatNo { get; set; } // Seat.SeatNo
+    public string ScheduleId { get; set; } // Schedule.Id
+    public DateOnly DepartDate { get; set; } // Schedule.DepartDate
+    public TimeOnly DepartTime { get; set; } // Schedule.DepartTime
+    public string Route { get; set; } // RouteLocation.Depart + " to " + RouteLocation.Destination
+    public decimal Price { get; set; } // Price per ticket
+    public string Status { get; set; } // BookingSeat.Status or Booking.Status
+
+    // Additional properties as needed
+    public string VoucherUsed { get; set; } // Voucher.Name (if applicable)
+    public string Remarks { get; set; } // Additional notes or remarks about the ticket
+}
