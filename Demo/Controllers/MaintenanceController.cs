@@ -32,6 +32,7 @@ public class MaintenanceController : Controller
 
         // Fetch the most popular location
         var mostPopularLocation = db.Bookings
+            .Where(b => b.Status == "Booked") // Filter bookings with Status = "Booked"
             .Include(b => b.Schedule)
             .ThenInclude(s => s.RouteLocation)
             .GroupBy(b => new { b.Schedule.RouteLocation.Depart, b.Schedule.RouteLocation.Destination })
@@ -45,6 +46,12 @@ public class MaintenanceController : Controller
             .FirstOrDefault();
 
         // Pass the data to the view
+        // Example data (replace with actual query logic)
+        ViewBag.FiveStarCount = db.Reviews.Count(r => r.Rating == 5);
+        ViewBag.FourStarCount = db.Reviews.Count(r => r.Rating == 4);
+        ViewBag.ThreeStarCount = db.Reviews.Count(r => r.Rating == 3);
+        ViewBag.TwoStarCount = db.Reviews.Count(r => r.Rating == 2);
+        ViewBag.OneStarCount = db.Reviews.Count(r => r.Rating == 1);
         ViewBag.BookedSeats = bookedSeatsCount;
 
         if (mostPopularLocation != null)
@@ -715,7 +722,7 @@ public class MaintenanceController : Controller
         // (1) Searching ------------------------
         ViewBag.Name = name = name?.Trim() ?? "";
 
-        var searched = db.Buses.Where(s => s.Name.Contains(name));
+    var searched = db.Buses.Where(s => s.Name.Contains(name) || s.BusPlate.Contains(name));
 
         ViewBag.Status = status = status?.Trim() ?? "All";
 
@@ -1211,7 +1218,7 @@ public class MaintenanceController : Controller
         // (1) Searching ------------------------
         ViewBag.Name = name = name?.Trim() ?? "";
 
-        var searched = db.RouteLocations.Where(s => s.Depart.Contains(name));
+        var searched = db.RouteLocations.Where(s => s.Depart.Contains(name) || s.Destination.Contains(name));
 
         // (2) Sorting --------------------------
         ViewBag.Sort = sort;
@@ -1273,5 +1280,35 @@ public class MaintenanceController : Controller
 
         return View(vm);
     }
+
+    [Authorize(Roles = "Staff")]
+    public IActionResult ReviewList(int? page)
+    {
+        int pageSize = 10; // Number of reviews per page
+        int pageNumber = page ?? 1; // Current page, default is 1
+
+        var reviews = db.Reviews
+            .Select(r => new ShowReviewVM
+            {
+                Id = r.Id,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                CommentDate = r.CommentDate,
+                NumberOfComments = r.numberOfComments,
+                FullName = r.Member.FirstName + " " + r.Member.LastName,
+            })
+            .OrderByDescending(r => r.CommentDate) // Newest reviews first
+            .ToList();
+
+        // Paginate the reviews
+        var pagedReviews = reviews.ToPagedList(pageNumber, pageSize);
+        ViewBag.PageNumber = pageNumber;
+        ViewBag.PageSize = pageSize;
+
+
+        return View(pagedReviews); // Pass the paginated list to the view
+    }
+
+
 
 }

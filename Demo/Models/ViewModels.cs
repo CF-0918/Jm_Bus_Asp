@@ -1006,3 +1006,15 @@ public class ReviewVM
     [Remote("CheckRating", "Rating", ErrorMessage = "Please enter a comment message since the rating is 1-2.")]
     public string comment { get; set; }
 }
+
+public class ShowReviewVM
+{
+    public string? Id { get; set; }
+    public int? Rating { get; set; }
+    public string? Comment { get; set; }
+    public DateOnly? CommentDate { get; set; }
+    public int? NumberOfComments { get; set; }
+    public string? FullName { get; set; }
+
+
+}
