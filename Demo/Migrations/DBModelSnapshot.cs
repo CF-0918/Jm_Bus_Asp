@@ -260,6 +260,35 @@ namespace Demo.Migrations
                     b.ToTable("Rents");
                 });
 
+            modelBuilder.Entity("Demo.Models.Review", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("CommentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("numberOfComments")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("Demo.Models.RouteLocation", b =>
                 {
                     b.Property<string>("Id")
@@ -623,6 +652,17 @@ namespace Demo.Migrations
                 {
                     b.HasOne("Demo.Models.Member", "Member")
                         .WithMany("Rents")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("Demo.Models.Review", b =>
+                {
+                    b.HasOne("Demo.Models.Member", "Member")
+                        .WithMany()
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

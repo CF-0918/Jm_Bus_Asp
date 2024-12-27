@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList.Extensions;
+using Microsoft.EntityFrameworkCore;
 using static Demo.Models.AddCategoryBus;
 
 namespace Demo.Controllers;
@@ -24,6 +25,45 @@ public class MaintenanceController : Controller
     [Authorize(Roles = "Staff,Admin")]
     public IActionResult Dashboard()
     {
+        // Fetch booked seats count from the database
+        var bookedSeatsCount = db.BookingSeats
+            .Where(seat => seat.Status == "booked")
+            .Count();
+
+        // Fetch the most popular location
+        var mostPopularLocation = db.Bookings
+            .Include(b => b.Schedule)
+            .ThenInclude(s => s.RouteLocation)
+            .GroupBy(b => new { b.Schedule.RouteLocation.Depart, b.Schedule.RouteLocation.Destination })
+            .Select(g => new
+            {
+                Depart = g.Key.Depart,
+                Destination = g.Key.Destination,
+                BookingCount = g.Count()
+            })
+            .OrderByDescending(g => g.BookingCount)
+            .FirstOrDefault();
+
+        // Pass the data to the view
+        ViewBag.BookedSeats = bookedSeatsCount;
+
+        if (mostPopularLocation != null)
+        {
+            ViewBag.MostPopularRoute = $"{mostPopularLocation.Depart} to {mostPopularLocation.Destination}";
+            ViewBag.PopularRouteCount = mostPopularLocation.BookingCount;
+        }
+        else
+        {
+            ViewBag.MostPopularRoute = "No data available";
+            ViewBag.PopularRouteCount = 0;
+        }
+
+        // Query the database to count active members
+        int activeMembers = db.Users.Count(u => u.Id.StartsWith("M") && u.Status == "Active");
+
+        // Pass the count to the view
+        ViewBag.ActiveMembers = activeMembers;
+
         return View();
     }
     [Authorize(Roles = "Staff,Admin")]

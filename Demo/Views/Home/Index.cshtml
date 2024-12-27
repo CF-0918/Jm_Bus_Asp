@@ -1,4 +1,5 @@
-﻿@{
+﻿
+@{
     ViewBag.Title = "Home | Index";
     IEnumerable<Schedule> schedules = ViewBag.ValueableSchedules;
 }
@@ -7,8 +8,6 @@
 {
     <partial name="_NewsLetterSubscribe" />
 }
-
-
 
 <div class="home_section1">
     <div class="banner_title">
@@ -179,6 +178,7 @@
 
 @section foot{
     <script>
+
            document.addEventListener('DOMContentLoaded', () => {
             const newsletterContainer = document.querySelector('.newsletter-container');
             const newsletterOverlay = document.querySelector('.newsletter-overlay');
@@ -214,7 +214,7 @@
                 });
             });
 
-        });
+       
 
     </script>
 }

@@ -32,6 +32,8 @@ public class DB : DbContext
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<BookingSeat> BookingSeats { get; set; }
 
+    public DbSet<Review> Reviews { get; set; }
+
 }
 
 // Entity Classes -------------------------------------------------------------
@@ -328,5 +330,17 @@ public class BookingSeat
 
     // Navigation Property
     public Booking Booking { get; set; } // Corrected to a single Booking
+}
+
+public class Review
+{
+    public string Id { get; set; }
+    public int Rating {  get; set; }
+    public string Comment {  get; set; }
+    public DateOnly CommentDate {  get; set; }
+    public int numberOfComments {  get; set; }
+
+    public string MemberId { get; set; }
+    public Member Member{ get; set; }
 }
 

@@ -998,3 +998,11 @@ public class RentHistoryVM
     public string Status { get; set; }
     public string? MemberId { get; set; }
 }
+
+public class ReviewVM
+{
+    public int rating { get; set; }
+
+    [Remote("CheckRating", "Rating", ErrorMessage = "Please enter a comment message since the rating is 1-2.")]
+    public string comment { get; set; }
+}

@@ -1,5 +1,4 @@
 ﻿@inject DB db
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,6 +22,10 @@
 </head>
 <body>
     <div class="info">@Html.Raw(TempData["Info"])</div>
+    @if (User.IsInRole("Member"))
+    {
+        @await Html.PartialAsync("_ReviewForm", new Demo.Models.ReviewVM())
+    }
 
 
     @if (User.Identity!.IsAuthenticated){
