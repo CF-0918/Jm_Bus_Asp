@@ -433,7 +433,7 @@ public class ScheduleController : Controller
     }
 
 
-    
+
 
     [HttpPost]
     public IActionResult EditSchedule(EditScheduleVM vm, string id)
@@ -871,7 +871,7 @@ public class ScheduleController : Controller
 
         // Filter bookings by ID and join with Schedule and RouteLocations
         var searched = db.Bookings
-            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status == "Booked" || b.Status=="Pending" )
+            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status == "Booked" || b.Status == "Pending")
             .Join(db.Schedules,
                 booking => booking.ScheduleId,
                 schedule => schedule.Id,
@@ -1184,7 +1184,8 @@ public class ScheduleController : Controller
             Quantity = booking.Qty,
             Subtotal = booking.Subtotal,
             Total = booking.Total,
-            Status = booking.Status == "Booked" ? "Paid" : booking.Status,
+            //Status = booking.Status == "Booked" ? "Paid" : booking.Status,
+            Status = booking.Status,
             VoucherApplied = booking.Voucher?.Name
         };
 
@@ -1198,7 +1199,7 @@ public class ScheduleController : Controller
         ViewBag.Name = id = id?.Trim() ?? "";
 
         var searched = db.Bookings
-            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status == "Cancelled"||b.Status=="Expired"||b.Status=="CheckIn")
+            .Where(b => b.Id.Contains(id) && b.MemberId == User.Identity.Name && b.Status == "Cancelled" || b.Status == "Expired" || b.Status == "CheckIn")
             .Join(db.Schedules,
                 booking => booking.ScheduleId,
                 schedule => schedule.Id,
@@ -1252,7 +1253,7 @@ public class ScheduleController : Controller
 
     //cf add additional things 
 
-    [Authorize(Roles ="Member,Staff,Admin")]
+    [Authorize(Roles = "Member,Staff,Admin")]
     public IActionResult CheckIn(string bookingId)
     {
         // Fetch booking and related booking seats
@@ -1266,7 +1267,7 @@ public class ScheduleController : Controller
                 Qty = b.Qty,
                 Subtotal = b.Subtotal,
                 Total = b.Total,
-                Status=b.Status,
+                Status = b.Status,
                 MemberId = b.MemberId,
                 Seats = b.BookingSeats
                     .Where(bs => bs.Status == "Booked")
@@ -1286,7 +1287,7 @@ public class ScheduleController : Controller
 
         var routeSchedules = db.Schedules
       .Include(s => s.RouteLocation) // Include related RouteLocation entity
-      .Include(s=>s.Bus)
+      .Include(s => s.Bus)
       .FirstOrDefault(s => s.Id == bookingDetails.ScheduleId);
 
         if (routeSchedules == null)
@@ -1302,10 +1303,10 @@ public class ScheduleController : Controller
 
     [Authorize(Roles = "Member,Staff,Admin")]
     [HttpPost]
-    public IActionResult CheckIn(string bookingId,string addtionalFields=null)
+    public IActionResult CheckIn(string bookingId, string addtionalFields = null)
     {
-         var booking=db.Bookings.FirstOrDefault(b => b.Id == bookingId&&b.Status=="Booked");
-        if(booking != null)
+        var booking = db.Bookings.FirstOrDefault(b => b.Id == bookingId && b.Status == "Booked");
+        if (booking != null)
         {
             booking.Status = "CheckIn";
             TempData["Info"] = $"{booking.Id} has checked-in,success !";
@@ -1313,7 +1314,354 @@ public class ScheduleController : Controller
             return RedirectToAction("MyBookingList", "Schedule");
         }
 
-            TempData["Info"] = "Unknown Booking Id";
+        TempData["Info"] = "Unknown Booking Id";
         return RedirectToAction("Index", "Schedule");
+    }
+
+    public IActionResult ShowTicketList(DateOnly? date, string? status, string? sort, string? dir, string? search, int page = 1)
+{
+    // (1) Searching ------------------------
+    ViewBag.Date = date.HasValue ? date.Value.ToString() : "";
+    ViewBag.Status = status ?? "All";
+    ViewBag.Search = search ?? ""; // Add ViewBag for search
+
+    // Base query joining necessary tables
+    var query = from b in db.Bookings
+                join s in db.Schedules on b.ScheduleId equals s.Id
+                join m in db.Members on b.MemberId equals m.Id
+                join rl in db.RouteLocations on s.RouteLocationId equals rl.Id
+                join bus in db.Buses on s.BusId equals bus.Id
+                select new Ticket
+                {
+                    // Primary Identifiers
+                    TicketId = b.Id,
+                    // Member Information
+                    MemberId = m.Id,
+                    MemberName = m.FirstName + " " + m.LastName,
+                    // Schedule Information
+                    ScheduleId = s.Id,
+                    DepartDate = s.DepartDate,
+                    DepartTime = s.DepartTime,
+                    Route = rl.Depart + " to " + rl.Destination,
+                    // Booking Details
+                    BookingDateTime = b.BookingDateTime,
+                    Status = b.Status,
+                    Quantity = b.Qty,
+                    SeatNo = string.Join(", ", b.BookingSeats.Select(bs => bs.SeatNo)),
+                    // Price Information
+                    Subtotal = b.Subtotal,
+                    Total = b.Total,
+                    // Voucher Information
+                    VoucherUsed = b.Voucher != null ? b.Voucher.Name : "",
+                    DiscountAmount = b.Subtotal - b.Total,
+                    // Additional Information
+                    BusName = bus.Name,
+                    BusPlate = bus.BusPlate,
+                    Remarks = b.Status == "Cancelled" ?
+                        "Cancelled on " + b.BookingSeats
+                            .Where(bs => bs.Status == "Cancelled")
+                            .Max(bs => bs.Booking.BookingDateTime)
+                            .ToString("dd/MM/yyyy HH:mm")
+                        : ""
+                };
+
+    // Apply filters
+    if (date.HasValue)
+    {
+        query = query.Where(t => t.DepartDate == date.Value);
+    }
+    if (!string.IsNullOrEmpty(status) && status != "All")
+    {
+        query = query.Where(t => t.Status == status);
+    }
+
+    // Apply search filter if provided
+    if (!string.IsNullOrEmpty(search))
+    {
+        string searchLower = search.Trim().ToLower();
+        query = query.Where(t => 
+            t.TicketId.ToLower().Contains(searchLower) || 
+            t.MemberName.ToLower().Contains(searchLower));
+    }
+
+    // (2) Sorting --------------------------
+    ViewBag.Sort = sort;
+    ViewBag.Dir = dir;
+    Func<Ticket, object> orderBy = sort switch
+    {
+        "BookingId" => t => t.TicketId,
+        "MemberName" => t => t.MemberName,
+        "DepartDate" => t => t.DepartDate,
+        "DepartTime" => t => t.DepartTime,
+        "Route" => t => t.Route,
+        "Status" => t => t.Status,
+        "Total" => t => t.Total,
+        _ => t => t.BookingDateTime
+    };
+
+    var sorted = dir == "des" ?
+                 query.OrderByDescending(orderBy) :
+                 query.OrderBy(orderBy);
+
+    // (3) Paging ---------------------------
+    if (page < 1)
+    {
+        return RedirectToAction(null, new { date, status, sort, dir, search, page = 1 });
+    }
+
+    var model = sorted.ToPagedList(page, 10);
+
+    if (page > model.PageCount && model.PageCount > 0)
+    {
+        return RedirectToAction(null, new { date, status, sort, dir, search, page = model.PageCount });
+    }
+
+    if (Request.IsAjax())
+    {
+        return PartialView("_TicketList", model);
+    }
+
+    return View(model);
+}
+
+    public class UpdateBookingStatusRequest
+    {
+        public string TicketId { get; set; }
+        public string Status { get; set; }
+    }
+
+    [HttpPost]
+public IActionResult UpdateBookingStatus([FromBody] UpdateBookingStatusRequest request)
+{
+    try
+    {
+        var booking = db.Bookings
+            .Include(b => b.BookingSeats)
+            .FirstOrDefault(b => b.Id == request.TicketId);
+
+        if (booking == null)
+        {
+            return Json(new { success = false, message = "Booking not found" });
+        }
+
+        // Validate the new status
+        if (request.Status != "Booked" && request.Status != "Cancelled" && request.Status != "Expired")
+        {
+            return Json(new { success = false, message = "Invalid status" });
+        }
+
+        // Handle status changes
+        switch (request.Status)
+        {
+            case "Booked":
+                // When changing to Booked, verify seat availability if coming from Cancelled
+                if (booking.Status == "Cancelled")
+                {
+                    // Check if seats are still available
+                    foreach (var seat in booking.BookingSeats)
+                    {
+                        var isSeatsAvailable = !db.BookingSeats
+                            .Any(bs => bs.SeatNo == seat.SeatNo && 
+                                     bs.Status == "Booked" && 
+                                     bs.BookingId != booking.Id);
+
+                        if (!isSeatsAvailable)
+                        {
+                            return Json(new { 
+                                success = false, 
+                                message = $"Seat {seat.SeatNo} is no longer available" 
+                            });
+                        }
+                    }
+                }
+                // Update booking seats to Booked
+                foreach (var seat in booking.BookingSeats)
+                {
+                    seat.Status = "Booked";
+                }
+                booking.BookingDateTime = DateTime.Now;
+                break;
+
+            case "Cancelled":
+                // Update all associated booking seats to Cancelled
+                foreach (var seat in booking.BookingSeats)
+                {
+                    seat.Status = "Cancelled";
+                }
+                booking.BookingDateTime = DateTime.Now;
+                break;
+
+            case "Expired":
+                // Update all associated booking seats to Expired
+                foreach (var seat in booking.BookingSeats)
+                {
+                    seat.Status = "Expired";
+                }
+                break;
+        }
+
+        // Update main booking status
+        booking.Status = request.Status;
+
+        // Mark entities as modified
+        db.Entry(booking).State = EntityState.Modified;
+        foreach (var seat in booking.BookingSeats)
+        {
+            db.Entry(seat).State = EntityState.Modified;
+        }
+
+        // Save changes
+        var changes = db.SaveChanges();
+        
+        if (changes > 0)
+        {
+            return Json(new { success = true });
+        }
+        else
+        {
+            return Json(new { 
+                success = false, 
+                message = "No changes were saved to the database" 
+            });
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log the exception details here
+        return Json(new { 
+            success = false, 
+            message = $"An error occurred while updating the status: {ex.Message}" 
+        });
+    }
+}
+
+    [HttpGet]
+    public IActionResult EditTicket(string id)
+    {
+        var booking = db.Bookings
+            .Include(b => b.BookingSeats)
+            .Include(b => b.Schedule)
+                .ThenInclude(s => s.Bus)
+            .Include(b => b.Schedule)
+                .ThenInclude(s => s.RouteLocation)
+            .FirstOrDefault(b => b.Id == id);
+
+        if (booking == null)
+        {
+            TempData["Error"] = "Booking not found";
+            return RedirectToAction("ShowTicketList");
+        }
+
+        var viewModel = new EditTicketVM
+        {
+            BookingId = booking.Id,
+            BusName = booking.Schedule.Bus.Name,
+            DepartLocation = booking.Schedule.RouteLocation.Depart,
+            Destination = booking.Schedule.RouteLocation.Destination,
+            DepartDate = booking.Schedule.DepartDate,
+            DepartTime = booking.Schedule.DepartTime,
+            Quantity = booking.BookingSeats.Count,
+            OriginalQuantity = booking.BookingSeats.Count,
+            Price = booking.Schedule.Price,
+            OriginalPrice = booking.Schedule.Price,
+            Status = booking.Status,
+            Total = booking.Total,
+            VoucherApplied = booking.VoucherId,
+            SeatNumbers = booking.BookingSeats.Select(bs => bs.SeatNo).ToList()
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult EditTicket(EditTicketVM model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        try
+        {
+            var booking = db.Bookings
+                .Include(b => b.BookingSeats)
+                .Include(b => b.Schedule)
+                .FirstOrDefault(b => b.Id == model.BookingId);
+
+            if (booking == null)
+            {
+                TempData["Error"] = "Booking not found";
+                return RedirectToAction("ShowTicketList");
+            }
+
+            // Handle status change
+            if (model.Status != booking.Status)
+            {
+                if (model.Status == "Cancelled")
+                {
+                    // Handle cancellation
+                    booking.Status = "Cancelled";
+                    foreach (var seat in booking.BookingSeats)
+                    {
+                        seat.Status = "Cancelled";
+                    }
+                }
+                else if (model.Status == "Booked" && booking.Status == "Cancelled")
+                {
+                    // Verify seat availability when rebooking
+                    foreach (var seat in booking.BookingSeats)
+                    {
+                        var isAvailable = !db.BookingSeats
+                            .Any(bs => bs.SeatNo == seat.SeatNo &&
+                                     bs.Status == "Booked" &&
+                                     bs.BookingId != booking.Id);
+
+                        if (!isAvailable)
+                        {
+                            ModelState.AddModelError("", $"Seat {seat.SeatNo} is no longer available");
+                            return View(model);
+                        }
+                    }
+
+                    // Reactivate booking
+                    booking.Status = "Booked";
+                    foreach (var seat in booking.BookingSeats)
+                    {
+                        seat.Status = "Booked";
+                    }
+                }
+            }
+
+            // Handle quantity changes
+            if (model.Quantity != model.OriginalQuantity)
+            {
+                ModelState.AddModelError("Quantity",
+                    "Changing ticket quantity requires seat reselection. " +
+                    "Please cancel and create a new booking.");
+                return View(model);
+            }
+
+            // Update total amount
+            booking.Total = model.Total;
+
+            // Save changes
+            db.Entry(booking).State = EntityState.Modified;
+            foreach (var seat in booking.BookingSeats)
+            {
+                db.Entry(seat).State = EntityState.Modified;
+            }
+
+            db.SaveChanges();
+            TempData["Success"] = "Ticket updated successfully";
+            return RedirectToAction("ShowTicketList");
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            ModelState.AddModelError("",
+                "An error occurred while updating the ticket. Please try again.");
+            return View(model);
+        }
     }
 }
