@@ -26,6 +26,7 @@ public class BackgroundUpdaterService : BackgroundService
                 // Call the scoped service
                 registerService.UpdateVoucherStatus();
                 registerService.CheckPendingBookingsDurationAndUpdate();
+                registerService.RealTimeUpdateMemberRank();
                 registerService.UpdateRealTimeSchedulBookingsStatus();
             }
 
