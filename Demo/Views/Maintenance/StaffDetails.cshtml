@@ -24,8 +24,8 @@
                     <small>ID : @Model.Id</small><br />
                 </div>
 
-                <div class="user_profile_status_div @(Model.Status == "Active" ? "active" : "inactive")">
-                    <span class="user_profile_status_rounded @(Model.Status == "Active" ? "active" : "inactive")"></span>
+                <div class="user_profile_status_div @(Model.Status == "Active" ? "active" : "blocked")">
+                    <span class="user_profile_status_rounded @(Model.Status == "Active" ? "active" : "blocked")"></span>
                     <b>@Model.Status</b>
                 </div>
 
