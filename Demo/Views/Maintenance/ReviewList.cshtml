@@ -1,0 +1,45 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core
+@model IPagedList<ShowReviewVM>
+
+    <div class="container">
+<h2>Customer Reviews</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Reviewer</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <th>Date</th>
+            <th># of Comments</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var review in Model)
+        {
+            <tr>
+                <td>@((ViewBag.PageNumber - 1) * ViewBag.PageSize + Model.ToList().IndexOf(review) + 1)</td>
+                <td>@review.FullName</td>
+                <td>@review.Rating</td>
+                <td>@review.Comment</td>
+                <td>@review.CommentDate</td>
+                <td>@review.NumberOfComments</td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("ReviewList", new { page }),
+            new PagedListRenderOptions
+    {
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+        UlElementClasses = new[] { "pagination" }
+    })
+</div>

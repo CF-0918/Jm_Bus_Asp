@@ -237,6 +237,8 @@ public class MembershipController : Controller
         return View(vm);
     }
 
+
+
     public IActionResult RankDetails(string id)
     {
 
@@ -282,9 +284,6 @@ public class MembershipController : Controller
         TempData["Info"] = "Rank deleted successfully.";
         return Json(new { success = true, message = "Rank deleted successfully." });
     }
-
-
-
 
     //Get Request
     [Authorize(Roles = "Staff,Admin")]

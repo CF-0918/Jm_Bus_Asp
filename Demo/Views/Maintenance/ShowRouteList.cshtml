@@ -30,6 +30,28 @@
                 timer = setTimeout(() => $(e.target.form).submit(), 500);
             });
 
+                        // Check All Button - Event Delegation
+            document.addEventListener("DOMContentLoaded", function () {
+                document.body.addEventListener("click", function (event) {
+                    if (event.target && event.target.getAttribute("data-check") === "ids") {
+                        // Select all checkboxes with name 'ids'
+                        document.querySelectorAll('input[name="ids"]').forEach(function (checkbox) {
+                            checkbox.checked = true;
+                        });
+                    }
+                });
+
+                // Uncheck All Button - Event Delegation
+                document.body.addEventListener("click", function (event) {
+                    if (event.target && event.target.getAttribute("data-uncheck") === "ids") {
+                        // Uncheck all checkboxes with name 'ids'
+                        document.querySelectorAll('input[name="ids"]').forEach(function (checkbox) {
+                            checkbox.checked = false;
+                        });
+                    }
+                });
+            });
+
                                     function deleteRoute(routeId) {
                 if (confirm('Are you sure you want to delete this route?')) {
                     $.ajax({

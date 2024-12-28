@@ -74,8 +74,10 @@
 
             <div class="col-md-3">
                 <div class="box p-3">
-                    <i class="fa fa-tags"></i> <!-- Replace with your icon -->
-                    <p>Sales Report</p>
+                    <a href="/Maintenance/ReviewList">
+                        <i class="fa fa-user-plus"></i> <!-- Replace with your icon -->
+                        <p>Customer Reviews</p>
+                    </a>
                 </div>
             </div>
 
@@ -114,7 +116,6 @@
             </div>
         </div>
 
-
         <div class="most-popular-route">
             <div class="status-box">
                 <h4>Most Popular Route</h4>
@@ -134,7 +135,26 @@
             </div>
         </div>
 
-        <div class="todaySales">
+        <div class="review-breakdown">
+            <div class="status-box">
+                <h4>Reviews</h4>
+                <div class="review-details left-align">
+                    <p><strong>⭐⭐⭐⭐⭐</strong>: <span id="fiveStarCounter">@ViewBag.FiveStarCount</span></p>
+                    <p><strong>⭐⭐⭐⭐</strong>: <span id="fourStarCounter">@ViewBag.FourStarCount</span></p>
+                    <p><strong>⭐⭐⭐</strong>: <span id="threeStarCounter">@ViewBag.ThreeStarCount</span></p>
+                    <p><strong>⭐⭐</strong>: <span id="twoStarCounter">@ViewBag.TwoStarCount</span></p>
+                    <p><strong>⭐</strong>: <span id="oneStarCounter">@ViewBag.OneStarCount</span></p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+@*         <div class="todaySales">
             <h4>Today Sales Report</h4>
             <table>
                 <thead>
@@ -155,20 +175,25 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div> *@
     </div>
 
 </div> <!-- right container -->
 <style>
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box; /* Ensures padding/border don't affect width/height */
+    }
+
     .seat-status {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 20px;
     }
 
     .status-box {
-        background: linear-gradient(45deg, #36A2EB, #1E90FF);
+        background: linear-gradient(45deg, #28a745, #218838);
         color: white;
         padding: 20px 40px;
         border-radius: 5px;
@@ -178,13 +203,28 @@
         min-width: 250px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column; /* Stack the content vertically */
+        justify-content: center; /* Center the content */
+        align-items: center; /* Center align the content */
+        height: 200px; /* Set a fixed height for all boxes */
     }
 
-    .status-box:hover {
+        .status-box p {
+            display: block; /* Ensures each <p> is displayed on a new line */
+            margin: 0; /* Removes default margin */
+        }
+
+        .status-box .seat-count {
+            font-size: 30px; /* Optional: Adjust the font size for the seat count */
+        }
+
+        .status-box:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-    }
+        }
 
+    /* Styling for the booked-seats section */
     .seat-status .status-box .booked-seats {
         display: flex;
         flex-direction: column; /* Stack text and number vertically */
@@ -197,26 +237,7 @@
             margin-top: 5px; /* Space between text and number */
         }
 
-
-    /* General styling for status boxes to make them equal size */
-    .status-box {
-        background: linear-gradient(45deg, #28a745, #218838);
-        color: white;
-        padding: 20px 40px;
-        border-radius: 5px;
-        font-size: 24px;
-        font-weight: bold;
-        text-align: center;
-        min-width: 250px; /* Ensure a minimum width */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        height: 150px; /* Set a fixed height for all boxes */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-
+    /* Additional custom styling for other classes */
     .most-popular-route .status-box {
         background: linear-gradient(45deg, #28a745, #218838); /* Green gradient */
         color: white;
@@ -230,28 +251,8 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: 180px; /* Adjust height to fit content */
+        height: 200px;
     }
-
-        .most-popular-route .status-box h4 {
-            margin-bottom: 10px; /* Space below the heading */
-        }
-
-    .most-popular-route .route-details {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px; /* Space between each row */
-    }
-
-        .most-popular-route .route-details p {
-            margin: 0; /* Remove any extra margins */
-            font-size: 16px; /* Adjust font size */
-        }
-
-        .most-popular-route .route-details strong {
-            font-weight: normal; /* Make the value not bold */
-        }
 
     .active-members .status-box {
         background: linear-gradient(45deg, #28a745, #218838); /* Turquoise color */
@@ -266,29 +267,82 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: 180px; /* Adjust height as needed */
+        height: 200px;
     }
 
+        .most-popular-route .status-box h4,
         .active-members .status-box h4 {
             margin-bottom: 10px;
         }
 
+    .most-popular-route .route-details,
     .active-members .member-details {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px; /* Space between the rows */
+        gap: 10px; /* Space between each row */
     }
 
+        .most-popular-route .route-details p,
         .active-members .member-details p {
-            margin: 0;
-            font-size: 16px;
+            margin: 0; /* Remove any extra margins */
+            font-size: 16px; /* Adjust font size */
         }
 
+        .most-popular-route .route-details strong,
         .active-members .member-details strong {
-            font-weight: normal;
+            font-weight: normal; /* Make the value not bold */
         }
 
+    .statistics {
+        display: flex;
+        justify-content: space-between; /* Ensures the left and right sections are side by side */
+        gap: 20px; /* Adds space between the sections */
+    }
+
+    .left-section {
+        display: flex;
+        flex-wrap: wrap; /* Allows boxes to wrap to a new row if there's not enough space */
+        gap: 20px; /* Adds space between boxes */
+        flex: 3; /* Takes up more space compared to the right section */
+    }
+
+    .right-section {
+        flex: 1; /* Takes less space compared to the left section */
+        display: flex;
+        justify-content: center; /* Center the Review Breakdown box horizontally */
+        align-items: flex-start; /* Align at the top */
+    }
+
+    .review-breakdown .status-box {
+        width: auto;
+        height: 200px; /* Allow height to adjust based on content */
+        padding: 20px;
+        font-size: 14px;
+    }
+
+    .review-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* Align content to the left */
+        gap: 10px;
+    }
+
+    .left-align {
+        justify-content: flex-start; /* Align content to the left */
+        text-align: left; /* Ensures text inside <p> tags is left-aligned */
+    }
+
+    .review-details p {
+        display: flex;
+        align-items: center; /* Align the stars and count side by side */
+        gap: 5px; /* Add space between the stars and count */
+    }
+
+    .statistics {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
 
 </style>
 <script>
@@ -351,6 +405,102 @@
 
     // Start the active member animation
     animateActiveMemberCounter();
+
+    // Five Star Counter
+    const fiveStarCount = @Html.Raw(Json.Serialize(ViewBag.FiveStarCount ?? 0));
+    const fiveStarCounterElement = document.getElementById('fiveStarCounter');
+
+    let fiveStarCurrentCount = 0;
+    const fiveStarAnimationSpeed = 40;
+
+    function animateFiveStarCounter() {
+        if (fiveStarCurrentCount < fiveStarCount) {
+            fiveStarCurrentCount++;
+            fiveStarCounterElement.textContent = fiveStarCurrentCount;
+            setTimeout(animateFiveStarCounter, fiveStarAnimationSpeed);
+        } else {
+            fiveStarCounterElement.textContent = fiveStarCount;
+        }
+    }
+
+    animateFiveStarCounter();
+
+    // Four Star Counter
+    const fourStarCount = @Html.Raw(Json.Serialize(ViewBag.FourStarCount ?? 0));
+    const fourStarCounterElement = document.getElementById('fourStarCounter');
+
+    let fourStarCurrentCount = 0;
+    const fourStarAnimationSpeed = 40;
+
+    function animateFourStarCounter() {
+        if (fourStarCurrentCount < fourStarCount) {
+            fourStarCurrentCount++;
+            fourStarCounterElement.textContent = fourStarCurrentCount;
+            setTimeout(animateFourStarCounter, fourStarAnimationSpeed);
+        } else {
+            fourStarCounterElement.textContent = fourStarCount;
+        }
+    }
+
+    animateFourStarCounter();
+
+    // Three Star Counter
+    const threeStarCount = @Html.Raw(Json.Serialize(ViewBag.ThreeStarCount ?? 0));
+    const threeStarCounterElement = document.getElementById('threeStarCounter');
+
+    let threeStarCurrentCount = 0;
+    const threeStarAnimationSpeed = 40;
+
+    function animateThreeStarCounter() {
+        if (threeStarCurrentCount < threeStarCount) {
+            threeStarCurrentCount++;
+            threeStarCounterElement.textContent = threeStarCurrentCount;
+            setTimeout(animateThreeStarCounter, threeStarAnimationSpeed);
+        } else {
+            threeStarCounterElement.textContent = threeStarCount;
+        }
+    }
+
+    animateThreeStarCounter();
+
+    // Two Star Counter
+    const twoStarCount = @Html.Raw(Json.Serialize(ViewBag.TwoStarCount ?? 0));
+    const twoStarCounterElement = document.getElementById('twoStarCounter');
+
+    let twoStarCurrentCount = 0;
+    const twoStarAnimationSpeed = 40;
+
+    function animateTwoStarCounter() {
+        if (twoStarCurrentCount < twoStarCount) {
+            twoStarCurrentCount++;
+            twoStarCounterElement.textContent = twoStarCurrentCount;
+            setTimeout(animateTwoStarCounter, twoStarAnimationSpeed);
+        } else {
+            twoStarCounterElement.textContent = twoStarCount;
+        }
+    }
+
+    animateTwoStarCounter();
+
+    // One Star Counter
+    const oneStarCount = @Html.Raw(Json.Serialize(ViewBag.OneStarCount ?? 0));
+    const oneStarCounterElement = document.getElementById('oneStarCounter');
+
+    let oneStarCurrentCount = 0;
+    const oneStarAnimationSpeed = 40;
+
+    function animateOneStarCounter() {
+        if (oneStarCurrentCount < oneStarCount) {
+            oneStarCurrentCount++;
+            oneStarCounterElement.textContent = oneStarCurrentCount;
+            setTimeout(animateOneStarCounter, oneStarAnimationSpeed);
+        } else {
+            oneStarCounterElement.textContent = oneStarCount;
+        }
+    }
+
+    animateOneStarCounter();
+
 
     });
 
