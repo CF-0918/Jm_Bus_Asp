@@ -173,7 +173,7 @@ public class MaintenanceController : Controller
             // Set their status to "Inactive"
             foreach (var staff in staffToDisable)
             {
-                staff.Status = "Inactive";
+                staff.Status = "Blocked";
             }
 
             // Save changes to the database

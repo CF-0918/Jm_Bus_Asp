@@ -101,7 +101,7 @@ public class AccountController : Controller
             ViewBag.ResendEmailLink = Url.Action("ResendActivation", "Account", new { email = u.Email }, "https");
             return View(vm);
         }
-        else if (u.Status == "Block")
+        else if (u.Status == "Blocked")
         {
             TempData["Info"] = "Your account is currently blocked. Please contact support.";
             return View(vm);
@@ -439,7 +439,7 @@ public class AccountController : Controller
 
         // Get the user associated with the token
         var user = tokenRecord.User;
-        if (user != null && user.Status != "Block" && user.EmailVerified == 0)
+        if (user != null && user.Status != "Blocked" && user.EmailVerified == 0)
         {
             // Activate the user account
             user.EmailVerified = 1;
