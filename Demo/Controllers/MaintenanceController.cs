@@ -451,16 +451,16 @@ public class MaintenanceController : Controller
             // Fetch the members to update based on the provided IDs
             var membersToUpdate = db.Members.Where(s => ids.Contains(s.Id)).ToList();
 
-            // Update the Status property to "Inactive"
+            // Update the Status property to "Blocked"
             foreach (var member in membersToUpdate)
             {
-                member.Status = "Inactive";
+                member.Status = "Blocked";
             }
 
             // Save the changes to the database
             db.SaveChanges();
 
-            TempData["Info"] = $"{membersToUpdate.Count} member(s) set to inactive.";
+            TempData["Info"] = $"{membersToUpdate.Count} member(s) set to blocked.";
         }
 
         return RedirectToAction("MemberList"); // Redirect to the member list page
