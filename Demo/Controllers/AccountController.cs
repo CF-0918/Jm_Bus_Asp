@@ -689,6 +689,10 @@ public class AccountController : Controller
         {
             ModelState.AddModelError("Email", "Email not found.");
             return View(vm);
+        }else if (u.Status == "Blocked")
+        {
+            ModelState.AddModelError("Email", "Account has been blocked.");
+            return View(vm);
         }
 
         if (ModelState.IsValid)
