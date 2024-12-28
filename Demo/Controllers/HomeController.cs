@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Demo.Controllers;
 
@@ -157,31 +158,74 @@ public class HomeController : Controller
 
     // Jayden Partttttttt
     [Authorize(Roles = "Staff,Admin")]
-    public IActionResult RentList()
+    [HttpGet]
+    public IActionResult RentList(string search, string sortBy, string sortDirection, string sortStatus)
     {
-        var rentList = db.Rents?
-            .Where(r => r.status != "Cancelled" && r.status != "Done") // Exclude Cancelled and Done statuses
-            .Select(r => new RentHistoryVM
-            {
-                Id = r.Id,
-                MemberId = r.MemberId,
-                Start_Date = r.Start_Date,
-                End_Date = r.End_Date,
-                DepTime = r.DepTime,
-                ArrTime = r.ArrTime,
-                Location = r.Location,
-                Destination = r.Destination,
-                Purpose = r.Purpose,
-                Numppl = r.Numppl,
-                PerIC = r.PerIC,
-                Phone = r.Phone,
-                Email = r.Email,
-                Req = r.Req,
-                Status = r.status ?? "Pending"
-            })
-            .ToList();
+        var query = db.Rents.AsQueryable();
 
-        return View(rentList); // This returns a collection, which is expected by the view.
+        // Apply search filter if search term is provided
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(r => r.MemberId.Contains(search));
+        }
+
+        // Apply sorting based on sortBy and sortDirection
+        if (!string.IsNullOrEmpty(sortBy))
+        {
+            if (sortDirection == "desc")
+            {
+                if (sortBy == "MemberId")
+                    query = query.OrderByDescending(r => r.MemberId);
+                else if (sortBy == "RentId")
+                    query = query.OrderByDescending(r => r.Id);
+            }
+            else
+            {
+                if (sortBy == "MemberId")
+                    query = query.OrderBy(r => r.MemberId);
+                else if (sortBy == "RentId")
+                    query = query.OrderBy(r => r.Id);
+            }
+        }
+
+        // Apply additional filters like sortStatus
+        if (!string.IsNullOrEmpty(sortStatus))
+        {
+            query = query.Where(r => r.status == sortStatus);
+        }
+
+        var rentList = query.Select(r => new RentHistoryVM
+        {
+            Id = r.Id,
+            MemberId = r.MemberId,
+            Start_Date = r.Start_Date,
+            End_Date = r.End_Date,
+            DepTime = r.DepTime,
+            ArrTime = r.ArrTime,
+            Numppl = r.Numppl,
+            Status = r.status ?? "Pending"
+        }).ToList();
+
+        // If no results after search and sort
+        if (!rentList.Any())
+        {
+            var noResultsMessage = string.IsNullOrEmpty(search) ? "No Record Yet" : "No Current Member";
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { message = noResultsMessage }); // Return as JSON for AJAX
+            }
+
+            ViewBag.Message = noResultsMessage; // Set for the full page view
+            return View(rentList);
+        }
+
+        // Return rentList normally if there are results
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return PartialView("RentList", rentList);
+        }
+
+        return View(rentList);
     }
 
 
@@ -244,36 +288,9 @@ public class HomeController : Controller
         return RedirectToAction("RentDetails", new { rentId = rent.Id });
     }
 
-    [Authorize(Roles = "Staff,Admin")]
-    public IActionResult RentHistory()
-    {
-        var rentHistory = db.Rents
-            .Where(r => r.status == "Done"||r.status=="Cancelled") // Filter for Approved and Done statuses
-            .Select(r => new RentHistoryVM
-            {
-                Id = r.Id,
-                Start_Date = r.Start_Date,
-                End_Date = r.End_Date,
-                DepTime = r.DepTime,
-                ArrTime = r.ArrTime,
-                Location = r.Location,
-                Destination = r.Destination,
-                Purpose = r.Purpose,
-                Numppl = r.Numppl,
-                PerIC = r.PerIC,
-                Phone = r.Phone,
-                Email = r.Email,
-                Req = r.Req,
-                Status = r.status
-            })
-            .OrderBy(r => r.Start_Date) // Sort by Start Date
-            .ToList();
+   
 
-        return View(rentHistory);
-    }
-
-
-    [Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Member,Staff,Admin")]
     [HttpPost]
     public IActionResult CancelBooking(string rentId)
     {
@@ -291,15 +308,52 @@ public class HomeController : Controller
             // Set a success message using TempData
             TempData["Cancelled"] = "Rent booking Cancelled!";
 
-            // Redirect to the same page or the Rent History page
-            return RedirectToAction("RentHistory"); // Adjust to your action if needed
+            if (User.IsInRole("Member"))
+            {
+                // Redirect to the same page or the Rent History page
+                return RedirectToAction("MemberRentBookingHistory"); // Adjust to your action if needed
+            }
+            else
+            {
+                // Redirect to the same page or the Rent History page
+                return RedirectToAction("RentHistory"); // Adjust to your action if needed
+            }
+        
         }
 
         // If rent not found, return an error message or a different page
         TempData["Cancelled"] = "Booking Not Found";
-        return RedirectToAction("RentHistory"); // Adjust to your action if needed
+        return RedirectToAction("Index"); // Adjust to your action if needed
     }
 
+
+    [Authorize(Roles ="Member")]
+    public IActionResult MemberRentBookingHistory()
+    {
+        var rentHistory = db.Rents.Where(r=>r.MemberId==User.Identity.Name)
+       .Select(r => new RentHistoryVM
+       {
+           Id = r.Id,
+           Start_Date = r.Start_Date,
+           End_Date = r.End_Date,
+           DepTime = r.DepTime,
+           ArrTime = r.ArrTime,
+           Location = r.Location,
+           Destination = r.Destination,
+           Purpose = r.Purpose,
+           Numppl = r.Numppl,
+           PerIC = r.PerIC,
+           Phone = r.Phone,
+           Email = r.Email,
+           Req = r.Req,
+           Status = r.status ?? "Pending" // Ensure "Pending" is used if status is null
+       })
+       .OrderBy(r => r.Status == "Pending" ? 0 : 1)  // This will sort "Pending" entries first
+       .ThenBy(r => r.Start_Date)  // Optionally, you can add more sorting (e.g., by Start Date)
+       .ToList();
+
+        return View(rentHistory);
+    }
 
 
     // Handle form submission and save to database

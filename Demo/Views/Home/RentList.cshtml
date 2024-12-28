@@ -3,58 +3,151 @@
 <div class="container mt-5">
     <h2 class="mb-4">Admin Rent List</h2>
 
+    <!-- Display message if no results -->
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-warning">@ViewBag.Message</div>
+    }
+
+    <!-- Search Bar (for Member ID) -->
+    <input type="text" id="searchBox" placeholder="Search by Member ID" class="form-control mb-3" />
+
+    <!-- Sort Dropdown (for Status) -->
+    <select id="sortStatus" class="form-control mb-3">
+        <option value="">Sort by Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Done">Done</option>
+        <option value="Cancelled">Cancelled</option>
+    </select>
+
+    <!-- Data Table -->
     <table class="table table-bordered table-striped">
         <thead class="thead-dark">
             <tr>
-                <th>Member ID</th>
-                <th>Rent ID</th>
+                <th>
+                    <a href="javascript:void(0);" class="sort-column" data-sortby="MemberId" data-sortdirection="asc">
+                        Member ID <i class="fas fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="javascript:void(0);" class="sort-column" data-sortby="RentId" data-sortdirection="asc">
+                        Rent ID <i class="fas fa-sort"></i>
+                    </a>
+                </th>
                 <th>Number of People</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Arrival Time</th>
                 <th>Departure Time</th>
-                <th>Status</th> <!-- New Status Column -->
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="rentTableBody">
             @foreach (var rent in Model)
             {
-                    <tr>
-                        <td>@rent.MemberId</td>
-                        <td>@rent.Id</td>
-                        <td>@rent.Numppl</td>
-                        <td>@rent.Start_Date.ToString("yyyy-MM-dd")</td>
-                        <td>@rent.End_Date.ToString("yyyy-MM-dd")</td>
-                        <td>@rent.ArrTime.ToString("hh\\:mm")</td>
-                        <td>@rent.DepTime.ToString("hh\\:mm")</td>
-                        <td>
-                            <!-- Status Column Logic -->
+                <tr>
+                    <td>@rent.MemberId</td>
+                    <td>@rent.Id</td>
+                    <td>@rent.Numppl</td>
+                    <td>@rent.Start_Date.ToString("yyyy-MM-dd")</td>
+                    <td>@rent.End_Date.ToString("yyyy-MM-dd")</td>
+                    <td>@rent.ArrTime.ToString("hh\\:mm")</td>
+                    <td>@rent.DepTime.ToString("hh\\:mm")</td>
+                    <td>
                         @if (rent.Status == "Pending")
                         {
-                                    <span class="status status-pending">@rent.Status</span>
+                            <span class="status status-pending">@rent.Status</span>
                         }
                         else if (rent.Status == "Approved")
                         {
-                                    <span class="status status-approved">@rent.Status</span>
+                            <span class="status status-approved">@rent.Status</span>
                         }
                         else if (rent.Status == "Done")
                         {
-                                    <span class="status status-done">@rent.Status</span>
+                            <span class="status status-done">@rent.Status</span>
                         }
                         else if (rent.Status == "Cancelled")
                         {
-                                    <span class="status status-cancelled">@rent.Status</span>
+                            <span class="status status-cancelled">@rent.Status</span>
                         }
-                        </td>
-                        <td>
-                            <form method="get" action="@Url.Action("RentDetails", "Home")">
-                                <input type="hidden" name="rentId" value="@rent.Id" />
-                                <button type="submit" class="btn btn-info">Details</button>
-                            </form>
-                        </td>
-                    </tr>
+                    </td>
+                    <td>
+                        <form method="get" action="@Url.Action("RentDetails", "Maintenance")">
+                            <input type="hidden" name="rentId" value="@rent.Id" />
+                            <button type="submit" class="btn btn-info">Details</button>
+                        </form>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
+
+<!-- Loading Indicator (optional) -->
+<div id="loadingIndicator" style="display:none;">Loading...</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Function to fetch and update data dynamically
+        function fetchRentList(searchTerm, sortBy, sortDirection, sortStatus) {
+            $.ajax({
+                url: '@Url.Action("RentList", "Home")',
+                method: 'GET',
+                data: { search: searchTerm, sortBy: sortBy, sortDirection: sortDirection, sortStatus: sortStatus },
+                beforeSend: function () {
+                    $("#loadingIndicator").show(); // Show loading indicator
+                },
+                success: function (response) {
+                    if (response.message) {
+                        // If there's a message (i.e., no results), show it
+                        $("#rentTableBody").html("<tr><td colspan='9'>" + response.message + "</td></tr>");
+                    } else {
+                        // Update the table body with the new data
+                        $("#rentTableBody").html($(response).find("#rentTableBody").html());
+                    }
+                },
+                complete: function () {
+                    $("#loadingIndicator").hide(); // Hide loading indicator
+                }
+            });
+        }
+
+        // Fetch data when search term changes
+        $("#searchBox").on("keyup", function () {
+            var searchTerm = $(this).val();
+            var sortBy = $(".sort-column").data("sortby");
+            var sortDirection = $(".sort-column").data("sortdirection");
+            var sortStatus = $("#sortStatus").val();
+            fetchRentList(searchTerm, sortBy, sortDirection, sortStatus);
+        });
+
+        // Fetch data when sort status changes
+        $("#sortStatus").on("change", function () {
+            var sortStatus = $(this).val();
+            var searchTerm = $("#searchBox").val();
+            var sortBy = $(".sort-column").data("sortby");
+            var sortDirection = $(".sort-column").data("sortdirection");
+            fetchRentList(searchTerm, sortBy, sortDirection, sortStatus);
+        });
+
+        // Sorting logic for table columns
+        $(".sort-column").on("click", function () {
+            var sortBy = $(this).data("sortby");
+            var sortDirection = $(this).data("sortdirection");
+
+            // Toggle sort direction
+            sortDirection = (sortDirection === "asc") ? "desc" : "asc";
+
+            // Update the sort icon (optional)
+            $(this).data("sortdirection", sortDirection);
+
+            var searchTerm = $("#searchBox").val();
+            var sortStatus = $("#sortStatus").val();
+
+            fetchRentList(searchTerm, sortBy, sortDirection, sortStatus);
+        });
+    });
+</script>

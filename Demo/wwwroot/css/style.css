@@ -2723,11 +2723,20 @@ input[type="range"]::-webkit-slider-thumb {
 }
 /* Different Colors for Buttons */
 .update_password_buttons{
+    text-decoration:none;
+    color:white;
+    padding:10px 20px;
+    font-weight:bold;
     background-color:grey;
+    border-radius:20px;
 }
-.ticket_quick_buttons {
-    background-color: #118f2e;
-}
+    .update_password_buttons:hover{
+        color:white;
+        opacity:0.8;
+    }
+    .ticket_quick_buttons {
+        background-color: #118f2e;
+    }
 
 .history_quick_buttons {
     background-color: #2a2727;

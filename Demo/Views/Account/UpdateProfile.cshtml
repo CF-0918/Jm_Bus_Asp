@@ -110,17 +110,19 @@
 
         <!-- Quick Buttons -->
         <div class="profile_quick_buttons">
-            <div style="margin-right:10px;">
-                <a class="update_password_buttons" href="/Account/UpdatePassword">Update Password <i class="fas fa-lock"></i></a>
-            </div>
             <a href="/Schedule/MyBookingList" class="ticket_quick_buttons"><i class="fas fa-ticket-alt"></i> Ticket<i class=""></i> <span class="total_notification">@ViewBag.TotalBookingActive</span></a>
-            <a href="/Schedule/MyBookingHistory" class="history_quick_buttons"><i class="fas fa-history"></i> History<i class=""></i> <span class="total_notification">@ViewBag.TotalBookingHistory</span></a>
+            <a href="/Schedule/MyBookingHistory" class="history_quick_buttons"><i class="fas fa-history"></i> Booking History<i class=""></i> <span class="total_notification">@ViewBag.TotalBookingHistory</span></a>
+            <a href="/Home/MemberRentBookingHistory" class="history_quick_buttons"><i class="fas fa-history"></i> Rent History<i class=""></i> <span class="total_notification"></span></a>
             <a href="/Membership/MyVoucher" class="voucher_quick_buttons">
                 <i class="fas fa-gift"></i> My Voucher
                 <span class="total_notification">@ViewBag.VouchersQty</span>
             </a>
 
         </div>
+
+             <div style="">
+                <a class="update_password_buttons" href="/Account/UpdatePassword">Update Password <i class="fas fa-lock"></i></a>
+            </div>
 
         <!-- Membership Level -->
         <div class="membership_level_container">
