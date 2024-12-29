@@ -752,10 +752,13 @@ public class AccountController : Controller
 
     //Eason Part Staff CRUD
     // GET: Staff/Create
+    [Authorize(Roles = "Admin")]
     public IActionResult CreateStaff()
     {
         return View();
     }
+
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult CreateStaff(CreateStaffVM vm)
     {

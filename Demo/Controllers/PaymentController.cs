@@ -23,6 +23,7 @@ public class PaymentController : Controller
     }
 
     //Get
+    [Authorize(Roles = "Member")]
     public IActionResult Index(string bookingId)
     {
         // Now is fetch Booking Type

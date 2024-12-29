@@ -122,9 +122,9 @@ public class MembershipController : Controller
     }
 
     //Get
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult Rank()
     {
-
         return View();
     }
 
@@ -172,6 +172,7 @@ public class MembershipController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EditRank(string id)
     {
 
@@ -238,7 +239,7 @@ public class MembershipController : Controller
     }
 
 
-
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult RankDetails(string id)
     {
 
@@ -411,6 +412,7 @@ public class MembershipController : Controller
         return View();
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EditVoucher(string id)
     {
 
@@ -474,6 +476,7 @@ public class MembershipController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult VoucherDetails(string id)
     {
 
@@ -544,6 +547,7 @@ public class MembershipController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EnableVoucher(string? id)
     {
         if (string.IsNullOrEmpty(id))

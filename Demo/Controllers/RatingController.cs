@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Controllers;
 
@@ -25,6 +26,7 @@ public class RatingController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Member")]
     public IActionResult AddReview(ReviewVM vm)
     {
         // Check if rating requires a comment

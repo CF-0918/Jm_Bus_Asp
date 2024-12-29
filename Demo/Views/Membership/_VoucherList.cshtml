@@ -58,7 +58,8 @@
                 <td>
                     <select class="status-dropdown" data-voucher-id="@s.Id">
                         <option value="Active" selected="@(s.Status == "Active")">Active</option>
-                        <option value="Inactive" selected="@(s.Status == "Inactive")">Inactive</option>
+                        <option value="InActive" selected="@(s.Status == "InActive")">InActive</option>
+                        <option value="Expired" selected="@(s.Status == "Expired")">Expired</option>
                     </select>
                 </td>
             <td>@s.StartDate</td>

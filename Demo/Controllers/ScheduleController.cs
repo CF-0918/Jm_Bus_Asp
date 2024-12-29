@@ -158,7 +158,7 @@ public class ScheduleController : Controller
         return true;
     }
 
-
+    [Authorize(Roles = "Member")]
     public IActionResult Index(string departFilter = "", string destinationFilter = "", DateOnly? fromDateIdnex = null, int page = 1)
     {
         // Define page size
@@ -269,6 +269,7 @@ public class ScheduleController : Controller
         return View();
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult AddSchedule()
     {
         ViewBag.Buses = db.Buses.Where(b => b.Status == "Active");
@@ -277,6 +278,7 @@ public class ScheduleController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult AddSchedule(ScheduleVM vm)
     {
         if (vm.Price <= 0)
@@ -345,6 +347,7 @@ public class ScheduleController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult ShowScheduleList(DateOnly? name, string? status, string? sort, string? dir, int page = 1)
     {
 
@@ -404,7 +407,7 @@ public class ScheduleController : Controller
 
     }
 
-
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EditSchedule(string id)
     {
         // Retrieve the schedule record based on the ID
@@ -434,7 +437,7 @@ public class ScheduleController : Controller
 
 
 
-
+    [Authorize(Roles = "Staff,Admin")]
     [HttpPost]
     public IActionResult EditSchedule(EditScheduleVM vm, string id)
     {
@@ -522,6 +525,7 @@ public class ScheduleController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult ScheduleDetails(string id)
     {
         // Retrieve the schedule record based on the ID
@@ -943,7 +947,7 @@ public class ScheduleController : Controller
         return View(pagedResult);
     }
 
-
+    [Authorize(Roles = "Member")]
     public IActionResult EditMyTicketSeats(string id)
     {
         var bookingSchedule = db.Bookings
@@ -971,6 +975,7 @@ public class ScheduleController : Controller
 
 
     [HttpPost]
+    [Authorize(Roles = "Member")]
     public IActionResult EditMyTicketSeats(string SeatNo, string BookingId)
     {
         // Fetch the booking details
@@ -1133,6 +1138,7 @@ public class ScheduleController : Controller
 
 
     //Get Request - in here we just want to show result then no need opne another HttpPost
+    [Authorize(Roles = "Member")]
     public IActionResult TicketDetails(string id)
     {
         var booking = db.Bookings
@@ -1318,6 +1324,7 @@ public class ScheduleController : Controller
         return RedirectToAction("Index", "Schedule");
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult ShowTicketList(DateOnly? date, string? status, string? sort, string? dir, string? search, int page = 1)
 {
     // (1) Searching ------------------------
@@ -1431,7 +1438,8 @@ public class ScheduleController : Controller
     }
 
     [HttpPost]
-public IActionResult UpdateBookingStatus([FromBody] UpdateBookingStatusRequest request)
+    [Authorize(Roles = "Staff,Admin,Member")]
+    public IActionResult UpdateBookingStatus([FromBody] UpdateBookingStatusRequest request)
 {
     try
     {

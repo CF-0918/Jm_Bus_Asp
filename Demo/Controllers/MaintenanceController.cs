@@ -79,7 +79,7 @@ public class MaintenanceController : Controller
         return View();
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public IActionResult StaffList(string? name, string? sort, string? dir, string? status, int page = 1)
     {
         // (1) Searching ------------------------
@@ -139,7 +139,7 @@ public class MaintenanceController : Controller
 
     // Individual Deletion
     [HttpPost]
-    [Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Admin")]
     public IActionResult UpdateStaffStatus(string id, [FromBody] UpdateStatusVM model)
     {
         if (string.IsNullOrEmpty(id) || model == null)
@@ -162,7 +162,7 @@ public class MaintenanceController : Controller
 
     // POST: Maintenance/DeleteMany
     [HttpPost]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public IActionResult DeleteMany(string[] ids)
     {
         if (ids != null && ids.Length > 0)
@@ -186,6 +186,7 @@ public class MaintenanceController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public IActionResult EnableStaff(string? id)
     {
         if (string.IsNullOrEmpty(id))
@@ -214,7 +215,7 @@ public class MaintenanceController : Controller
 
 
     // GET: Account/UpdateProfile
-    //[Authorize(Roles = "Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult StaffDetails(string id)
     {
         // Get member record based on email (PK)
@@ -291,7 +292,7 @@ public class MaintenanceController : Controller
         return View(vm);
     }
 
-    //[Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Admin")]
     public IActionResult EditStaff(string id)
     {
         // Get staff/admin  record based on email (PK)
@@ -314,8 +315,8 @@ public class MaintenanceController : Controller
 
         return View(vm);
     }
-    //[Authorize(Roles = "Staff,Admin")]
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult EditStaff(EditStaffVM vm, string id)
     {
@@ -467,6 +468,7 @@ public class MaintenanceController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EnableMember(string? id)
     {
         if (string.IsNullOrEmpty(id))
@@ -494,7 +496,7 @@ public class MaintenanceController : Controller
     }
 
     // GET: Account/UpdateProfile
-    //[Authorize(Roles = "Member")]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult MemberDetails(string id)
     {
         // Get member record based on email (PK)
@@ -595,8 +597,8 @@ public class MaintenanceController : Controller
 
         return View(vm);
     }
-    //[Authorize(Roles = "Staff,Admin")]
 
+    [Authorize(Roles = "Staff,Admin")]
     [HttpPost]
     public IActionResult EditMember(EditMemberVM vm, string id)
     {
@@ -716,6 +718,7 @@ public class MaintenanceController : Controller
     }
 
     //Get Request [Show Bus List]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult ShowBusList(string? name, string? sort, string? status, string? dir, string? categoryId, int page = 1)
     {
         ViewBag.Categories = db.CategoryBuses.ToList();
@@ -780,7 +783,7 @@ public class MaintenanceController : Controller
         return View(m);
     }
 
-    //[Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EditBus(string id)
     {
         // Get staff/admin  record based on email (PK)
@@ -799,8 +802,8 @@ public class MaintenanceController : Controller
 
         return View(vm);
     }
-    //[Authorize(Roles = "Staff,Admin")]
 
+    [Authorize(Roles = "Staff,Admin")]
     [HttpPost]
     public IActionResult EditBus(EditBusVM vm, string id)
     {
@@ -845,6 +848,7 @@ public class MaintenanceController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult BusDetails(string id)
     {
         // Get staff/admin  record based on email (PK)
@@ -925,7 +929,7 @@ public class MaintenanceController : Controller
         return View(vm);
     }
 
-    //[Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EditCategoryBus(string id)
     {
         // Get staff/admin  record based on email (PK)
@@ -939,8 +943,7 @@ public class MaintenanceController : Controller
 
         return View(vm);
     }
-    //[Authorize(Roles = "Staff,Admin")]
-
+    [Authorize(Roles = "Staff,Admin")]
     [HttpPost]
     public IActionResult EditCategoryBus(EditCategoryBusVM vm, string id)
     {
@@ -1019,6 +1022,7 @@ public class MaintenanceController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EnableBus(string? id)
     {
         if (string.IsNullOrEmpty(id))
@@ -1049,12 +1053,15 @@ public class MaintenanceController : Controller
     {
          return destination != depart;
     }
+
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult AddRoute()
     {
         return View();
     }
 
     [HttpPost]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult AddRoute(RouteVM vm)
     {
         if (vm.Depart == vm.Destination)
@@ -1108,6 +1115,7 @@ public class MaintenanceController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult EditRoute(string id)
     {
 
@@ -1165,6 +1173,7 @@ public class MaintenanceController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult RouteDetails(string id)
     {
 
@@ -1211,7 +1220,7 @@ public class MaintenanceController : Controller
         return Json(new { success = true, message = "Route deleted successfully." });
     }
 
-
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult ShowRouteList(string? name, string? sort, string? dir, int page = 1)
     {
     
@@ -1281,7 +1290,7 @@ public class MaintenanceController : Controller
         return View(vm);
     }
 
-    [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "Staff,Admin")]
     public IActionResult ReviewList(int? page)
     {
         int pageSize = 10; // Number of reviews per page
@@ -1308,7 +1317,5 @@ public class MaintenanceController : Controller
 
         return View(pagedReviews); // Pass the paginated list to the view
     }
-
-
 
 }
