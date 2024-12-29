@@ -579,6 +579,7 @@ public class AccountController : Controller
 
         // Get the number of vouchers the member has
         ViewBag.VouchersQty = db.MemberVouchers.Where(vm => vm.MemberId == User.Identity!.Name).Count();
+        ViewBag.RentQty = db.Rents.Where(vm => vm.MemberId == User.Identity!.Name).Count();
 
         // Get membership rank details and pass it to the ViewBag
         if (m.Rank != null)

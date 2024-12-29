@@ -1,0 +1,138 @@
+INSERT INTO [dbo].[Bookings] ([Id], [Price], [Qty], [Status], [BookingDateTime], [Subtotal], [Total], [VoucherId], [ScheduleId], [MemberId]) VALUES (N'BK0001', 20, 0, N'Cancelled', N'2024-12-27 12:24:04', CAST(40.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), NULL, N'OW0001', N'M0001')
+INSERT INTO [dbo].[Bookings] ([Id], [Price], [Qty], [Status], [BookingDateTime], [Subtotal], [Total], [VoucherId], [ScheduleId], [MemberId]) VALUES (N'BK0002', 20, 2, N'CheckIn', N'2024-12-27 12:26:18', CAST(40.00 AS Decimal(18, 2)), CAST(44.00 AS Decimal(18, 2)), NULL, N'OW0001', N'M0001')
+INSERT INTO [dbo].[Bookings] ([Id], [Price], [Qty], [Status], [BookingDateTime], [Subtotal], [Total], [VoucherId], [ScheduleId], [MemberId]) VALUES (N'BK0003', 20, 1, N'Expired', N'2024-12-27 12:32:46', CAST(40.00 AS Decimal(18, 2)), CAST(22.00 AS Decimal(18, 2)), NULL, N'OW0001', N'M0001')
+INSERT INTO [dbo].[Bookings] ([Id], [Price], [Qty], [Status], [BookingDateTime], [Subtotal], [Total], [VoucherId], [ScheduleId], [MemberId]) VALUES (N'BK0004', 50, 2, N'Cancelled', N'2024-12-29 13:43:45', CAST(100.00 AS Decimal(18, 2)), CAST(110.00 AS Decimal(18, 2)), NULL, N'OW0002', N'M0002')
+INSERT INTO [dbo].[Bookings] ([Id], [Price], [Qty], [Status], [BookingDateTime], [Subtotal], [Total], [VoucherId], [ScheduleId], [MemberId]) VALUES (N'BK0005', 50, 1, N'Booked', N'2024-12-29 14:01:31', CAST(50.00 AS Decimal(18, 2)), CAST(55.00 AS Decimal(18, 2)), NULL, N'OW0002', N'M0002')
+INSERT INTO [dbo].[Bookings] ([Id], [Price], [Qty], [Status], [BookingDateTime], [Subtotal], [Total], [VoucherId], [ScheduleId], [MemberId]) VALUES (N'BK0006', 50, 2, N'Cancelled', N'2024-12-29 14:21:03', CAST(100.00 AS Decimal(18, 2)), CAST(104.50 AS Decimal(18, 2)), NULL, N'OW0002', N'M0002')
+INSERT INTO [dbo].[Bookings] ([Id], [Price], [Qty], [Status], [BookingDateTime], [Subtotal], [Total], [VoucherId], [ScheduleId], [MemberId]) VALUES (N'BK0007', 50, 2, N'Cancelled', N'2024-12-29 14:27:38', CAST(100.00 AS Decimal(18, 2)), CAST(101.20 AS Decimal(18, 2)), NULL, N'OW0002', N'M0002')
+INSERT INTO [dbo].[Bookings] ([Id], [Price], [Qty], [Status], [BookingDateTime], [Subtotal], [Total], [VoucherId], [ScheduleId], [MemberId]) VALUES (N'BK0008', 50, 2, N'Cancelled', N'2024-12-29 14:45:38', CAST(100.00 AS Decimal(18, 2)), CAST(101.20 AS Decimal(18, 2)), NULL, N'OW0002', N'M0002')
+
+
+SET IDENTITY_INSERT [dbo].[BookingSeats] ON
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (1, N'Seat03', N'Cancelled', N'BK0001')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (2, N'Seat04', N'Cancelled', N'BK0001')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (3, N'Seat03', N'Booked', N'BK0002')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (4, N'Seat04', N'Booked', N'BK0002')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (5, N'Seat07', N'Cancelled', N'BK0003')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (6, N'Seat08', N'Booked', N'BK0003')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (7, N'Seat03', N'Cancelled', N'BK0004')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (8, N'Seat04', N'Cancelled', N'BK0004')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (9, N'Seat08', N'Booked', N'BK0005')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (10, N'Seat06', N'Cancelled', N'BK0006')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (11, N'Seat07', N'Cancelled', N'BK0006')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (12, N'Seat06', N'Cancelled', N'BK0007')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (13, N'Seat07', N'Cancelled', N'BK0007')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (14, N'Seat06', N'Cancelled', N'BK0008')
+INSERT INTO [dbo].[BookingSeats] ([Id], [SeatNo], [Status], [BookingId]) VALUES (15, N'Seat07', N'Cancelled', N'BK0008')
+SET IDENTITY_INSERT [dbo].[BookingSeats] OFF
+
+INSERT INTO [dbo].[Buses] ([Id], [Name], [BusPlate], [Status], [Capacity], [PhotoURL], [CategoryBusId]) VALUES (N'B001', N'T250', N'VHA5309', N'Active', 10, N'bbd7d0f72af247f3a4c6a55d542e233b.jpg', N'CB001')
+INSERT INTO [dbo].[Buses] ([Id], [Name], [BusPlate], [Status], [Capacity], [PhotoURL], [CategoryBusId]) VALUES (N'B002', N'TEST Bus', N'VHA5309', N'Active', 15, N'9a15d09c0e284a75825ee0a4568cf0d0.jpg', N'CB001')
+INSERT INTO [dbo].[Buses] ([Id], [Name], [BusPlate], [Status], [Capacity], [PhotoURL], [CategoryBusId]) VALUES (N'B003', N'FLY Over Night', N'VHA5309', N'Active', 15, N'c311f29728624aac9cd9cf56902a295b.jpg', N'CB005')
+INSERT INTO [dbo].[Buses] ([Id], [Name], [BusPlate], [Status], [Capacity], [PhotoURL], [CategoryBusId]) VALUES (N'B004', N'TXT BUS HV', N'VHA5309', N'Active', 10, N'8792c1fb342b49b9901bd827e2f0803d.jpg', N'CB002')
+
+INSERT INTO [dbo].[CategoryBuses] ([Id], [Name]) VALUES (N'CB001', N'MINI BUS')
+INSERT INTO [dbo].[CategoryBuses] ([Id], [Name]) VALUES (N'CB002', N'EXTREME BUS')
+INSERT INTO [dbo].[CategoryBuses] ([Id], [Name]) VALUES (N'CB003', N'LUXURY BUS')
+INSERT INTO [dbo].[CategoryBuses] ([Id], [Name]) VALUES (N'CB004', N'BIG BUS')
+INSERT INTO [dbo].[CategoryBuses] ([Id], [Name]) VALUES (N'CB005', N'DJ BUS')
+
+SET IDENTITY_INSERT [dbo].[MemberVouchers] ON
+INSERT INTO [dbo].[MemberVouchers] ([Id], [MemberId], [VoucherId], [Amount]) VALUES (1, N'M0002', N'V0003', 2)
+INSERT INTO [dbo].[MemberVouchers] ([Id], [MemberId], [VoucherId], [Amount]) VALUES (2, N'M0001', N'V0003', 2)
+INSERT INTO [dbo].[MemberVouchers] ([Id], [MemberId], [VoucherId], [Amount]) VALUES (5, N'M0002', N'V0001', 3)
+SET IDENTITY_INSERT [dbo].[MemberVouchers] OFF
+
+INSERT INTO [dbo].[Ranks] ([Id], [Name], [Description], [MinSpend], [Discounts]) VALUES (N'R0001', N'BEGINNER', N'TEST', 0, 0)
+INSERT INTO [dbo].[Ranks] ([Id], [Name], [Description], [MinSpend], [Discounts]) VALUES (N'R0002', N'SILVER', N'Silver rank will get 5 % discount on each order that has been purchased.', 1000, 8)
+INSERT INTO [dbo].[Ranks] ([Id], [Name], [Description], [MinSpend], [Discounts]) VALUES (N'R0003', N'GOLD', N'Gold will have a10% discount', 2000, 10)
+
+INSERT INTO [dbo].[Rents] ([Id], [DepTime], [ArrTime], [Start_Date], [End_Date], [Location], [Destination], [Purpose], [Numppl], [PerIC], [Phone], [Email], [Req], [status], [MemberId]) VALUES (N'R1', N'14:47:00', N'18:43:00', N'2024-12-29', N'2025-01-02', N'KL', N'Selangor', N'business', 10, N'YCF', N'01280821652', N'yfung2574@gmail.com', N'Test
+', N'Done', N'M0001')
+INSERT INTO [dbo].[Rents] ([Id], [DepTime], [ArrTime], [Start_Date], [End_Date], [Location], [Destination], [Purpose], [Numppl], [PerIC], [Phone], [Email], [Req], [status], [MemberId]) VALUES (N'R2', N'18:06:00', N'19:06:00', N'2024-12-29', N'2024-12-30', N'Pahang', N'Melaka', N'travel', 10, N'YCF', N'0128088', N'yfung2574@gmail.com', N'test', N'Cancelled', N'M0002')
+INSERT INTO [dbo].[Rents] ([Id], [DepTime], [ArrTime], [Start_Date], [End_Date], [Location], [Destination], [Purpose], [Numppl], [PerIC], [Phone], [Email], [Req], [status], [MemberId]) VALUES (N'R3', N'08:04:00', N'13:04:00', N'2025-01-01', N'2025-01-04', N'KL', N'JOHOR', N'school_trip', 20, N'Jayden Wong', N'01280821652', N'yfung2574@gmail.com', N'I need an insurance 
+', N'Pending', N'M0002')
+
+INSERT INTO [dbo].[Reviews] ([Id], [Rating], [Comment], [CommentDate], [numberOfComments], [MemberId]) VALUES (N'Review01', 1, N'test
+', N'2024-12-26', 1, N'M0001')
+
+INSERT INTO [dbo].[RouteLocations] ([Id], [Depart], [Destination], [Hour], [Min]) VALUES (N'RT001', N'Selangor', N'Kuala Lumpur', 1, 30)
+INSERT INTO [dbo].[RouteLocations] ([Id], [Depart], [Destination], [Hour], [Min]) VALUES (N'RT002', N'Melaka', N'Kuala Lumpur', 2, 10)
+INSERT INTO [dbo].[RouteLocations] ([Id], [Depart], [Destination], [Hour], [Min]) VALUES (N'RT003', N'Pahang', N'Selangor', 4, 10)
+INSERT INTO [dbo].[RouteLocations] ([Id], [Depart], [Destination], [Hour], [Min]) VALUES (N'RT004', N'Putrajaya', N'Kuala Lumpur', 1, 30)
+INSERT INTO [dbo].[RouteLocations] ([Id], [Depart], [Destination], [Hour], [Min]) VALUES (N'RT005', N'Johor', N'Penang', 6, 30)
+
+INSERT INTO [dbo].[Schedules] ([Id], [DepartDate], [DepartTime], [Price], [DiscountPrice], [Status], [Remark], [BusId], [RouteLocationId]) VALUES (N'OW0001', N'2024-12-27', N'12:25:00', 100, 20, N'Expired', N'testing only', N'B001', N'RT001')
+INSERT INTO [dbo].[Schedules] ([Id], [DepartDate], [DepartTime], [Price], [DiscountPrice], [Status], [Remark], [BusId], [RouteLocationId]) VALUES (N'OW0002', N'2024-12-31', N'15:42:00', 100, 50, N'Active', N'1234
+', N'B002', N'RT001')
+INSERT INTO [dbo].[Schedules] ([Id], [DepartDate], [DepartTime], [Price], [DiscountPrice], [Status], [Remark], [BusId], [RouteLocationId]) VALUES (N'OW0003', N'2025-01-11', N'17:30:00', 120, 50, N'Active', N'LIMITED EDDITION ', N'B003', N'RT005')
+INSERT INTO [dbo].[Schedules] ([Id], [DepartDate], [DepartTime], [Price], [DiscountPrice], [Status], [Remark], [BusId], [RouteLocationId]) VALUES (N'OW0004', N'2025-01-03', N'19:30:00', 100, 0, N'Active', N'Test', N'B001', N'RT003')
+INSERT INTO [dbo].[Schedules] ([Id], [DepartDate], [DepartTime], [Price], [DiscountPrice], [Status], [Remark], [BusId], [RouteLocationId]) VALUES (N'OW0005', N'2025-01-06', N'16:34:00', 30, 0, N'Active', N'Test', N'B004', N'RT004')
+
+SET IDENTITY_INSERT [dbo].[Seats] ON
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (1, N'B001', N'Seat01')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (2, N'B001', N'Seat02')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (3, N'B001', N'Seat03')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (4, N'B001', N'Seat04')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (5, N'B001', N'Seat05')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (6, N'B001', N'Seat06')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (7, N'B001', N'Seat07')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (8, N'B001', N'Seat08')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (9, N'B001', N'Seat09')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (10, N'B001', N'Seat10')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (11, N'B002', N'Seat01')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (12, N'B002', N'Seat02')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (13, N'B002', N'Seat03')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (14, N'B002', N'Seat04')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (15, N'B002', N'Seat05')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (16, N'B002', N'Seat06')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (17, N'B002', N'Seat07')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (18, N'B002', N'Seat08')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (19, N'B002', N'Seat09')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (20, N'B002', N'Seat10')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (21, N'B002', N'Seat11')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (22, N'B002', N'Seat12')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (23, N'B002', N'Seat13')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (24, N'B002', N'Seat14')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (25, N'B002', N'Seat15')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (26, N'B003', N'Seat01')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (27, N'B003', N'Seat02')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (28, N'B003', N'Seat03')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (29, N'B003', N'Seat04')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (30, N'B003', N'Seat05')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (31, N'B003', N'Seat06')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (32, N'B003', N'Seat07')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (33, N'B003', N'Seat08')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (34, N'B003', N'Seat09')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (35, N'B003', N'Seat10')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (36, N'B003', N'Seat11')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (37, N'B003', N'Seat12')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (38, N'B003', N'Seat13')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (39, N'B003', N'Seat14')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (40, N'B003', N'Seat15')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (41, N'B004', N'Seat01')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (42, N'B004', N'Seat02')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (43, N'B004', N'Seat03')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (44, N'B004', N'Seat04')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (45, N'B004', N'Seat05')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (46, N'B004', N'Seat06')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (47, N'B004', N'Seat07')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (48, N'B004', N'Seat08')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (49, N'B004', N'Seat09')
+INSERT INTO [dbo].[Seats] ([Id], [BusId], [SeatNo]) VALUES (50, N'B004', N'Seat10')
+SET IDENTITY_INSERT [dbo].[Seats] OFF
+
+INSERT INTO [dbo].[Users] ([Id], [FirstName], [LastName], [Age], [IcNo], [Gender], [Email], [Phone], [Hash], [PhotoURL], [Status], [EmailVerified], [Discriminator], [Position], [Country], [IsSubscribedToNewsletter], [Points], [MinSpend], [RankId]) VALUES (N'M0001', N'YONG', N'CHYENG FUGN', 20, N'040918-14-0821', N'F', N'yfung2574@gmail.com', N'0128082165', N'AQAAAAIAAYagAAAAEE28SwpqHY65uhGLChu4ecu+qpygHBXiEeYILHebw67HmlUYyIVsFpJHdqeDI0CphQ==', N'7b2db4e82859440da35c9f45c9a51f13.jpg', N'Active', 1, N'Member', N'MANAGERFD', N'Malaysian', 1, 116, CAST(66.00 AS Decimal(18, 2)), N'R0001')
+INSERT INTO [dbo].[Users] ([Id], [FirstName], [LastName], [Age], [IcNo], [Gender], [Email], [Phone], [Hash], [PhotoURL], [Status], [EmailVerified], [Discriminator], [Position], [Country], [IsSubscribedToNewsletter], [Points], [MinSpend], [RankId]) VALUES (N'M0002', N'YONG', N'QIAN LE', 18, N'040918-14-0821', N'M', N'yongcf-wm22@student.tarc.edu.my', N'01280821652', N'AQAAAAIAAYagAAAAEBjq3S9bcJh5Gv0pApO4IcUKArsFEljckkClBRaZJ/aLSzcWllTyJlICMnyUPLl0lg==', N'7c0b49d91bde4a2ca6ffba52b12fda0b.jpg', N'Active', 1, N'Member', N'MANAGER', N'Malaysian', 0, 45, CAST(1000.00 AS Decimal(18, 2)), N'R0002')
+INSERT INTO [dbo].[Users] ([Id], [FirstName], [LastName], [Age], [IcNo], [Gender], [Email], [Phone], [Hash], [PhotoURL], [Status], [EmailVerified], [Discriminator], [Position], [Country], [IsSubscribedToNewsletter], [Points], [MinSpend], [RankId]) VALUES (N'S0001', N'Admin', N'Admin', 23, N'040913-14-0972', N'F', N'christinechew0510@gmail.com', N'0128082165', N'AQAAAAIAAYagAAAAELpRMi/GzRTqgDVtX0K5omBbHSpVKFrfoX0Q736COrLmGY3tz9DBFkmK1RYaSW6VWQ==', N'7b0003121b064a25b699b12ba9b36817.jpg', N'Active', 1, N'Admin', NULL, NULL, NULL, NULL, NULL, NULL)
+INSERT INTO [dbo].[Users] ([Id], [FirstName], [LastName], [Age], [IcNo], [Gender], [Email], [Phone], [Hash], [PhotoURL], [Status], [EmailVerified], [Discriminator], [Position], [Country], [IsSubscribedToNewsletter], [Points], [MinSpend], [RankId]) VALUES (N'U0001', N'YONG', N'CF', 17, N'040918-14-0821', N'F', N'infosmart609@gmail.com', N'01280821652', N'AQAAAAIAAYagAAAAEHwrGeLW9hsNAXeqkYfr+f25J2OmYPU3SDLJd2Az2tk+iSPhkXuDhZ3aeg2pD39HLg==', N'58e85df435fc4e629de8dbe45e261b7d.jpg', N'Active', 1, N'Staff', NULL, NULL, NULL, NULL, NULL, NULL)
+INSERT INTO [dbo].[Users] ([Id], [FirstName], [LastName], [Age], [IcNo], [Gender], [Email], [Phone], [Hash], [PhotoURL], [Status], [EmailVerified], [Discriminator], [Position], [Country], [IsSubscribedToNewsletter], [Points], [MinSpend], [RankId]) VALUES (N'U0002', N'YONG', N'CHENG FUNG', 18, N'040918-14-0821', N'M', N'yongcf@smartmaster.com.my', N'01280821652', N'AQAAAAIAAYagAAAAECiZMxenebPVjgjwXJr7wfyp4oknkcbJEWL+QfUYDKBAlzmgP8VJMjQLmTHJDipBTA==', N'40c0cd5ceed3407bae4d2b42808997fc.jpg', N'Active', 1, N'Staff', NULL, NULL, NULL, NULL, NULL, NULL)
+
+
+INSERT INTO [dbo].[Vouchers] ([Id], [Name], [PointNeeded], [Description], [CashDiscount], [Qty], [StartDate], [EndDate], [Status]) VALUES (N'V0001', N'10RINGGIT', 10, N'10 RINGGIT VOUCHER WILL CAN ONLY BE REDEEM WITH 100 POINTS.', 10, 0, N'2024-12-29', N'2024-12-31', N'Active')
+INSERT INTO [dbo].[Vouchers] ([Id], [Name], [PointNeeded], [Description], [CashDiscount], [Qty], [StartDate], [EndDate], [Status]) VALUES (N'V0002', N'20RINGGIT', 200, N'This voucher will start in the 30/12/24', 20, 2, N'2024-12-30', N'2024-12-31', N'InActive')
+INSERT INTO [dbo].[Vouchers] ([Id], [Name], [PointNeeded], [Description], [CashDiscount], [Qty], [StartDate], [EndDate], [Status]) VALUES (N'V0003', N'Test Expired ', 100, N'23232323', 10, 2, N'2024-12-20', N'2024-12-22', N'Expired')
+INSERT INTO [dbo].[Vouchers] ([Id], [Name], [PointNeeded], [Description], [CashDiscount], [Qty], [StartDate], [EndDate], [Status]) VALUES (N'V0004', N'Special Voucher RM10', 50, N'Test', 10, 10, N'2024-12-31', N'2025-01-11', N'InActive')
+INSERT INTO [dbo].[Vouchers] ([Id], [Name], [PointNeeded], [Description], [CashDiscount], [Qty], [StartDate], [EndDate], [Status]) VALUES (N'V0005', N'Deluxue Voucher RM100', 10000, N'Test', 100, 10, N'2024-12-29', N'2025-01-14', N'Active')
+
+

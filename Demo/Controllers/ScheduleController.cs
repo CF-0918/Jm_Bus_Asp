@@ -1138,7 +1138,7 @@ public class ScheduleController : Controller
 
 
     //Get Request - in here we just want to show result then no need opne another HttpPost
-    [Authorize(Roles = "Member")]
+    [Authorize(Roles = "Member,Staff,Admin")]
     public IActionResult TicketDetails(string id)
     {
         var booking = db.Bookings

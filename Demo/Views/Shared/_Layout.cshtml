@@ -88,7 +88,7 @@
                     </a>
                     <div class="dropdown-content-schedule">
                         <p><a href="/Schedule/AddSchedule"><i class="fas fa-plus"></i> Add Schedule</a></p>
-                        <p><a href="/Schedule/ShowScheduleList"><i class="fas fa-plus"></i> Show Schedule</a></p>
+                        <p><a href="/Schedule/ShowScheduleList"><i class="fas fa-list"></i> Show Schedule</a></p>
                         <p><a href="/Schedule/ShowTicketList"><i class="fas fa-info"></i> Manage Ticket</a></p>
                     </div>
                 </li>
@@ -132,18 +132,22 @@
 
             }
              @if (User.IsInRole("Admin")){
-                <li class="menu-item member-item">
+                <li class="menu-item dropdown-bus">
                     <a href="/Maintenance/StaffList" class="menu-link">
                         <i class="fas fa-users"></i>Staff
+                        <i class="fa fa-caret-down"></i>
                     </a>
+                    <div class="dropdown-content-bus">
+                        <p><a href="/Account/CreateStaff"><i class="fas fa-plus"></i> Create Staff</a></p> <!-- Icon for list -->
+                    </div>
                 </li>
             }
 
             @if(User.IsInRole("Staff") || User.IsInRole("Admin")){
                 <li class="menu-item dropdown-bus">
                     <a href="#" class="menu-link">
-                        <i class="fas fa-car"></i> Rent <!-- Updated Main Icon -->
-                        <i class="fa fa-caret-down"></i> <!-- Dropdown Icon -->
+                        <i class="fas fa-car"></i> Rent 
+                        <i class="fa fa-caret-down"></i>
                     </a>
                     <div class="dropdown-content-bus">
                         <p><a href="/Home/RentList"><i class="fas fa-list-alt"></i> Rent List</a></p> <!-- Icon for list -->

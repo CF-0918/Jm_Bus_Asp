@@ -111,8 +111,12 @@
         <!-- Quick Buttons -->
         <div class="profile_quick_buttons">
             <a href="/Schedule/MyBookingList" class="ticket_quick_buttons"><i class="fas fa-ticket-alt"></i> Ticket<i class=""></i> <span class="total_notification">@ViewBag.TotalBookingActive</span></a>
-            <a href="/Schedule/MyBookingHistory" class="history_quick_buttons"><i class="fas fa-history"></i> Booking History<i class=""></i> <span class="total_notification">@ViewBag.TotalBookingHistory</span></a>
-            <a href="/Home/MemberRentBookingHistory" class="history_quick_buttons"><i class="fas fa-history"></i> Rent History<i class=""></i> <span class="total_notification"></span></a>
+            <a href="/Schedule/MyBookingHistory" class="history_quick_buttons"><i class="fas fa-history"></i> Ticket History<i class=""></i> <span class="total_notification">@ViewBag.TotalBookingHistory</span></a>
+            <a href="/Home/MemberRentBookingHistory" class="history_quick_buttons" style="background-color: #2196F3; color: white;">
+                <i class="fas fa-building"></i> Rent Bookings
+                <span class="total_notification">@ViewBag.RentQty</span>
+            </a>
+
             <a href="/Membership/MyVoucher" class="voucher_quick_buttons">
                 <i class="fas fa-gift"></i> My Voucher
                 <span class="total_notification">@ViewBag.VouchersQty</span>

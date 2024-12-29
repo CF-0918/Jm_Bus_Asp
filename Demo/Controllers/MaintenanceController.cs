@@ -794,6 +794,7 @@ public class MaintenanceController : Controller
         var vm = new EditBusVM
         {
             Name = m.Name,
+            Status=m.Status,
             BusPlate = m.BusPlate,
             Capacity = m.Capacity,
             CategoryBusId = m.CategoryBusId,
@@ -826,8 +827,8 @@ public class MaintenanceController : Controller
 
             if (vm.Photo != null)
             {
-                hp.DeletePhoto(m.PhotoURL, "photo/users");
-                m.PhotoURL = hp.SavePhoto(vm.Photo, "photo/users");
+                hp.DeletePhoto(m.PhotoURL, "photo/buses");
+                m.PhotoURL = hp.SavePhoto(vm.Photo, "photo/buses");
             }
 
             db.SaveChanges();
@@ -839,6 +840,7 @@ public class MaintenanceController : Controller
         {
             TempData["Info"] = "Bus Not updated.";
             vm.Name = m.Name;
+            vm.Status = m.Status;
             vm.BusPlate = m.BusPlate;
             vm.Capacity = m.Capacity;
             vm.CategoryBusId = m.CategoryBusId;
@@ -859,6 +861,7 @@ public class MaintenanceController : Controller
         var vm = new BusDetailsVM
         {
             Name = m.Name,
+            Status=m.Status,
             BusPlate = m.BusPlate,
             Capacity = m.Capacity,
             CategoryBusId = m.CategoryBusId,
@@ -1072,7 +1075,7 @@ public class MaintenanceController : Controller
         {
             ModelState.AddModelError("EstimatedTimeHour", "Hour should not more than 12 h or less than 1");
         }
-        if (vm.EstimatedTimeMin <= 0 || vm.EstimatedTimeMin > 60)
+        if (vm.EstimatedTimeMin < 0 || vm.EstimatedTimeMin > 60)
         {
             ModelState.AddModelError("EstimatedTimeHour", "Hour should not more than 60 m or less than 1");
         }

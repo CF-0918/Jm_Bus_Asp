@@ -18,13 +18,13 @@
             <div class="profile_img_user_container">
                 <label class="upload">
                     <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
-                    <img src="/photo/users/@Model.PhotoURL" alt="Bus Photo" class="profile_img_user">
+                    <img src="/photo/buses/@Model.PhotoURL" alt="Bus Photo" class="profile_img_user">
                     <span class="errorMessage" asp-validation-for="Photo"></span>
                 </label>
             </div>
             <div class="status @Model.Status">
                 <span class="rounded_status"></span>
-                <span class="status-text">@Model.Status</span>
+                <span class="status-text @Model.Status">@Model.Status</span>
             </div>
         </div>
 
@@ -46,7 +46,7 @@
                     <!-- Column 1: Capacity -->
                     <div class="form-group col">
                         <label asp-for="Capacity"></label>
-                        <input asp-for="Capacity" type="number">
+                        <input asp-for="Capacity" type="number" readonly>
                         <span class="errorMessage" asp-validation-for="Capacity"></span>
                     </div>
                     <!-- Column 2: Category Bus -->

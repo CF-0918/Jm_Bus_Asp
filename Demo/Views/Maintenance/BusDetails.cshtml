@@ -18,13 +18,13 @@
             <div class="profile_img_user_container">
                 <label class="upload">
                     <input asp-for="Photo" accept="image/jpeg,image/png" hidden readonly>
-                    <img src="/photo/users/@Model.PhotoURL" alt="Bus Photo" class="profile_img_user">
+                    <img src="/photo/buses/@Model.PhotoURL" alt="Bus Photo" class="profile_img_user">
                     <span class="errorMessage" asp-validation-for="Photo"></span>
                 </label>
             </div>
             <div class="status @Model.Status">
                 <span class="rounded_status"></span>
-                <span class="status-text">@Model.Status</span>
+                <span class="status-text @Model.Status">@Model.Status</span>
             </div>
         </div>
 
