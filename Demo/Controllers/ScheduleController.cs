@@ -905,24 +905,22 @@ public class ScheduleController : Controller
             searched = searched.Where(x => x.schedule.DepartDate == departDate.Value);
         }
 
-        // (2) Sorting --------------------------
+        // (2) Sorting
         ViewBag.Sort = sort;
         ViewBag.Dir = dir;
 
-        Func<dynamic, object> fn = sort switch
+        searched = sort switch
         {
-            "Id" => item => item.booking.Id,
-            "Status" => item => item.booking.Status,
-            "Qty" => item => item.booking.Qty,
-            "BookingDateTime" => item => item.booking.BookingDateTime,
-            "Total" => item => item.booking.Total,
-            "RouteLocation" => item => item.route.Depart,
-            "DepartDate" => item => item.schedule.DepartDate,
-            "DepartTime" => item => item.schedule.DepartTime,
-            _ => item => item.booking.Id,
+            "Id" => dir == "desc" ? searched.OrderByDescending(x => x.booking.Id) : searched.OrderBy(x => x.booking.Id),
+            "Status" => dir == "desc" ? searched.OrderByDescending(x => x.booking.Status) : searched.OrderBy(x => x.booking.Status),
+            "Qty" => dir == "desc" ? searched.OrderByDescending(x => x.booking.Qty) : searched.OrderBy(x => x.booking.Qty),
+            "BookingDateTime" => dir == "desc" ? searched.OrderByDescending(x => x.booking.BookingDateTime) : searched.OrderBy(x => x.booking.BookingDateTime),
+            "Total" => dir == "desc" ? searched.OrderByDescending(x => x.booking.Total) : searched.OrderBy(x => x.booking.Total),
+            "RouteLocation" => dir == "desc" ? searched.OrderByDescending(x => x.route.Depart) : searched.OrderBy(x => x.route.Depart),
+            "DepartDate" => dir == "desc" ? searched.OrderByDescending(x => x.schedule.DepartDate) : searched.OrderBy(x => x.schedule.DepartDate),
+            "DepartTime" => dir == "desc" ? searched.OrderByDescending(x => x.schedule.DepartTime) : searched.OrderBy(x => x.schedule.DepartTime),
+            _ => searched.OrderBy(x => x.booking.Id)
         };
-
-        var sorted = dir == "desc" ? searched.OrderByDescending(fn) : searched.OrderBy(fn);
 
         // (3) Paging ---------------------------
         if (page < 1)
@@ -930,7 +928,7 @@ public class ScheduleController : Controller
             return RedirectToAction(null, new { id, sort, dir, page = 1 });
         }
 
-        var pagedResult = sorted.ToPagedList(page, 10);
+        var pagedResult = searched.ToPagedList(page, 10);
 
         if (page > pagedResult.PageCount && pagedResult.PageCount > 0)
         {
