@@ -97,11 +97,13 @@ public class Member : User
     public Rank Rank { get; set; }
     public string RankId {  get; set; }
 
+
     // Navigation property to track the vouchers the member has redeemed
     public List<MemberVoucher> MemberVoucher { get; set; }
 
     public List<Rent> Rents { get; set; }
     public Subscriptions Subscriptions { get; set; }
+    public List<Booking> Bookings { get; set; }
 }
 
 public class Voucher
